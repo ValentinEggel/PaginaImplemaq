@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMPLEMAQ — Panel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --am: #f5c842; --am2: #f7d460;
+    --ng: #111; --ng2: #1e1e1e; --ng3: #2a2a2a;
+    --gr: #f5f3ee; --gr2: #e0ddd6;
+    --tx: #111; --tx2: #666;
+    --rd: #e53935;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow',sans-serif;background:var(--gr);color:var(--tx);}
+
+  /* LOGIN */
+  #ls{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ng);}
+  .lb{background:var(--ng2);border:1px solid #333;border-radius:12px;padding:48px 40px;width:100%;max-width:380px;text-align:center;}
+  .ll{width:72px;height:72px;background:var(--am);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:var(--ng);line-height:1.2;flex-direction:column;}
+  .lb h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#fff;text-transform:uppercase;margin-bottom:4px;}
+  .lb p{font-size:13px;color:#777;margin-bottom:28px;}
+  .lb input{width:100%;padding:11px 14px;background:#111;border:1.5px solid #333;border-radius:6px;color:#fff;font-size:15px;margin-bottom:12px;transition:border-color .2s;font-family:'Barlow',sans-serif;}
+  .lb input:focus{outline:none;border-color:var(--am);}
+  .lb input::placeholder{color:#555;}
+  .btn-li{width:100%;padding:13px;background:var(--am);color:var(--ng);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .2s;}
+  .btn-li:hover{background:var(--am2);}
+  #lerr{color:#ff6b6b;font-size:13px;margin-top:10px;display:none;}
+
+  /* ADMIN */
+  #as{display:none;}
+  .ah{background:var(--ng);border-bottom:2px solid var(--am);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .ahl{display:flex;align-items:center;gap:14px;}
+  .als{width:38px;height:38px;background:var(--am);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:var(--ng);text-align:center;line-height:1.1;}
+  .ah h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+  .ah h1 span{color:#888;font-weight:400;font-size:13px;margin-left:6px;}
+  .btn-lo{background:transparent;border:1px solid #444;color:#aaa;font-size:13px;padding:7px 16px;border-radius:5px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;}
+  .btn-lo:hover{border-color:#ff6b6b;color:#ff6b6b;}
+  .ab{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);}
+
+  /* SIDEBAR */
+  .sb{background:#fff;border-right:1px solid var(--gr2);padding:20px 12px;}
+  .sbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:0 10px;margin:16px 0 6px;}
+  .sbl:first-child{margin-top:0;}
+  .sbt{width:100%;text-align:left;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;border:none;background:transparent;font-size:14px;color:var(--tx2);cursor:pointer;transition:all .2s;margin-bottom:2px;font-family:'Barlow',sans-serif;}
+  .sbt:hover{background:var(--gr);color:var(--tx);}
+  .sbt.active{background:var(--am);color:var(--ng);font-weight:600;}
+  .sbt svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .sbc{margin-left:auto;background:var(--ng3);color:#fff;font-size:11px;padding:2px 7px;border-radius:20px;}
+  .sbt.active .sbc{background:var(--ng);}
+
+  /* MAIN */
+  .am{padding:32px;overflow-y:auto;}
+  .pg{display:none;}.pg.active{display:block;}
+  .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+  .ph h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;text-transform:uppercase;}
+  .ph h2 span{color:#aaa;font-weight:400;font-size:16px;margin-left:8px;}
+
+  /* BOTONES */
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;padding:10px 20px;border-radius:6px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
+  .btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+  .btn-y{background:var(--am);color:var(--ng);}.btn-y:hover{background:var(--am2);}
+  .btn-k{background:var(--ng);color:#fff;}.btn-k:hover{background:#333;}
+  .btn-r{background:#ffebee;color:var(--rd);}.btn-r:hover{background:#ffcdd2;}
+  .btn-o{background:transparent;border:1.5px solid var(--gr2);color:var(--tx2);}.btn-o:hover{border-color:#aaa;color:var(--tx);}
+  .btn-sm{font-size:12px;padding:6px 12px;}
+
+  /* STATS */
+  .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+  .sc{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;padding:20px;}
+  .sc .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;color:var(--ng);line-height:1;}
+  .sc .lbl{font-size:13px;color:var(--tx2);margin-top:4px;}
+  .sc .ico{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .iy{background:#fff8d0;}.ik{background:#f0f0f0;}
+
+  /* TABLA */
+  .tw{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;}
+  .ttb{padding:16px 20px;border-bottom:1px solid var(--gr2);display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .ts{flex:1;min-width:200px;padding:8px 14px;border:1.5px solid var(--gr2);border-radius:6px;font-size:14px;font-family:'Barlow',sans-serif;transition:border-color .2s;}
+  .ts:focus{outline:none;border-color:var(--am);}
+  .fs{padding:8px 14px;border:1.5px solid var(--gr2);border-radius:6px;font-size:14px;font-family:'Barlow',sans-serif;background:#fff;cursor:pointer;}
+  table{width:100%;border-collapse:collapse;}
+  thead{background:var(--gr);}
+  th{text-align:left;padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--tx2);border-bottom:1px solid var(--gr2);}
+  td{padding:12px 16px;border-bottom:1px solid #f0ede8;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#fafaf8;}
+  .pi{display:flex;align-items:center;gap:12px;}
+  .pt{width:48px;height:48px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--gr);display:flex;align-items:center;justify-content:center;}
+  .pt img{width:100%;height:100%;object-fit:cover;}
+  .pn{font-weight:600;font-size:14px;}
+  .ps{font-size:12px;color:#aaa;}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;}
+  .bn{background:#e8f5e9;color:#2e7d32;}.bu{background:#fff3e0;color:#e65100;}
+  .bm{background:#e3f2fd;color:#1565c0;}.br{background:#f3e5f5;color:#6a1b9a;}
+  .bi{background:#fff8e1;color:#f57f17;}.bh{background:#e8f5e9;color:#2e7d32;}
+  .pc{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;}
+  .acc{display:flex;gap:6px;}
+  .es{text-align:center;padding:60px 20px;color:#aaa;}
+  .es svg{width:48px;height:48px;margin-bottom:12px;stroke:#ccc;fill:none;stroke-width:1.5;}
+
+  /* MODAL */
+  .mo{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .mo.open{display:flex;}
+  .md{background:#fff;border-radius:12px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .mh{padding:24px 28px 16px;border-bottom:1px solid var(--gr2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;}
+  .mh h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;}
+  .mc{width:32px;height:32px;border:none;background:var(--gr);border-radius:6px;cursor:pointer;font-size:18px;color:#666;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+  .mc:hover{background:var(--gr2);}
+  .mb{padding:24px 28px;}
+  .mf{padding:16px 28px;border-top:1px solid var(--gr2);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:#fff;}
+
+  /* FORM */
+  .fg{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .fgr{display:flex;flex-direction:column;gap:6px;}
+  .fgr.full{grid-column:1/-1;}
+  label{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--tx2);}
+  input,select,textarea{padding:10px 14px;border:1.5px solid var(--gr2);border-radius:6px;font-size:14px;font-family:'Barlow',sans-serif;transition:border-color .2s;width:100%;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--am);}
+  textarea{resize:vertical;min-height:80px;}
+  .fsec{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#aaa;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--gr2);grid-column:1/-1;}
+
+  /* CONFIRM */
+  .co{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;}
+  .co.open{display:flex;}
+  .cb{background:#fff;border-radius:10px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .cb h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;margin-bottom:10px;text-transform:uppercase;}
+  .cb p{font-size:14px;color:var(--tx2);margin-bottom:24px;}
+  .cbb{display:flex;gap:10px;justify-content:center;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--ng);color:#fff;padding:14px 20px;border-radius:8px;font-size:14px;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;border-left:3px solid var(--am);}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.err{border-left-color:var(--rd);}
+  .ld{text-align:center;padding:40px;color:#aaa;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lb">
+    <div class="ll">IMP<br>LEMAQ</div>
+    <h2>Panel de Administración</h2>
+    <p>Ingresá con tu cuenta de administrador</p>
+    <input type="email" id="le" placeholder="Email" autocomplete="email">
+    <input type="password" id="lp" placeholder="Contraseña">
+    <button class="btn-li" onclick="doLogin()">Ingresar</button>
+    <div id="lerr">Email o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="as">
+  <header class="ah">
+    <div class="ahl">
+      <div class="als">IMP<br>LEMAQ</div>
+      <h1>Admin <span id="ued"></span></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="index.html" target="_blank" class="btn btn-o btn-sm">↗ Ver sitio</a>
+      <button class="btn-lo" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </header>
+  <div class="ab">
+    <aside class="sb">
+      <div class="sbl">General</div>
+      <button class="sbt active" onclick="showPage('dash',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <div class="sbl">Productos</div>
+      <button class="sbt" onclick="showPage('maquinaria',this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Maquinaria <span class="sbc" id="cm">0</span>
+      </button>
+      <button class="sbt" onclick="showPage('forrajera',this)">
+        <svg viewBox="0 0 24 24"><path d="M3 13h18"/><path d="M5 13l2 6h10l2-6"/><circle cx="8" cy="19" r="2"/><circle cx="16" cy="19" r="2"/></svg>
+        Forrajera <span class="sbc" id="cf">0</span>
+      </button>
+      <button class="sbt" onclick="showPage('implementos',this)">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Implementos <span class="sbc" id="ci">0</span>
+      </button>
+      <button class="sbt" onclick="showPage('repuestos',this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Repuestos <span class="sbc" id="cr">0</span>
+      </button>
+      <button class="sbt" onclick="showPage('herramientas',this)">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Herramientas <span class="sbc" id="ch">0</span>
+      </button>
+    </aside>
+    <main class="am">
+      <div id="pg-dash" class="pg active">
+        <div class="ph"><h2>Dashboard</h2></div>
+        <div class="sg">
+          <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="num" id="dm">0</div><div class="lbl">Maquinaria</div></div>
+          <div class="sc"><div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M3 13h18"/><path d="M5 13l2 6h10l2-6"/></svg></div><div class="num" id="df">0</div><div class="lbl">Forrajera</div></div>
+          <div class="sc"><div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="num" id="di">0</div><div class="lbl">Implementos</div></div>
+          <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></div><div class="num" id="dr">0</div><div class="lbl">Repuestos</div></div>
+          <div class="sc"><div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="num" id="dh">0</div><div class="lbl">Herramientas</div></div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--gr2);border-radius:8px;padding:24px;">
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;text-transform:uppercase;margin-bottom:16px;">Últimos productos</h3>
+          <div id="drec"><div class="ld">Cargando...</div></div>
+        </div>
+      </div>
+      <div id="pg-maquinaria" class="pg"></div>
+      <div id="pg-forrajera" class="pg"></div>
+      <div id="pg-implementos" class="pg"></div>
+      <div id="pg-repuestos" class="pg"></div>
+      <div id="pg-herramientas" class="pg"></div>
+    </main>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="mo" id="mo">
+  <div class="md">
+    <div class="mh">
+      <h3 id="mt">Nuevo Producto</h3>
+      <button class="mc" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mb">
+      <div class="fg">
+        <div class="fsec">Información básica</div>
+        <div class="fgr full"><label>Nombre *</label><input type="text" id="fn" placeholder="Ej: Tractor John Deere 5090E"></div>
+        <div class="fgr"><label>Categoría *</label>
+          <select id="fc">
+            <option value="Maquinaria">Maquinaria</option>
+            <option value="Forrajera">Forrajera</option>
+            <option value="Implementos">Implementos</option>
+            <option value="Repuestos">Repuestos</option>
+            <option value="Herramientas">Herramientas</option>
+          </select>
+        </div>
+        <div class="fgr"><label>Subcategoría</label><input type="text" id="fsc" placeholder="Ej: Tractor, Sembradora..."></div>
+        <div class="fgr"><label>Estado</label>
+          <select id="fco">
+            <option value="Nuevo">Nuevo</option>
+            <option value="Usado">Usado</option>
+          </select>
+        </div>
+        <div class="fgr"><label>Año</label><input type="number" id="fa" placeholder="Ej: 2022" min="1990" max="2030"></div>
+        <div class="fgr"><label>Marca</label><input type="text" id="fm" placeholder="Ej: John Deere"></div>
+        <div class="fgr"><label>Modelo</label><input type="text" id="fmo" placeholder="Ej: 5090E"></div>
+
+        <div class="fsec">Precio y ubicación</div>
+        <div class="fgr"><label>Precio</label><input type="number" id="fp" placeholder="Ej: 15000000"></div>
+        <div class="fgr"><label>Moneda</label>
+          <select id="fmon">
+            <option value="ARS">Pesos (ARS)</option>
+            <option value="USD">Dólares (USD)</option>
+          </select>
+        </div>
+        <div class="fgr"><label>Mostrar precio</label>
+          <select id="fmp">
+            <option value="si">Sí, mostrar precio</option>
+            <option value="no">No, solo "Consultar"</option>
+          </select>
+        </div>
+        <div class="fgr"><label>Ubicación</label><input type="text" id="fu" value="Susana, Santa Fe"></div>
+
+        <div class="fsec">Descripción</div>
+        <div class="fgr full"><label>Descripción general</label><textarea id="fd" placeholder="Descripción del producto..."></textarea></div>
+        <div class="fgr full"><label>Características técnicas (una por línea)</label><textarea id="fcar" placeholder="Motor: 90 HP&#10;Horas de uso: 1200&#10;Tracción: 4x4"></textarea></div>
+
+        <div class="fsec">Fotos</div>
+        <div class="fgr full">
+          <label>URLs de fotos (una por línea)</label>
+          <textarea id="ffo" placeholder="https://...&#10;https://..." style="min-height:80px;"></textarea>
+          <small style="color:#aaa;font-size:12px;margin-top:4px;">Podés usar links de Google Drive, Imgur o cualquier imagen pública</small>
+        </div>
+
+        <div class="fgr full"><label>Visibilidad</label>
+          <select id="fes">
+            <option value="activo">Activo (visible en el sitio)</option>
+            <option value="destacado">Activo + destacado</option>
+            <option value="inactivo">Inactivo (oculto)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-o" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-y" onclick="saveProd()">✓ Guardar producto</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="co" id="co">
+  <div class="cb">
+    <h4>¿Eliminar producto?</h4>
+    <p>Esta acción no se puede deshacer.</p>
+    <div class="cbb">
+      <button class="btn btn-o" onclick="closeCo()">Cancelar</button>
+      <button class="btn btn-r" id="cok">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
+  authDomain: "implemaq-4bce2.firebaseapp.com",
+  projectId: "implemaq-4bce2",
+  storageBucket: "implemaq-4bce2.firebasestorage.app",
+  messagingSenderId: "433504757908",
+  appId: "1:433504757908:web:21cb6d1c0b333bec84ac81",
+  measurementId: "G-43YC2W9YHZ"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const CATS = [
+  { key: 'maquinaria', label: 'Maquinaria', value: 'Maquinaria', countId: 'cm', dashId: 'dm' },
+  { key: 'forrajera', label: 'Forrajera', value: 'Forrajera', countId: 'cf', dashId: 'df' },
+  { key: 'implementos', label: 'Implementos', value: 'Implementos', countId: 'ci', dashId: 'di' },
+  { key: 'repuestos', label: 'Repuestos', value: 'Repuestos', countId: 'cr', dashId: 'dr' },
+  { key: 'herramientas', label: 'Herramientas', value: 'Herramientas', countId: 'ch', dashId: 'dh' }
+];
+
+let editId = null;
+let prods = [];
+
+const ADMIN_EMAIL = "valentingeggel@gmail.com";
+
+const val = (p, a, b = null) => p?.[a] ?? (b ? p?.[b] : undefined);
+const catKey = (cat) => String(cat || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const catValueFromKey = (key) => CATS.find(c => c.key === key)?.value || 'Maquinaria';
+const catKeyFromValue = (value) => CATS.find(c => catKey(c.value) === catKey(value))?.key || catKey(value);
+const cleanNum = (n) => Number.isFinite(Number(n)) ? Number(n) : 0;
+
+onAuthStateChanged(auth, async u => {
+  const loginSection = document.getElementById('ls');
+  const adminSection = document.getElementById('as');
+  const errorBox = document.getElementById('lerr');
+
+  if (u && u.email === ADMIN_EMAIL) {
+    loginSection.style.display = 'none';
+    adminSection.style.display = 'block';
+    errorBox.style.display = 'none';
+    document.getElementById('ued').textContent = '— ' + u.email;
+    loadAll();
+    return;
+  }
+
+  if (u && u.email !== ADMIN_EMAIL) {
+    await signOut(auth);
+    errorBox.textContent = 'Usuario no autorizado para administrar este sitio';
+    errorBox.style.display = 'block';
+  }
+
+  loginSection.style.display = 'flex';
+  adminSection.style.display = 'none';
+});
+
+window.doLogin = async () => {
+  const e = document.getElementById('le').value.trim();
+  const p = document.getElementById('lp').value;
+  const errorBox = document.getElementById('lerr');
+
+  errorBox.textContent = 'Email o contraseña incorrectos';
+  errorBox.style.display = 'none';
+
+  if (e !== ADMIN_EMAIL) {
+    errorBox.textContent = 'Usuario no autorizado para administrar este sitio';
+    errorBox.style.display = 'block';
+    return;
+  }
+
+  try { await signInWithEmailAndPassword(auth, e, p); }
+  catch { errorBox.style.display = 'block'; }
+};
+window.doLogout = () => signOut(auth);
+
+async function loadAll() {
+  try {
+    const snap = await getDocs(collection(db, 'Productos'));
+    prods = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    prods.sort((a, b) => String(val(a, 'Nombre', 'nombre') || '').localeCompare(String(val(b, 'Nombre', 'nombre') || '')));
+
+    CATS.forEach(c => {
+      const n = prods.filter(p => catKeyFromValue(val(p, 'Categoría', 'categoria')) === c.key).length;
+      document.getElementById(c.countId).textContent = n;
+      document.getElementById(c.dashId).textContent = n;
+    });
+
+    renderDash();
+    CATS.forEach(c => renderCat(c.key));
+  } catch (e) {
+    toast('Error al cargar productos: ' + e.message, true);
+  }
+}
+
+function renderDash() {
+  const rec = prods.slice(0,5);
+  const el = document.getElementById('drec');
+  if (!rec.length) {
+    el.innerHTML = '<p style="color:#aaa;font-size:14px;">No hay productos cargados aún.</p>';
+    return;
+  }
+  el.innerHTML = `<table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th></tr></thead><tbody>
+    ${rec.map(p=>`<tr>
+      <td style="font-weight:600;font-size:14px;padding:10px 12px;border-bottom:1px solid #f0ede8;">${val(p,'Nombre','nombre') || 'Sin nombre'}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #f0ede8;">${badge(val(p,'Categoría','categoria'))}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #f0ede8;font-family:'Barlow Condensed',sans-serif;font-weight:700;">${fmtP(p)}</td>
+    </tr>`).join('')}
+  </tbody></table>`;
+}
+
+function renderCat(cat) {
+  const el = document.getElementById('pg-' + cat);
+  if (!el) return;
+  const catInfo = CATS.find(c => c.key === cat);
+  const ps = prods.filter(p => catKeyFromValue(val(p, 'Categoría', 'categoria')) === cat);
+  el.innerHTML = `
+    <div class="ph">
+      <h2>${catInfo.label} <span>${ps.length} productos</span></h2>
+      <button class="btn btn-y" onclick="openModal(null,'${cat}')">+ Nuevo producto</button>
+    </div>
+    <div class="tw">
+      <div class="ttb">
+        <input class="ts" placeholder="Buscar por nombre, marca, modelo..." oninput="filterT('${cat}',this.value)">
+        <select class="fs" onchange="filterEstado('${cat}',this.value)">
+          <option value="">Todos</option><option value="Nuevo">Nuevo</option><option value="Usado">Usado</option>
+        </select>
+      </div>
+      <div id="tb-${cat}">${renderTabla(ps, cat)}</div>
+    </div>`;
+}
+
+function renderTabla(ps, cat) {
+  if (!ps.length) return `<div class="es"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><p>No hay productos</p></div>`;
+  return `<table><thead><tr>
+    <th>Producto</th><th>Marca</th><th>Estado</th><th>Precio</th><th>Visibilidad</th><th>Acciones</th>
+  </tr></thead><tbody>
+    ${ps.map(p=>{
+      const nombre = val(p,'Nombre','nombre') || 'Sin nombre';
+      const marca = val(p,'Marca','marca') || '';
+      const modelo = val(p,'Modelo','modelo') || '';
+      const img = val(p,'Imagen','img') || (Array.isArray(val(p,'Imagenes','fotos')) ? val(p,'Imagenes','fotos')[0] : '');
+      const estado = val(p,'Estado','estado') || val(p,'condicion') || 'Nuevo';
+      const activo = val(p,'Activo','activo') !== false;
+      const destacado = val(p,'Destacado','destacado') === true || val(p,'estado') === 'destacado';
+      return `<tr>
+        <td>
+          <div class="pi">
+            <div class="pt">${img ? `<img src="${img}" onerror="this.style.display='none'">` : '📷'}</div>
+            <div><div class="pn">${nombre}</div><div class="ps">${modelo}</div></div>
+          </div>
+        </td>
+        <td style="font-size:13px;color:#666;">${marca || '—'}</td>
+        <td><span class="badge ${String(estado).toLowerCase()==='nuevo'?'bn':'bu'}">${estado}</span></td>
+        <td class="pc">${fmtP(p)}</td>
+        <td><span class="badge ${!activo?'bu':destacado?'bm':'bn'}">${!activo ? 'Inactivo' : destacado ? 'Destacado' : 'Activo'}</span></td>
+        <td><div class="acc">
+          <button class="btn btn-k btn-sm" onclick="openModal('${p.id}','${cat}')">✏ Editar</button>
+          <button class="btn btn-r btn-sm" onclick="askDel('${p.id}')">🗑 Eliminar</button>
+        </div></td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+}
+
+window.filterT = (cat, q) => {
+  const query = String(q || '').toLowerCase();
+  const ps = prods.filter(p => catKeyFromValue(val(p,'Categoría','categoria')) === cat && (
+    String(val(p,'Nombre','nombre') || '').toLowerCase().includes(query) ||
+    String(val(p,'Marca','marca') || '').toLowerCase().includes(query) ||
+    String(val(p,'Modelo','modelo') || '').toLowerCase().includes(query) ||
+    String(val(p,'Descripción','descripcion') || '').toLowerCase().includes(query)
+  ));
+  document.getElementById('tb-' + cat).innerHTML = renderTabla(ps, cat);
+};
+
+window.filterEstado = (cat, v) => {
+  const ps = prods.filter(p => catKeyFromValue(val(p,'Categoría','categoria')) === cat && (!v || String(val(p,'Estado','estado') || '').toLowerCase() === v.toLowerCase()));
+  document.getElementById('tb-' + cat).innerHTML = renderTabla(ps, cat);
+};
+
+window.openModal = (id, cat) => {
+  editId = id;
+  document.getElementById('fc').value = catValueFromKey(cat || 'maquinaria');
+
+  if (id) {
+    const p = prods.find(x => x.id === id);
+    const imagenes = Array.isArray(val(p,'Imagenes','fotos')) ? val(p,'Imagenes','fotos') : [];
+    const imgPrincipal = val(p,'Imagen','img');
+    const fotos = imagenes.length ? imagenes : (imgPrincipal ? [imgPrincipal] : []);
+    const estado = val(p,'Estado','estado') || val(p,'condicion') || 'Nuevo';
+    const activo = val(p,'Activo','activo') !== false;
+    const destacado = val(p,'Destacado','destacado') === true || val(p,'estado') === 'destacado';
+
+    document.getElementById('mt').textContent = 'Editar Producto';
+    document.getElementById('fn').value = val(p,'Nombre','nombre') || '';
+    document.getElementById('fc').value = val(p,'Categoría','categoria') || catValueFromKey(cat || 'maquinaria');
+    document.getElementById('fsc').value = val(p,'Subcategoría','subcategoria') || '';
+    document.getElementById('fco').value = String(estado).toLowerCase() === 'usado' ? 'Usado' : 'Nuevo';
+    document.getElementById('fa').value = val(p,'Año','anio') || '';
+    document.getElementById('fm').value = val(p,'Marca','marca') || '';
+    document.getElementById('fmo').value = val(p,'Modelo','modelo') || '';
+    const precio = val(p,'Precio','precio');
+    document.getElementById('fp').value = precio && precio !== 'Consultar' ? precio : '';
+    document.getElementById('fmon').value = val(p,'Moneda','moneda') || 'ARS';
+    document.getElementById('fmp').value = (!precio || precio === 'Consultar') ? 'no' : 'si';
+    document.getElementById('fu').value = val(p,'Ubicación','ubicacion') || 'Susana, Santa Fe';
+    document.getElementById('fd').value = val(p,'Descripción','descripcion') || '';
+    document.getElementById('fcar').value = (val(p,'Características','caracteristicas') || []).join('\n');
+    document.getElementById('ffo').value = fotos.join('\n');
+    document.getElementById('fes').value = !activo ? 'inactivo' : destacado ? 'destacado' : 'activo';
+  } else {
+    document.getElementById('mt').textContent = 'Nuevo Producto';
+    ['fn','fsc','fa','fm','fmo','fp','fd','fcar','ffo'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('fco').value = 'Nuevo';
+    document.getElementById('fmon').value = 'ARS';
+    document.getElementById('fmp').value = 'no';
+    document.getElementById('fu').value = 'Susana, Santa Fe';
+    document.getElementById('fes').value = 'activo';
+  }
+  document.getElementById('mo').classList.add('open');
+};
+
+window.closeModal = () => {
+  document.getElementById('mo').classList.remove('open');
+  editId = null;
+};
+
+window.saveProd = async () => {
+  const nombre = document.getElementById('fn').value.trim();
+  if (!nombre) { toast('El nombre es obligatorio', true); return; }
+
+  const fotos = document.getElementById('ffo').value.trim().split('\n').map(f => f.trim()).filter(Boolean);
+  const carac = document.getElementById('fcar').value.trim().split('\n').map(c => c.trim()).filter(Boolean);
+  const visibilidad = document.getElementById('fes').value;
+  const mostrarPrecio = document.getElementById('fmp').value;
+  const precioInput = document.getElementById('fp').value.trim();
+  const precio = mostrarPrecio === 'no' || !precioInput ? 'Consultar' : precioInput;
+
+  const anterior = editId ? prods.find(p => p.id === editId) : {};
+  const data = {
+    Nombre: nombre,
+    Categoría: document.getElementById('fc').value,
+    Subcategoría: document.getElementById('fsc').value.trim(),
+    Estado: document.getElementById('fco').value,
+    Año: document.getElementById('fa').value || '',
+    Marca: document.getElementById('fm').value.trim(),
+    Modelo: document.getElementById('fmo').value.trim(),
+    Precio: precio,
+    Moneda: document.getElementById('fmon').value,
+    MostrarPrecio: mostrarPrecio,
+    Ubicación: document.getElementById('fu').value.trim(),
+    Descripción: document.getElementById('fd').value.trim(),
+    Características: carac,
+    Imagen: fotos[0] || '',
+    Imagenes: fotos,
+    Activo: visibilidad !== 'inactivo',
+    Destacado: visibilidad === 'destacado',
+    Clicks: cleanNum(val(anterior,'Clicks','clicks')),
+    Vistas: cleanNum(val(anterior,'Vistas','vistas')),
+    Actualizado: serverTimestamp()
+  };
+
+  try {
+    if (editId) {
+      await updateDoc(doc(db, 'Productos', editId), data);
+      toast('Producto actualizado ✓');
+    } else {
+      data.Creado = serverTimestamp();
+      await addDoc(collection(db, 'Productos'), data);
+      toast('Producto creado ✓');
+    }
+    closeModal();
+    await loadAll();
+    const key = catKeyFromValue(data.Categoría);
+    showPage(key, document.querySelector(`.sbt[onclick*="${key}"]`));
+  } catch (e) {
+    toast('Error: ' + e.message, true);
+  }
+};
+
+let delId = null;
+window.askDel = id => {
+  delId = id;
+  document.getElementById('co').classList.add('open');
+  document.getElementById('cok').onclick = async () => {
+    try {
+      await deleteDoc(doc(db, 'Productos', delId));
+      toast('Eliminado');
+      closeCo();
+      await loadAll();
+    } catch(e) {
+      toast('Error: ' + e.message, true);
+    }
+  };
+};
+window.closeCo = () => { document.getElementById('co').classList.remove('open'); delId = null; };
+
+function fmtP(p) {
+  const precio = val(p,'Precio','precio');
+  const mostrar = val(p,'MostrarPrecio','mostrarPrecio');
+  if (mostrar === 'no' || !precio || precio === 'Consultar') return 'Consultar';
+  const moneda = val(p,'Moneda','moneda') || 'ARS';
+  return (moneda === 'USD' ? 'U$S ' : '$ ') + Number(precio).toLocaleString('es-AR');
+}
+
+function badge(cat) {
+  const key = catKeyFromValue(cat);
+  const m = {
+    maquinaria: ['bm','Maquinaria'],
+    forrajera: ['bi','Forrajera'],
+    implementos: ['bi','Implementos'],
+    repuestos: ['br','Repuestos'],
+    herramientas: ['bh','Herramientas']
+  };
+  const [c,l] = m[key] || ['bn', cat || 'Sin categoría'];
+  return `<span class="badge ${c}">${l}</span>`;
+}
+
+window.showPage = (pg, btn) => {
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sbt').forEach(b => b.classList.remove('active'));
+  const page = document.getElementById('pg-' + pg);
+  if (page) page.classList.add('active');
+  if (btn) btn.classList.add('active');
+};
+
+function toast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+window.toast = toast;
+
+document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') window.doLogin(); });
+</script>
+</body>
+</html>

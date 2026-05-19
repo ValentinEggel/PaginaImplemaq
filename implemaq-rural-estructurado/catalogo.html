@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — IMPLEMAQ RURAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* ─── CATÁLOGO ─── */
+  .catalogo-hero {
+    background: var(--gris-oscuro);
+    padding: 140px 5vw 60px;
+    border-bottom: 2px solid var(--amarillo);
+  }
+
+  .catalogo-hero .section-tag { color: var(--amarillo); }
+  .catalogo-hero .section-tag::before { background: var(--amarillo); }
+
+  .catalogo-hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(42px, 6vw, 72px);
+    text-transform: uppercase;
+    color: var(--blanco);
+    line-height: 0.95;
+    margin-bottom: 14px;
+  }
+
+  .catalogo-hero h1 .hl { color: var(--amarillo); }
+
+  .catalogo-hero p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.65);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* ─── TOOLBAR ─── */
+  .catalogo-toolbar {
+    background: var(--blanco);
+    border-bottom: 1px solid #e8e5de;
+    padding: 20px 5vw;
+    position: sticky;
+    top: 80px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gris-claro);
+    border: 1.5px solid #e8e5de;
+    border-radius: 6px;
+    padding: 9px 16px;
+    flex: 1;
+    min-width: 220px;
+    max-width: 360px;
+    transition: border-color 0.2s;
+  }
+
+  .search-box:focus-within {
+    border-color: var(--amarillo);
+    background: var(--blanco);
+  }
+
+  .search-box svg { width: 16px; height: 16px; flex-shrink: 0; color: #aaa; }
+
+  .search-box input {
+    border: none;
+    background: transparent;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--texto);
+    width: 100%;
+    outline: none;
+  }
+
+  .search-box input::placeholder { color: #bbb; }
+
+  .filtros {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filtro-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+  }
+
+  .filtro-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 100px;
+    border: 1.5px solid #e8e5de;
+    background: var(--blanco);
+    color: var(--texto-suave);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .filtro-btn:hover {
+    border-color: var(--amarillo);
+    color: var(--texto);
+  }
+
+  .filtro-btn.active {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--gris-oscuro);
+  }
+
+  .toolbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contador-resultados {
+    font-size: 13px;
+    color: var(--texto-suave);
+    white-space: nowrap;
+  }
+
+  .contador-resultados span {
+    font-weight: 700;
+    color: var(--texto);
+  }
+
+  /* ─── GRILLA ─── */
+  .catalogo-body {
+    padding: 40px 5vw 80px;
+    background: var(--gris-claro);
+    min-height: 60vh;
+  }
+
+  .catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .prod-card {
+    background: var(--blanco);
+    border: 1.5px solid #e8e5de;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prod-card:hover {
+    border-color: var(--amarillo);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+  }
+
+  .prod-card.seleccionado {
+    border-color: var(--amarillo);
+    box-shadow: 0 0 0 3px rgba(245,200,66,0.3);
+  }
+
+  .prod-check {
+    position: absolute;
+    top: 10px; left: 10px;
+    width: 24px; height: 24px;
+    background: var(--blanco);
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2;
+    transition: all 0.2s;
+  }
+
+  .prod-card.seleccionado .prod-check {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+  }
+
+  .prod-check svg {
+    width: 14px; height: 14px;
+    stroke: var(--gris-oscuro);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .prod-card.seleccionado .prod-check svg { opacity: 1; }
+
+  .prod-badge {
+    position: absolute;
+    top: 10px; right: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 3px;
+    z-index: 2;
+  }
+
+  .prod-badge.nuevo { background: var(--amarillo); color: var(--gris-oscuro); }
+  .prod-badge.usado { background: var(--gris-oscuro); color: var(--blanco); }
+
+  .prod-img {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    background: var(--gris-claro);
+  }
+
+  .prod-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s;
+  }
+
+  .prod-card:hover .prod-img img { transform: scale(1.05); }
+
+  .prod-body {
+    padding: 14px 16px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prod-cat {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--acento-dark, #d4a800);
+    margin-bottom: 5px;
+  }
+
+  .prod-body h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    text-transform: uppercase;
+    color: var(--gris-oscuro);
+    line-height: 1.2;
+    margin-bottom: 5px;
+  }
+
+  .prod-body p {
+    font-size: 13px;
+    color: var(--texto-suave);
+    line-height: 1.4;
+    flex: 1;
+    margin-bottom: 12px;
+  }
+
+  .prod-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    border-top: 1px solid #f0ede6;
+  }
+
+  .prod-precio {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    color: var(--gris-oscuro);
+  }
+
+  .prod-precio.consultar {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--texto-suave);
+  }
+
+  .prod-wpp {
+    width: 34px; height: 34px;
+    background: #25d366;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+
+  .prod-wpp:hover { background: #1da851; }
+  .prod-wpp svg { width: 18px; height: 18px; fill: white; }
+
+  /* ─── ESTADO VACÍO ─── */
+  .catalogo-vacio {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 20px;
+  }
+
+  .catalogo-vacio svg {
+    width: 60px; height: 60px;
+    stroke: #ccc; margin-bottom: 16px;
+  }
+
+  .catalogo-vacio h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 8px;
+  }
+
+  .catalogo-vacio p { font-size: 14px; color: #ccc; }
+
+  /* ─── CARRITO / SELECCIÓN ─── */
+  .seleccion-bar {
+    position: fixed;
+    bottom: -100px;
+    left: 50%; transform: translateX(-50%);
+    z-index: 999;
+    background: var(--gris-oscuro);
+    border: 2px solid var(--amarillo);
+    border-radius: 10px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: bottom 0.3s ease;
+    white-space: nowrap;
+    min-width: 340px;
+  }
+
+  .seleccion-bar.visible { bottom: 24px; }
+
+  .seleccion-info {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--blanco);
+    text-transform: uppercase;
+  }
+
+  .seleccion-info span { color: var(--amarillo); font-size: 20px; }
+
+  .btn-consultar-sel {
+    background: var(--amarillo);
+    color: var(--gris-oscuro);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-consultar-sel:hover { background: #f7d460; }
+  .btn-consultar-sel svg { width: 16px; height: 16px; fill: currentColor; }
+
+  .btn-limpiar-sel {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+  }
+
+  .btn-limpiar-sel:hover { color: #ff6b6b; }
+
+
+
+  /* ─── PAGINACIÓN ─── */
+  .paginacion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+
+  .pag-btn {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    border: 1.5px solid #e8e5de;
+    background: var(--blanco);
+    color: var(--texto-suave);
+    border-radius: 6px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .pag-btn:hover:not(:disabled) {
+    border-color: var(--amarillo);
+    color: var(--gris-oscuro);
+  }
+
+  .pag-btn.active {
+    background: var(--amarillo);
+    border-color: var(--amarillo);
+    color: var(--gris-oscuro);
+  }
+
+  .pag-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .pag-info {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--texto-suave);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1100px) {
+    .catalogo-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .catalogo-grid { grid-template-columns: repeat(2, 1fr); }
+    .catalogo-toolbar { top: 90px; }
+    .toolbar-right { margin-left: 0; width: 100%; }
+  }
+
+  @media (max-width: 480px) {
+    .catalogo-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo-area">
+    <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 90px; width: auto;">
+  </a>
+  <nav>
+    <a href="index.html#nosotros">Nosotros</a>
+    <a href="catalogo.html" style="color: var(--amarillo-claro);">Catálogo</a>
+    <a href="index.html#repuestos">Repuestos</a>
+    <a href="index.html#servicios">Servicios</a>
+    <a href="index.html#contacto" class="btn-contacto-nav">Contacto</a>
+  </nav>
+</header>
+
+<!-- HERO CATÁLOGO -->
+<div class="catalogo-hero">
+  <div class="section-tag">IMPLEMAQ RURAL</div>
+  <h1>Catálogo de <span class="hl">productos</span></h1>
+  <p>Maquinaria nueva y usada, implementos e implementos para el campo. Seleccioná los que te interesan y consultanos por WhatsApp.</p>
+</div>
+
+<!-- TOOLBAR FILTROS -->
+<div class="catalogo-toolbar">
+  <div class="search-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="buscador" placeholder="Buscar producto, marca, modelo...">
+  </div>
+
+  <div class="filtros">
+    <span class="filtro-label">Categoría:</span>
+    <button class="filtro-btn active" data-cat="todos">Todos</button>
+    <button class="filtro-btn" data-cat="maquinaria">Maquinaria</button>
+    <button class="filtro-btn" data-cat="forrajera">Forrajera</button>
+    <button class="filtro-btn" data-cat="implementos">Implementos</button>
+    <button class="filtro-btn" data-cat="repuestos">Repuestos</button>
+    <button class="filtro-btn" data-cat="herramientas">Herramientas</button>
+  </div>
+
+  <div class="filtros">
+    <span class="filtro-label">Estado:</span>
+    <button class="filtro-btn active" data-estado="todos">Todos</button>
+    <button class="filtro-btn" data-estado="nuevo">Nuevo</button>
+    <button class="filtro-btn" data-estado="usado">Usado</button>
+  </div>
+
+  <div class="toolbar-right">
+    <span class="contador-resultados">Mostrando <span id="cant-resultados">0</span> productos</span>
+  </div>
+</div>
+
+<!-- GRILLA -->
+<div class="catalogo-body">
+  <div class="catalogo-grid" id="catalogo-grid">
+    <!-- Los productos se generan con JS -->
+  </div>
+  <div class="paginacion" id="paginacion"></div>
+</div>
+
+<!-- BARRA DE SELECCIÓN -->
+<div class="seleccion-bar" id="seleccion-bar">
+  <div class="seleccion-info">
+    <span id="cant-sel">0</span> producto(s) seleccionado(s)
+  </div>
+  <a href="#" class="btn-consultar-sel" id="btn-consultar-wpp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+    Consultar selección
+  </a>
+  <button class="btn-limpiar-sel" id="btn-limpiar" title="Limpiar selección">✕</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="margin-bottom:14px;">
+        <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 84px; width: auto;">
+      </div>
+      <p>Más de 30 años acompañando al productor agropecuario de Santa Fe y la región. Contamos con repuestos para todas las marcas.</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://wa.me/543492508683" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Catálogo</h5>
+      <a href="catalogo.html">Todos los productos</a>
+      <a href="catalogo.html?cat=maquinaria">Maquinaria</a>
+      <a href="catalogo.html?cat=implementos">Implementos</a>
+      <a href="catalogo.html?cat=repuestos">Repuestos</a>
+    </div>
+    <div class="footer-col">
+      <h5>Empresa</h5>
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#contacto">Contacto</a>
+      <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank">Facebook</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <a href="tel:03492-15508683">03492 - 15 508683</a>
+      <a href="https://wa.me/543492508683" target="_blank">WhatsApp</a>
+      <a href="mailto:implemaqweb@hotmail.com">implemaqweb@hotmail.com</a>
+      <a style="color:rgba(255,255,255,0.4); cursor:default;">Corrientes 152, Susana, SF</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 IMPLEMAQ RURAL. Todos los derechos reservados.</span>
+    <span>Susana, Santa Fe, Argentina</span>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/543492508683" target="_blank" class="wa-float" title="Consultar por WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+</a>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+
+  // ─── FIREBASE CONFIG ───
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
+    authDomain: "implemaq-4bce2.firebaseapp.com",
+    projectId: "implemaq-4bce2",
+    storageBucket: "implemaq-4bce2.firebasestorage.app",
+    messagingSenderId: "433504757908",
+    appId: "1:433504757908:web:21cb6d1c0b333bec84ac81",
+    measurementId: "G-43YC2W9YHZ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // ─── ESTADO ───
+  let productos = [];
+  let filtrosCat = 'todos';
+  let filtroEstado = 'todos';
+  let busqueda = '';
+  let seleccionados = new Set();
+  let paginaActual = 1;
+  const productosPorPagina = 20;
+
+  function reiniciarPaginacion() {
+    paginaActual = 1;
+  }
+
+  // ─── LOADING ───
+  function mostrarLoading() {
+    document.getElementById('catalogo-grid').innerHTML = `
+      <div class="catalogo-vacio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="animation: spin 1s linear infinite;">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        <h3>Cargando productos...</h3>
+        <p>Consultando la base de datos.</p>
+      </div>
+      <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>`;
+  }
+
+  // ─── CARGAR DESDE FIREBASE ───
+  async function cargarProductos() {
+    mostrarLoading();
+    try {
+      const snapshot = await getDocs(collection(db, "Productos"));
+
+      productos = snapshot.docs
+        .map(doc => {
+          const data = doc.data();
+
+          return {
+            id: doc.id,
+            nombre: data.Nombre || "",
+            marca: data.Marca || "",
+            categoria: (data.Categoría || data.Categoria || "").toLowerCase(),
+            estado: (data.Estado || "nuevo").toLowerCase(),
+            descripcion: data.Descripción || data.Descripcion || "",
+            precio: data.Precio || "Consultar",
+            img: data.Imagen || "",
+            activo: data.Activo !== false,
+            destacado: data.Destacado === true,
+            vistas: data.Vistas || 0,
+            clicks: data.Clicks || 0
+          };
+        })
+        .filter(p => p.activo);
+
+      renderProductos();
+    } catch (error) {
+      console.error('Error al cargar productos:', error);
+      document.getElementById('catalogo-grid').innerHTML = `
+        <div class="catalogo-vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <h3>Error al cargar</h3>
+          <p>No se pudo conectar con la base de datos. Intentá recargar la página.</p>
+        </div>`;
+    }
+  }
+
+  // ─── RENDER ───
+  function renderProductos() {
+    const grid = document.getElementById('catalogo-grid');
+    const filtrados = productos.filter(p => {
+      const matchCat = filtrosCat === 'todos' || p.categoria === filtrosCat;
+      const matchEstado = filtroEstado === 'todos' || p.estado === filtroEstado;
+      const matchBusq = busqueda === '' ||
+        (p.nombre || '').toLowerCase().includes(busqueda) ||
+        (p.marca || '').toLowerCase().includes(busqueda) ||
+        (p.descripcion || '').toLowerCase().includes(busqueda) ||
+        (p.categoria || '').toLowerCase().includes(busqueda);
+      return matchCat && matchEstado && matchBusq;
+    });
+
+    document.getElementById('cant-resultados').textContent = filtrados.length;
+
+    if (filtrados.length === 0) {
+      document.getElementById('paginacion').innerHTML = '';
+      grid.innerHTML = `
+        <div class="catalogo-vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <h3>Sin resultados</h3>
+          <p>Probá con otro término o cambiá los filtros.</p>
+        </div>`;
+      return;
+    }
+
+    const totalPaginas = Math.ceil(filtrados.length / productosPorPagina);
+
+    if (paginaActual > totalPaginas) {
+      paginaActual = totalPaginas || 1;
+    }
+
+    const inicio = (paginaActual - 1) * productosPorPagina;
+    const fin = inicio + productosPorPagina;
+    const productosPagina = filtrados.slice(inicio, fin);
+
+    grid.innerHTML = productosPagina.map(p => `
+      <div class="prod-card ${seleccionados.has(p.id) ? 'seleccionado' : ''}"
+           onclick="toggleSeleccion('${p.id}', event)" data-id="${p.id}">
+        <div class="prod-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <span class="prod-badge ${p.estado || 'nuevo'}">${p.estado === 'usado' ? 'Usado' : 'Nuevo'}</span>
+        <div class="prod-img">
+          <img src="${p.img || ''}" alt="${p.nombre}" loading="lazy"
+               onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
+        </div>
+        <div class="prod-body">
+          <div class="prod-cat">${p.marca || ''} · ${p.categoria || ''}</div>
+          <h3>${p.nombre || ''}</h3>
+          <p>${p.descripcion || ''}</p>
+          <div class="prod-footer">
+            <div class="prod-precio ${!p.precio || p.precio === 'Consultar' ? 'consultar' : ''}">
+              ${!p.precio || p.precio === 'Consultar' ? 'Consultar precio' : '$' + Number(p.precio).toLocaleString('es-AR')}
+            </div>
+            <a href="https://wa.me/543492508683?text=${encodeURIComponent('Hola! Me interesa consultar por: ' + p.nombre + ' (' + (p.marca||'') + '). ¿Tienen disponibilidad?')}"
+               target="_blank" class="prod-wpp" onclick="event.stopPropagation()" title="Consultar este producto">
+              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    renderPaginacion(filtrados.length, totalPaginas, inicio, Math.min(fin, filtrados.length));
+  }
+
+  function renderPaginacion(totalProductos, totalPaginas, inicio, fin) {
+    const paginacion = document.getElementById('paginacion');
+
+    if (!paginacion || totalPaginas <= 1) {
+      if (paginacion) paginacion.innerHTML = '';
+      return;
+    }
+
+    let botones = `
+      <button class="pag-btn" ${paginaActual === 1 ? 'disabled' : ''} onclick="cambiarPagina(${paginaActual - 1})">← Anterior</button>
+    `;
+
+    for (let i = 1; i <= totalPaginas; i++) {
+      botones += `
+        <button class="pag-btn ${i === paginaActual ? 'active' : ''}" onclick="cambiarPagina(${i})">${i}</button>
+      `;
+    }
+
+    botones += `
+      <button class="pag-btn" ${paginaActual === totalPaginas ? 'disabled' : ''} onclick="cambiarPagina(${paginaActual + 1})">Siguiente →</button>
+      <div class="pag-info">Mostrando ${inicio + 1}-${fin} de ${totalProductos} productos</div>
+    `;
+
+    paginacion.innerHTML = botones;
+  }
+
+  window.cambiarPagina = function(nuevaPagina) {
+    paginaActual = nuevaPagina;
+    renderProductos();
+    document.querySelector('.catalogo-body').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // ─── SELECCIÓN MÚLTIPLE ───
+  window.toggleSeleccion = function(id, event) {
+    if (seleccionados.has(id)) {
+      seleccionados.delete(id);
+    } else {
+      seleccionados.add(id);
+    }
+    actualizarBarraSeleccion();
+    renderProductos();
+  };
+
+  function actualizarBarraSeleccion() {
+    const bar = document.getElementById('seleccion-bar');
+    document.getElementById('cant-sel').textContent = seleccionados.size;
+    bar.classList.toggle('visible', seleccionados.size > 0);
+
+    const nombresSeleccionados = productos
+      .filter(p => seleccionados.has(p.id))
+      .map(p => `- ${p.nombre} (${p.marca || ''})`)
+      .join('\n');
+
+    const mensaje = `Hola! Me interesan los siguientes productos y quisiera consultar disponibilidad:\n\n${nombresSeleccionados}\n\n¿Pueden informarme?`;
+    document.getElementById('btn-consultar-wpp').href =
+      `https://wa.me/543492508683?text=${encodeURIComponent(mensaje)}`;
+  }
+
+  document.getElementById('btn-limpiar').addEventListener('click', () => {
+    seleccionados.clear();
+    actualizarBarraSeleccion();
+    renderProductos();
+  });
+
+  // ─── FILTROS CATEGORÍA ───
+  document.querySelectorAll('[data-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filtrosCat = btn.dataset.cat;
+      reiniciarPaginacion();
+      renderProductos();
+    });
+  });
+
+  // ─── FILTROS ESTADO ───
+  document.querySelectorAll('[data-estado]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-estado]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filtroEstado = btn.dataset.estado;
+      reiniciarPaginacion();
+      renderProductos();
+    });
+  });
+
+  // ─── BUSCADOR ───
+  document.getElementById('buscador').addEventListener('input', e => {
+    busqueda = e.target.value.toLowerCase().trim();
+    reiniciarPaginacion();
+    renderProductos();
+  });
+
+  // ─── FILTRO POR URL (?cat=maquinaria) ───
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('cat')) {
+    filtrosCat = params.get('cat');
+    document.querySelectorAll('[data-cat]').forEach(b => {
+      b.classList.toggle('active', b.dataset.cat === filtrosCat);
+    });
+    reiniciarPaginacion();
+  }
+
+  // ─── INIT ───
+  cargarProductos();
+</script>
+</body>
+</html>
