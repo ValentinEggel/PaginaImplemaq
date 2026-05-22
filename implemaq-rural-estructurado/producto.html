@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Producto — IMPLEMAQ RURAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* ── PRODUCTO PAGE ── */
+  .prod-hero {
+    padding-top: 120px;
+    padding-bottom: 0;
+    background: var(--gris-claro);
+  }
+
+  .prod-breadcrumb {
+    padding: 16px 5vw;
+    font-size: 13px;
+    color: var(--texto-suave);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blanco);
+    border-bottom: 1px solid #e8e5de;
+  }
+  .prod-breadcrumb a { color: var(--texto-suave); text-decoration: none; transition: color .2s; }
+  .prod-breadcrumb a:hover { color: var(--texto); }
+  .prod-breadcrumb svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+  /* ── LAYOUT PRINCIPAL ── */
+  .prod-layout {
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5vw 60px;
+    padding-top: 32px;
+    align-items: start;
+  }
+
+  /* ── GALERÍA ── */
+  .galeria { position: sticky; top: 100px; }
+
+  .galeria-principal {
+    aspect-ratio: 4/3;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--blanco);
+    border: 1.5px solid #e8e5de;
+    cursor: zoom-in;
+    position: relative;
+  }
+
+  .galeria-principal img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    transition: transform .4s;
+    padding: 16px;
+  }
+
+  .galeria-principal:hover img { transform: scale(1.04); }
+
+  .galeria-badge-est {
+    position: absolute;
+    top: 16px; left: 16px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 12px; letter-spacing: 1px;
+    text-transform: uppercase; padding: 5px 12px; border-radius: 4px;
+    z-index: 2;
+  }
+  .galeria-badge-est.nuevo { background: var(--amarillo); color: var(--gris-oscuro); }
+  .galeria-badge-est.usado { background: var(--gris-oscuro); color: var(--blanco); }
+
+  .galeria-thumbs {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .thumb {
+    width: 72px; height: 56px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 2px solid #e8e5de;
+    cursor: pointer;
+    transition: border-color .2s;
+    background: var(--blanco);
+    flex-shrink: 0;
+  }
+  .thumb:hover, .thumb.active { border-color: var(--amarillo); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+  .galeria-compartir {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e8e5de;
+  }
+  .compartir-label {
+    font-size: 12px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--texto-suave);
+  }
+  .share-btn {
+    width: 34px; height: 34px;
+    border-radius: 6px;
+    border: 1.5px solid #e8e5de;
+    background: var(--blanco);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all .2s; text-decoration: none;
+  }
+  .share-btn:hover { border-color: var(--amarillo); background: #fffce8; }
+  .share-btn svg { width: 16px; height: 16px; }
+
+  /* ── INFO PANEL ── */
+  .info-panel { padding-left: 40px; }
+
+  .prod-cats {
+    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+  .prod-cat-tag {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 100px;
+    background: #fff8d0; color: var(--amarillo-dark, #d4a800);
+    border: 1px solid #f5e090;
+  }
+
+  .prod-titulo {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: clamp(28px, 3.5vw, 44px);
+    text-transform: uppercase; color: var(--gris-oscuro);
+    line-height: 1.0; margin-bottom: 8px;
+  }
+
+  .prod-marca {
+    font-size: 15px; color: var(--texto-suave); margin-bottom: 20px;
+  }
+  .prod-marca strong { color: var(--texto); font-weight: 600; }
+
+  /* Precio box */
+  .precio-box {
+    background: var(--gris-oscuro);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    border: 1.5px solid #2a2a2a;
+  }
+  .precio-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: #888; margin-bottom: 6px;
+  }
+  .precio-valor {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 42px; color: var(--amarillo);
+    line-height: 1;
+  }
+  .precio-valor.consultar {
+    font-size: 26px; color: #aaa;
+  }
+  .precio-nota {
+    font-size: 12px; color: #666; margin-top: 6px;
+  }
+
+  /* CTA Buttons */
+  .cta-buttons {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .btn-wpp-prod {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: #25d366; color: var(--blanco);
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+    font-size: 18px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 16px 24px; border-radius: 8px; border: none;
+    cursor: pointer; text-decoration: none; transition: all .2s;
+  }
+  .btn-wpp-prod:hover { background: #1da851; transform: translateY(-2px); }
+  .btn-wpp-prod svg { width: 22px; height: 22px; fill: white; }
+
+  .btn-wpp-prod-2 {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: transparent; color: var(--texto);
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 13px 24px; border-radius: 8px;
+    border: 1.5px solid #e8e5de; cursor: pointer; text-decoration: none;
+    transition: all .2s;
+  }
+  .btn-wpp-prod-2:hover { border-color: var(--amarillo); background: #fffce8; }
+  .btn-wpp-prod-2 svg { width: 18px; height: 18px; }
+
+  /* Datos rápidos */
+  .datos-rapidos {
+    background: var(--blanco);
+    border: 1.5px solid #e8e5de;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .datos-rapidos h4 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+    font-size: 14px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--texto-suave); margin-bottom: 14px;
+  }
+  .dato-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #f0ede6;
+  }
+  .dato-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .dato-key {
+    font-size: 13px; color: var(--texto-suave); display: flex; align-items: center; gap: 8px;
+  }
+  .dato-key svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .dato-val { font-size: 14px; font-weight: 600; color: var(--gris-oscuro); }
+  .dato-val .badge-est {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 12px;
+    letter-spacing: .5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px;
+  }
+  .badge-nuevo2 { background: #fff8d0; color: #b8860b; }
+  .badge-usado2 { background: #f0f0f0; color: #666; }
+
+  /* Vendedor */
+  .vendedor-box {
+    background: var(--blanco);
+    border: 1.5px solid #e8e5de;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .vendedor-logo {
+    width: 52px; height: 52px; flex-shrink: 0;
+    background: var(--gris-oscuro); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vendedor-logo img { width: 44px; height: 44px; object-fit: contain; border-radius: 6px; }
+  .vendedor-info h5 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+    font-size: 16px; text-transform: uppercase; color: var(--gris-oscuro);
+    margin-bottom: 2px;
+  }
+  .vendedor-info p { font-size: 12px; color: var(--texto-suave); }
+  .vendedor-info .loc {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; color: var(--texto-suave); margin-top: 2px;
+  }
+  .vendedor-info .loc svg { width: 12px; height: 12px; }
+
+  /* ── DESCRIPCIÓN ── */
+  .prod-descripcion {
+    padding: 40px 5vw;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 40px;
+  }
+
+  .desc-section h3 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+    font-size: 22px; text-transform: uppercase; color: var(--gris-oscuro);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--amarillo);
+    display: inline-block;
+  }
+
+  .desc-texto {
+    font-size: 15px; color: var(--texto-suave); line-height: 1.8;
+    margin-bottom: 24px;
+  }
+
+  .specs-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+  }
+  .specs-tabla tr { border-bottom: 1px solid #f0ede6; }
+  .specs-tabla tr:last-child { border-bottom: none; }
+  .specs-tabla td {
+    padding: 10px 0; font-size: 14px; vertical-align: top;
+  }
+  .specs-tabla td:first-child {
+    color: var(--texto-suave); width: 40%; font-weight: 500;
+  }
+  .specs-tabla td:last-child { color: var(--gris-oscuro); font-weight: 600; }
+
+  /* ── RELACIONADOS ── */
+  .relacionados {
+    background: var(--gris-claro);
+    padding: 60px 5vw;
+    border-top: 1px solid #e8e5de;
+  }
+
+  .relacionados-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 32px;
+  }
+
+  .rel-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.9); z-index: 2000;
+    align-items: center; justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox img {
+    max-width: 90vw; max-height: 90vh;
+    object-fit: contain; border-radius: 8px;
+  }
+  .lightbox-close {
+    position: absolute; top: 20px; right: 24px;
+    color: #fff; font-size: 32px; cursor: pointer;
+    background: none; border: none; line-height: 1;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .prod-layout { grid-template-columns: 1fr; }
+    .info-panel { padding-left: 0; margin-top: 32px; }
+    .galeria { position: static; }
+    .prod-descripcion { grid-template-columns: 1fr; }
+    .rel-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .rel-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo-area">
+    <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 90px; width: auto;">
+  </a>
+  <nav>
+    <a href="index.html#nosotros">Nosotros</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="index.html#repuestos">Repuestos</a>
+    <a href="index.html#servicios">Servicios</a>
+    <a href="index.html#contacto" class="btn-contacto-nav">Contacto</a>
+  </nav>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="prod-breadcrumb">
+  <a href="index.html">Inicio</a>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  <a href="catalogo.html">Catálogo</a>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  <span id="bread-cat">Maquinaria</span>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+  <span id="bread-nombre" style="color: var(--texto); font-weight: 600;">Cargando...</span>
+</div>
+
+<!-- LAYOUT PRINCIPAL -->
+<div style="background: var(--gris-claro);">
+<div class="prod-layout">
+
+  <!-- GALERÍA -->
+  <div class="galeria">
+    <div class="galeria-principal" onclick="abrirLightbox(window.imgActual)">
+      <span class="galeria-badge-est nuevo" id="badge-estado">Nuevo</span>
+      <img id="img-principal" src="" alt="Producto" onerror="this.src='https://via.placeholder.com/600x450/f5f3ee/aaa?text=Sin+imagen'">
+    </div>
+    <div class="galeria-thumbs" id="galeria-thumbs"></div>
+    <div class="galeria-compartir">
+      <span class="compartir-label">Compartir:</span>
+      <a id="share-wpp" href="#" target="_blank" class="share-btn" title="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="#25d366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+      </a>
+      <a id="share-fb" href="#" target="_blank" class="share-btn" title="Facebook">
+        <svg viewBox="0 0 24 24" fill="#1877f2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      </a>
+      <button class="share-btn" onclick="copiarLink()" title="Copiar link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- INFO PANEL -->
+  <div class="info-panel">
+    <div class="prod-cats">
+      <span class="prod-cat-tag" id="info-cat">Maquinaria</span>
+    </div>
+
+    <h1 class="prod-titulo" id="info-nombre">Cargando...</h1>
+    <p class="prod-marca">Marca: <strong id="info-marca">—</strong></p>
+
+    <!-- Precio -->
+    <div class="precio-box">
+      <div class="precio-label">Precio</div>
+      <div class="precio-valor" id="info-precio">Consultar</div>
+      <div class="precio-nota">Precio en pesos argentinos · IVA no incluido</div>
+    </div>
+
+    <!-- CTAs -->
+    <div class="cta-buttons">
+      <a id="btn-wpp-directo" href="#" target="_blank" class="btn-wpp-prod">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Consultar disponibilidad
+      </a>
+      <a href="tel:03492-15508683" class="btn-wpp-prod-2">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Llamar: 03492 - 15 508683
+      </a>
+    </div>
+
+    <!-- Datos rápidos -->
+    <div class="datos-rapidos">
+      <h4>Información del producto</h4>
+      <div class="dato-row">
+        <span class="dato-key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Estado
+        </span>
+        <span class="dato-val"><span class="badge-est badge-nuevo2" id="dato-estado">Nuevo</span></span>
+      </div>
+      <div class="dato-row">
+        <span class="dato-key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          Categoría
+        </span>
+        <span class="dato-val" id="dato-cat">—</span>
+      </div>
+      <div class="dato-row">
+        <span class="dato-key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Marca
+        </span>
+        <span class="dato-val" id="dato-marca">—</span>
+      </div>
+      <div class="dato-row">
+        <span class="dato-key">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Ubicación
+        </span>
+        <span class="dato-val">Susana, Santa Fe</span>
+      </div>
+    </div>
+
+    <!-- Vendedor -->
+    <div class="vendedor-box">
+      <div class="vendedor-logo">
+        <img src="src/logo.jpg" alt="IMPLEMAQ RURAL">
+      </div>
+      <div class="vendedor-info">
+        <h5>IMPLEMAQ RURAL</h5>
+        <div class="loc">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Corrientes 152, Susana, Santa Fe
+        </div>
+        <p style="margin-top:4px;">Maquinaria · Implementos · Repuestos</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DESCRIPCIÓN Y SPECS -->
+<div style="background: var(--blanco); border-top: 1px solid #e8e5de; border-bottom: 1px solid #e8e5de;">
+<div class="prod-descripcion">
+  <div class="desc-section">
+    <h3>Descripción</h3>
+    <div class="desc-texto" id="desc-texto">Cargando descripción...</div>
+
+    <h3 style="margin-top: 32px;">Especificaciones técnicas</h3>
+    <table class="specs-tabla" id="specs-tabla">
+      <tr><td colspan="2" style="color:#bbb; font-size:14px;">Sin especificaciones cargadas.</td></tr>
+    </table>
+  </div>
+
+  <!-- Mini contacto lateral -->
+  <div>
+    <div style="background: var(--gris-claro); border-radius:10px; padding:28px; border:1.5px solid #e8e5de; position:sticky; top:100px;">
+      <h4 style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:18px; text-transform:uppercase; margin-bottom:16px;">¿Tenés consultas?</h4>
+      <p style="font-size:14px; color:var(--texto-suave); margin-bottom:20px; line-height:1.6;">Escribinos directamente y te respondemos a la brevedad.</p>
+      <a id="btn-wpp-lateral" href="#" target="_blank" class="btn-wpp-prod" style="font-size:15px; padding:13px 20px;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        Escribir por WhatsApp
+      </a>
+      <div style="text-align:center; margin-top:16px; font-size:13px; color:var(--texto-suave);">
+        o llamanos al <a href="tel:03492-15508683" style="color:var(--texto);font-weight:600;">03492 - 15 508683</a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRODUCTOS RELACIONADOS -->
+<div class="relacionados">
+  <div class="relacionados-header">
+    <div>
+      <div class="section-tag">También te puede interesar</div>
+      <h2 class="section-title">Productos <span class="hl">relacionados</span></h2>
+    </div>
+    <a href="catalogo.html" class="btn-primary" style="font-size:13px;padding:10px 20px;">Ver catálogo completo →</a>
+  </div>
+  <div class="rel-grid" id="rel-grid">
+    <!-- Se carga dinámicamente -->
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="margin-bottom:14px;">
+        <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height:84px;width:auto;">
+      </div>
+      <p>Más de 30 años acompañando al productor agropecuario de Santa Fe y la región. Contamos con repuestos para todas las marcas.</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://wa.me/543492508683" target="_blank" class="social-link">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Catálogo</h5>
+      <a href="catalogo.html">Todos los productos</a>
+      <a href="catalogo.html?cat=maquinaria">Maquinaria</a>
+      <a href="catalogo.html?cat=implementos">Implementos</a>
+      <a href="catalogo.html?cat=repuestos">Repuestos</a>
+    </div>
+    <div class="footer-col">
+      <h5>Empresa</h5>
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#servicios">Servicios</a>
+      <a href="index.html#contacto">Contacto</a>
+      <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank">Facebook</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <a href="tel:03492-15508683">03492 - 15 508683</a>
+      <a href="https://wa.me/543492508683" target="_blank">WhatsApp</a>
+      <a href="mailto:implemaqweb@hotmail.com">implemaqweb@hotmail.com</a>
+      <a style="color:rgba(255,255,255,0.4);cursor:default;">Corrientes 152, Susana, SF</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 IMPLEMAQ RURAL. Todos los derechos reservados.</span>
+    <span>Susana, Santa Fe, Argentina</span>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/543492508683" target="_blank" class="wa-float">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+</a>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="cerrarLightbox()">
+  <button class="lightbox-close">✕</button>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<script type="module">
+import {
+  db,
+  doc,
+  getDoc,
+  getDocs,
+  collection,
+  updateDoc,
+  increment
+} from "./js/firebase-config.js";
+
+// ── OBTENER ID DE LA URL ──
+const params = new URLSearchParams(window.location.search);
+const prodId = params.get('id');
+
+let imgActual = '';
+
+async function cargar() {
+  if (!prodId) { window.location.href = 'catalogo.html'; return; }
+
+  try {
+    const snap = await getDoc(doc(db, "Productos", prodId));
+    if (!snap.exists()) { window.location.href = 'catalogo.html'; return; }
+
+    const p = snap.data();
+    const nombre   = p.Nombre || p.nombre || '';
+    const marca    = p.Marca  || p.marca  || '';
+    const cat      = p.Categoría || p.Categoria || p.categoria || '';
+    const estado   = p.Estado || p.estado || 'Nuevo';
+    const precio   = p.Precio || p.precio || 'Consultar';
+    const desc     = p.Descripción || p.descripcion || 'Sin descripción disponible.';
+    const imgs     = p.Imagenes || p.Fotos || p.fotos || (p.Imagen ? [p.Imagen] : (p.imagen ? [p.imagen] : []));
+    const caracteristicas = p.Características || p.Caracteristicas || p.caracteristicas || [];
+
+    // Título página
+    document.title = `${nombre} — IMPLEMAQ RURAL`;
+
+    // Breadcrumb
+    document.getElementById('bread-cat').textContent = cat;
+    document.getElementById('bread-nombre').textContent = nombre;
+
+    // Info
+    document.getElementById('info-nombre').textContent = nombre;
+    document.getElementById('info-marca').textContent  = marca || 'Sin especificar';
+    document.getElementById('info-cat').textContent    = cat;
+    document.getElementById('dato-cat').textContent    = cat;
+    document.getElementById('dato-marca').textContent  = marca || '—';
+
+    // Estado
+    const estadoEl = document.getElementById('dato-estado');
+    const badgeEl  = document.getElementById('badge-estado');
+    estadoEl.textContent = estado;
+    estadoEl.className   = `badge-est ${estado.toLowerCase() === 'usado' ? 'badge-usado2' : 'badge-nuevo2'}`;
+    badgeEl.textContent  = estado;
+    badgeEl.className    = `galeria-badge-est ${estado.toLowerCase() === 'usado' ? 'usado' : 'nuevo'}`;
+
+    // Precio
+    const precioEl = document.getElementById('info-precio');
+    if (!precio || precio === 'Consultar') {
+      precioEl.textContent = 'Consultar precio';
+      precioEl.classList.add('consultar');
+    } else {
+      precioEl.textContent = '$' + Number(precio).toLocaleString('es-AR');
+    }
+
+    // Descripción
+    document.getElementById('desc-texto').textContent = desc;
+
+    const specsTabla = document.getElementById('specs-tabla');
+    if (Array.isArray(caracteristicas) && caracteristicas.length > 0) {
+      specsTabla.innerHTML = caracteristicas.map(item => {
+        const partes = String(item).split(':');
+        if (partes.length > 1) {
+          const clave = partes.shift().trim();
+          const valor = partes.join(':').trim();
+          return `<tr><td>${clave}</td><td>${valor}</td></tr>`;
+        }
+        return `<tr><td colspan="2">${item}</td></tr>`;
+      }).join('');
+    } else {
+      specsTabla.innerHTML = `<tr><td colspan="2" style="color:#bbb; font-size:14px;">Sin especificaciones cargadas.</td></tr>`;
+    }
+
+    // Imágenes
+    const imgPrincipal = document.getElementById('img-principal');
+    if (imgs.length > 0) {
+      imgActual = imgs[0];
+      imgPrincipal.src = imgs[0];
+      window.imgActual = imgs[0];
+
+      const thumbsEl = document.getElementById('galeria-thumbs');
+      if (imgs.length > 1) {
+        thumbsEl.innerHTML = imgs.map((src, i) => `
+          <div class="thumb ${i===0?'active':''}" onclick="cambiarImg('${src}', this)">
+            <img src="${src}" onerror="this.parentElement.style.display='none'">
+          </div>`).join('');
+      }
+    } else {
+      imgPrincipal.src = 'https://via.placeholder.com/600x450/f5f3ee/aaa?text=Sin+imagen';
+    }
+
+    // Botones WhatsApp
+    const msgWpp = `Hola! Me interesa consultar por: *${nombre}* (${marca}).\n\nLink del producto:\n${window.location.href}\n\n¿Tienen disponibilidad y cuál es el precio?`;
+    const wppUrl = `https://wa.me/543492508683?text=${encodeURIComponent(msgWpp)}`;
+    document.getElementById('btn-wpp-directo').href = wppUrl;
+    document.getElementById('btn-wpp-lateral').href = wppUrl;
+
+    // Compartir
+    const pageUrl = window.location.href;
+    document.getElementById('share-wpp').href = `https://wa.me/?text=${encodeURIComponent(nombre + ' — IMPLEMAQ RURAL\n' + pageUrl)}`;
+    document.getElementById('share-fb').href  = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+
+    // Contador de vistas
+    try {
+      await updateDoc(doc(db, "Productos", prodId), { Vistas: increment(1) });
+    } catch {}
+
+    // Relacionados
+    cargarRelacionados(cat, prodId);
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+async function cargarRelacionados(cat, idActual) {
+  try {
+    const snap = await getDocs(collection(db, "Productos"));
+    const rel = snap.docs
+      .filter(d => d.id !== idActual && (d.data().Categoria || d.data().categoria) === cat)
+      .slice(0, 4)
+      .map(d => ({ id: d.id, ...d.data() }));
+
+    const grid = document.getElementById('rel-grid');
+    if (!rel.length) { grid.parentElement.style.display='none'; return; }
+
+    grid.innerHTML = rel.map(p => {
+      const img = p.Imagen || p.imagen || '';
+      const nom = p.Nombre || p.nombre || '';
+      const mar = p.Marca  || p.marca  || '';
+      const est = p.Estado || p.estado || 'Nuevo';
+      const pre = p.Precio || p.precio || 'Consultar';
+      return `
+        <a href="producto.html?id=${p.id}" class="cat-card" style="text-decoration:none;color:inherit;">
+          <div class="cat-img">
+            <img src="${img}" alt="${nom}" onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
+            <span class="cat-overlay">${est}</span>
+          </div>
+          <div class="cat-body">
+            <div class="prod-cat" style="margin-bottom:4px;font-size:11px;">${mar}</div>
+            <h3>${nom}</h3>
+            <p style="font-size:13px;color:var(--texto-suave);">${pre === 'Consultar' ? 'Consultar precio' : '$'+Number(pre).toLocaleString('es-AR')}</p>
+            <span class="cat-link">Ver producto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </div>
+        </a>`;
+    }).join('');
+  } catch {}
+}
+
+cargar();
+
+// ── GALERÍA ──
+window.cambiarImg = (src, el) => {
+  document.getElementById('img-principal').src = src;
+  window.imgActual = src;
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+};
+
+window.abrirLightbox = src => {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+};
+
+window.cerrarLightbox = () => {
+  document.getElementById('lightbox').classList.remove('open');
+};
+
+window.copiarLink = () => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    alert('Link copiado al portapapeles');
+  });
+};
+</script>
+</body>
+</html>

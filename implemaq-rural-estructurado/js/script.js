@@ -1,13 +1,18 @@
 const reveals = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        setTimeout(() => e.target.classList.add('visible'), i * 80);
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  reveals.forEach(el => observer.observe(el));
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, index) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, index * 80);
+
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+reveals.forEach((element) => observer.observe(element));
 
 function enviarFormulario() {
   const nombre = document.getElementById('nombre').value.trim();
@@ -21,14 +26,13 @@ function enviarFormulario() {
     return;
   }
 
-  const texto =
-`Hola! 
+  const texto = `Hola!
 Soy ${nombre}.
 
-${tel ? `Teléfono: ${tel}` : ''}
-${email ? `Email: ${email}` : ''}
-${asunto ? `Consulta: ${asunto}` : ''}
-
+${tel ? `Teléfono: ${tel}
+` : ''}${email ? `Email: ${email}
+` : ''}${asunto ? `Consulta: ${asunto}
+` : ''}
 Mensaje:
 ${mensaje}`;
 
@@ -37,56 +41,81 @@ ${mensaje}`;
     '_blank'
   );
 }
+
 async function cargarDolar() {
+  const contenedor = document.getElementById('dolar-oficial');
+
+  if (!contenedor) return;
+
   try {
-    const [oficialRes, blueRes] = await Promise.all([
-      fetch("https://dolarapi.com/v1/dolares/oficial"),
-      fetch("https://dolarapi.com/v1/dolares/blue")
-    ]);
-
+    const oficialRes = await fetch('https://dolarapi.com/v1/dolares/oficial');
     const oficial = await oficialRes.json();
-    const blue = await blueRes.json();
 
-    document.getElementById("dolar-oficial").textContent = `$${oficial.venta}`;
-    document.getElementById("dolar-blue").textContent = `$${blue.venta}`;
+    contenedor.innerHTML = `
+      <div class="dolar-item">
+        <strong>$${oficial.compra}</strong>
+        <small>Compra</small>
+      </div>
+
+      <div class="dolar-item">
+        <strong>$${oficial.venta}</strong>
+        <small>Venta</small>
+      </div>
+    `;
   } catch (error) {
-    document.getElementById("dolar-oficial").textContent = "No disponible";
-    document.getElementById("dolar-blue").textContent = "No disponible";
+    contenedor.textContent = 'No disponible';
   }
 }
 
 async function cargarClima(lat, lon, ubicacionTexto) {
+  const temp = document.getElementById('clima-temp');
+  const ubicacion = document.getElementById('clima-ubicacion');
+
+  if (!temp || !ubicacion) return;
+
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&timezone=auto`;
     const res = await fetch(url);
     const data = await res.json();
 
-    document.getElementById("clima-temp").textContent =
-      `${Math.round(data.current.temperature_2m)}°C`;
-
-    document.getElementById("clima-ubicacion").textContent = ubicacionTexto;
+    temp.textContent = `${Math.round(data.current.temperature_2m)}°C`;
+    ubicacion.textContent = ubicacionTexto;
   } catch (error) {
-    document.getElementById("clima-temp").textContent = "No disponible";
-    document.getElementById("clima-ubicacion").textContent = "Clima";
+    temp.textContent = 'No disponible';
+    ubicacion.textContent = 'Clima';
   }
 }
 
 function iniciarClima() {
-  if ("geolocation" in navigator) {
+  const ubicacionDefault = {
+    lat: -31.3553,
+    lon: -61.5058,
+    texto: 'Rafaela / Susana'
+  };
+
+  if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         cargarClima(
           pos.coords.latitude,
           pos.coords.longitude,
-          "Tu ubicación"
+          'Tu ubicación'
         );
       },
       () => {
-        cargarClima(-31.3553, -61.5058, "Rafaela / Susana");
+        cargarClima(
+          ubicacionDefault.lat,
+          ubicacionDefault.lon,
+          ubicacionDefault.texto
+        );
       }
     );
   } else {
-    cargarClima(-31.3553, -61.5058, "Rafaela / Susana");
+    cargarClima(
+      ubicacionDefault.lat,
+      ubicacionDefault.lon,
+      ubicacionDefault.texto
+    );
   }
 }
 

@@ -493,10 +493,9 @@
     <span class="filtro-label">Categoría:</span>
     <button class="filtro-btn active" data-cat="todos">Todos</button>
     <button class="filtro-btn" data-cat="maquinaria">Maquinaria</button>
-    <button class="filtro-btn" data-cat="forrajera">Forrajera</button>
     <button class="filtro-btn" data-cat="implementos">Implementos</button>
     <button class="filtro-btn" data-cat="repuestos">Repuestos</button>
-    <button class="filtro-btn" data-cat="herramientas">Herramientas</button>
+    <button class="filtro-btn" data-cat="insumos">Insumos</button>
   </div>
 
   <div class="filtros">
@@ -625,6 +624,21 @@
       <style>@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }</style>`;
   }
 
+  function normalizarCategoria(valor) {
+    return String(valor || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  }
+
+  function urlProducto(id) {
+    return `producto.html?id=${encodeURIComponent(id)}`;
+  }
+
+  function urlProductoAbsoluta(id) {
+    return `${window.location.origin}${window.location.pathname.replace(/catalogo\.html$/, '')}producto.html?id=${encodeURIComponent(id)}`;
+  }
+
   // ─── CARGAR DESDE FIREBASE ───
   async function cargarProductos() {
     mostrarLoading();
@@ -639,7 +653,7 @@
             id: doc.id,
             nombre: data.Nombre || "",
             marca: data.Marca || "",
-            categoria: (data.Categoría || data.Categoria || "").toLowerCase(),
+            categoria: normalizarCategoria(data.Categoría || data.Categoria || ""),
             estado: (data.Estado || "nuevo").toLowerCase(),
             descripcion: data.Descripción || data.Descripcion || "",
             precio: data.Precio || "Consultar",
@@ -701,35 +715,46 @@
     const fin = inicio + productosPorPagina;
     const productosPagina = filtrados.slice(inicio, fin);
 
-    grid.innerHTML = productosPagina.map(p => `
-      <div class="prod-card ${seleccionados.has(p.id) ? 'seleccionado' : ''}"
-           onclick="toggleSeleccion('${p.id}', event)" data-id="${p.id}">
-        <div class="prod-check">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <span class="prod-badge ${p.estado || 'nuevo'}">${p.estado === 'usado' ? 'Usado' : 'Nuevo'}</span>
-        <div class="prod-img">
-          <img src="${p.img || ''}" alt="${p.nombre}" loading="lazy"
-               onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
-        </div>
-        <div class="prod-body">
-          <div class="prod-cat">${p.marca || ''} · ${p.categoria || ''}</div>
-          <h3>${p.nombre || ''}</h3>
-          <p>${p.descripcion || ''}</p>
-          <div class="prod-footer">
-            <div class="prod-precio ${!p.precio || p.precio === 'Consultar' ? 'consultar' : ''}">
-              ${!p.precio || p.precio === 'Consultar' ? 'Consultar precio' : '$' + Number(p.precio).toLocaleString('es-AR')}
+    grid.innerHTML = productosPagina.map(p => {
+      const linkProducto = urlProducto(p.id);
+      const linkProductoAbs = urlProductoAbsoluta(p.id);
+      const mensajeIndividual = `Hola! Me interesa consultar por: ${p.nombre} (${p.marca || ''}).\n\nLink del producto:\n${linkProductoAbs}\n\n¿Tienen disponibilidad?`;
+
+      return `
+        <div class="prod-card ${seleccionados.has(p.id) ? 'seleccionado' : ''}" data-id="${p.id}">
+          <button class="prod-check" type="button" onclick="toggleSeleccion('${p.id}', event)" title="Seleccionar producto">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </button>
+
+          <span class="prod-badge ${p.estado || 'nuevo'}">${p.estado === 'usado' ? 'Usado' : 'Nuevo'}</span>
+
+          <a href="${linkProducto}" class="prod-card-link">
+            <div class="prod-img">
+              <img src="${p.img || ''}" alt="${p.nombre}" loading="lazy"
+                   onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
             </div>
-            <a href="https://wa.me/543492508683?text=${encodeURIComponent('Hola! Me interesa consultar por: ' + p.nombre + ' (' + (p.marca||'') + '). ¿Tienen disponibilidad?')}"
-               target="_blank" class="prod-wpp" onclick="event.stopPropagation()" title="Consultar este producto">
-              <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-            </a>
-          </div>
+
+            <div class="prod-body">
+              <div class="prod-cat">${p.marca || ''} · ${p.categoria || ''}</div>
+              <h3>${p.nombre || ''}</h3>
+              <p>${p.descripcion || ''}</p>
+              <div class="prod-footer">
+                <div class="prod-precio ${!p.precio || p.precio === 'Consultar' ? 'consultar' : ''}">
+                  ${!p.precio || p.precio === 'Consultar' ? 'Consultar precio' : '$' + Number(p.precio).toLocaleString('es-AR')}
+                </div>
+
+                <a href="https://wa.me/543492508683?text=${encodeURIComponent(mensajeIndividual)}"
+                   target="_blank" class="prod-wpp" onclick="event.stopPropagation()" title="Consultar este producto">
+                  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                </a>
+              </div>
+            </div>
+          </a>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     renderPaginacion(filtrados.length, totalPaginas, inicio, Math.min(fin, filtrados.length));
   }
@@ -768,6 +793,7 @@
 
   // ─── SELECCIÓN MÚLTIPLE ───
   window.toggleSeleccion = function(id, event) {
+    if (event) event.stopPropagation();
     if (seleccionados.has(id)) {
       seleccionados.delete(id);
     } else {
@@ -784,8 +810,8 @@
 
     const nombresSeleccionados = productos
       .filter(p => seleccionados.has(p.id))
-      .map(p => `- ${p.nombre} (${p.marca || ''})`)
-      .join('\n');
+      .map(p => `• ${p.nombre} (${p.marca || ''})\n${urlProductoAbsoluta(p.id)}`)
+      .join('\n\n');
 
     const mensaje = `Hola! Me interesan los siguientes productos y quisiera consultar disponibilidad:\n\n${nombresSeleccionados}\n\n¿Pueden informarme?`;
     document.getElementById('btn-consultar-wpp').href =

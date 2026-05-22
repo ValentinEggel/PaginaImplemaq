@@ -1,49 +1,165 @@
 import { db, collection, getDocs } from "./firebase-config.js";
 
-async function cargarProductos() {
+const normalizar = (valor) => {
+  return String(valor || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
+const obtenerImagen = (producto) => {
+  if (producto.Imagen) return producto.Imagen;
+  if (producto.imagen) return producto.imagen;
+
+  if (Array.isArray(producto.Imagenes) && producto.Imagenes.length > 0) {
+    return producto.Imagenes[0];
+  }
+
+  if (Array.isArray(producto.imagenes) && producto.imagenes.length > 0) {
+    return producto.imagenes[0];
+  }
+
+  return "https://via.placeholder.com/600x450/f5f3ee/aaa?text=Sin+imagen";
+};
+
+const obtenerPrecio = (producto) => {
+  const precio = producto.Precio || producto.precio || "";
+
+  if (!precio || precio === "Consultar") {
+    return "Consultar precio";
+  }
+
+  const precioNumerico = Number(precio);
+
+  if (Number.isNaN(precioNumerico)) {
+    return precio;
+  }
+
+  return `$${precioNumerico.toLocaleString("es-AR")}`;
+};
+
+const crearCardProducto = (producto, id) => {
+  const nombre = producto.Nombre || producto.nombre || "Producto sin nombre";
+  const marca = producto.Marca || producto.marca || "";
+  const descripcion = producto.Descripción || producto.Descripcion || producto.descripcion || "";
+  const imagen = obtenerImagen(producto);
+
+  return `
+    <a href="producto.html?id=${id}" class="dest-card-link">
+      <div class="dest-card">
+        <div class="dest-img">
+          <img src="${imagen}" alt="${nombre}" loading="lazy">
+        </div>
+
+        <div class="dest-body">
+          <span class="dest-tag">${marca || "IMPLEMAQ"}</span>
+          <h4>${nombre}</h4>
+          <p>${descripcion}</p>
+        </div>
+      </div>
+    </a>
+  `;
+};
+
+async function obtenerProductos() {
+  const querySnapshot = await getDocs(collection(db, "Productos"));
+
+  return querySnapshot.docs
+    .map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    .filter((producto) => producto.Activo !== false);
+}
+
+async function cargarProductosDestacados(productos) {
   const contenedor = document.getElementById("productos-dinamicos");
 
-  if (!contenedor) {
-    console.error("No existe el contenedor productos-dinamicos");
+  if (!contenedor) return;
+
+  const destacados = productos
+    .filter((producto) => producto.Destacado === true || producto.destacado === true)
+    .slice(0, 4);
+
+  const productosAMostrar = destacados.length > 0
+    ? destacados
+    : productos.slice(0, 4);
+
+  if (productosAMostrar.length === 0) {
+    contenedor.innerHTML = "<p>No hay productos destacados cargados.</p>";
     return;
   }
 
-  contenedor.innerHTML = "<p>Cargando productos...</p>";
+  contenedor.innerHTML = productosAMostrar
+    .map((producto) => crearCardProducto(producto, producto.id))
+    .join("");
+}
+
+async function cargarCarruselRepuestos(productos) {
+  const contenedor = document.getElementById("repuestos-carousel");
+
+  if (!contenedor) return;
+
+  const repuestos = productos.filter((producto) => {
+    const categoria = normalizar(producto.Categoría || producto.Categoria || producto.categoria);
+    return categoria.includes("repuesto");
+  });
+
+  if (repuestos.length === 0) {
+    contenedor.innerHTML = `
+      <div class="carousel-empty">
+        No hay repuestos cargados todavía.
+      </div>
+    `;
+    return;
+  }
+
+  contenedor.innerHTML = repuestos
+    .map((producto) => crearCardProducto(producto, producto.id))
+    .join("");
+}
+
+window.moverCarruselRepuestos = (direccion) => {
+  const carrusel = document.getElementById("repuestos-carousel");
+
+  if (!carrusel) return;
+
+  carrusel.scrollBy({
+    left: direccion * 320,
+    behavior: "smooth"
+  });
+};
+
+async function iniciarHomeDinamico() {
+  const contenedorDestacados = document.getElementById("productos-dinamicos");
+  const contenedorRepuestos = document.getElementById("repuestos-carousel");
+
+  if (contenedorDestacados) {
+    contenedorDestacados.innerHTML = "<p>Cargando productos destacados...</p>";
+  }
+
+  if (contenedorRepuestos) {
+    contenedorRepuestos.innerHTML = "<p class='carousel-loading'>Cargando repuestos...</p>";
+  }
 
   try {
-    const querySnapshot = await getDocs(collection(db, "Productos"));
+    const productos = await obtenerProductos();
 
-    console.log("Cantidad de productos:", querySnapshot.size);
-
-    if (querySnapshot.empty) {
-      contenedor.innerHTML = "<p>No hay productos cargados en Firestore.</p>";
-      return;
-    }
-
-    contenedor.innerHTML = "";
-
-    querySnapshot.docs.slice(0, 4).forEach((doc) => {
-      const producto = doc.data();
-      console.log(producto);
-
-      contenedor.innerHTML += `
-        <div class="dest-card">
-          <div class="dest-img">
-            <img src="${producto.Imagen}" alt="${producto.Nombre}">
-          </div>
-          <div class="dest-body">
-            <span class="dest-tag">${producto.Marca}</span>
-            <h4>${producto.Nombre}</h4>
-            <p>${producto.Descripción}</p>
-          </div>
-        </div>
-      `;
-    });
+    await cargarProductosDestacados(productos);
+    await cargarCarruselRepuestos(productos);
 
   } catch (error) {
-    console.error("Error al cargar productos:", error);
-    contenedor.innerHTML = "<p>Error al cargar productos. Revisá la consola.</p>";
+    console.error("Error al cargar productos dinámicos:", error);
+
+    if (contenedorDestacados) {
+      contenedorDestacados.innerHTML = "<p>Error al cargar productos destacados.</p>";
+    }
+
+    if (contenedorRepuestos) {
+      contenedorRepuestos.innerHTML = "<p class='carousel-loading'>Error al cargar repuestos.</p>";
+    }
   }
 }
 
-cargarProductos();
+iniciarHomeDinamico();
