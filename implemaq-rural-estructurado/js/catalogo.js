@@ -24,7 +24,18 @@ const obtenerImagen = (producto) => {
 };
 
 const obtenerPrecio = (producto) => {
+
   const precio = producto.Precio || producto.precio || "";
+  
+  const monedaRaw =
+    producto.Moneda ||
+    producto.moneda ||
+    "ARS";
+
+  const moneda = String(monedaRaw)
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   if (!precio || precio === "Consultar") {
     return "Consultar precio";
@@ -36,7 +47,13 @@ const obtenerPrecio = (producto) => {
     return precio;
   }
 
-  return `$${precioNumerico.toLocaleString("es-AR")}`;
+  const esUSD =
+    moneda.includes("USD") ||
+    moneda.includes("DOLAR");
+
+  return esUSD
+    ? `U$S ${precioNumerico.toLocaleString("es-AR")}`
+    : `$${precioNumerico.toLocaleString("es-AR")}`;
 };
 
 const crearCardProducto = (producto, id) => {

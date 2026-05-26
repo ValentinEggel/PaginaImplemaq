@@ -403,7 +403,9 @@
     <div class="precio-box">
       <div class="precio-label">Precio</div>
       <div class="precio-valor" id="info-precio">Consultar</div>
-      <div class="precio-nota">Precio en pesos argentinos · IVA no incluido</div>
+      <div class="precio-nota" id="precio-nota">
+       Precio en pesos argentinos · IVA no incluido
+      </div>
     </div>
 
     <!-- CTAs -->
@@ -625,14 +627,31 @@ async function cargar() {
     badgeEl.textContent  = estado;
     badgeEl.className    = `galeria-badge-est ${estado.toLowerCase() === 'usado' ? 'usado' : 'nuevo'}`;
 
-    // Precio
-    const precioEl = document.getElementById('info-precio');
-    if (!precio || precio === 'Consultar') {
-      precioEl.textContent = 'Consultar precio';
-      precioEl.classList.add('consultar');
-    } else {
-      precioEl.textContent = '$' + Number(precio).toLocaleString('es-AR');
-    }
+// Precio
+const precioEl = document.getElementById('info-precio');
+const precioNota = document.getElementById('precio-nota');
+
+const moneda = p.Moneda || p.moneda || "ARS";
+
+if (!precio || precio === 'Consultar') {
+
+  precioEl.textContent = 'Consultar precio';
+  precioEl.classList.add('consultar');
+
+  precioNota.textContent = 'Precio a consultar';
+
+} else {
+
+  precioEl.textContent =
+    moneda === "USD"
+      ? 'U$S ' + Number(precio).toLocaleString('es-AR')
+      : '$' + Number(precio).toLocaleString('es-AR');
+
+  precioNota.textContent =
+    moneda === "USD"
+      ? 'Precio en dólares · IVA no incluido'
+      : 'Precio en pesos argentinos · IVA no incluido';
+}
 
     // Descripción
     document.getElementById('desc-texto').textContent = desc;

@@ -639,6 +639,31 @@
     return `${window.location.origin}${window.location.pathname.replace(/catalogo\.html$/, '')}producto.html?id=${encodeURIComponent(id)}`;
   }
 
+  function formatearPrecio(precio, moneda) {
+    if (!precio || precio === "Consultar") {
+      return "Consultar precio";
+    }
+
+    const precioNumerico = Number(precio);
+
+    if (Number.isNaN(precioNumerico)) {
+      return precio;
+    }
+
+    const monedaNormalizada = String(moneda || "ARS")
+      .toUpperCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+
+    const esUSD =
+      monedaNormalizada.includes("USD") ||
+      monedaNormalizada.includes("DOLAR");
+
+    return esUSD
+      ? `U$S ${precioNumerico.toLocaleString("es-AR")}`
+      : `$${precioNumerico.toLocaleString("es-AR")}`;
+  }
+
   // ─── CARGAR DESDE FIREBASE ───
   async function cargarProductos() {
     mostrarLoading();
@@ -657,6 +682,7 @@
             estado: (data.Estado || "nuevo").toLowerCase(),
             descripcion: data.Descripción || data.Descripcion || "",
             precio: data.Precio || "Consultar",
+            moneda: data.Moneda || data.moneda || "ARS",
             img: data.Imagen || "",
             activo: data.Activo !== false,
             destacado: data.Destacado === true,
@@ -742,7 +768,7 @@
               <p>${p.descripcion || ''}</p>
               <div class="prod-footer">
                 <div class="prod-precio ${!p.precio || p.precio === 'Consultar' ? 'consultar' : ''}">
-                  ${!p.precio || p.precio === 'Consultar' ? 'Consultar precio' : '$' + Number(p.precio).toLocaleString('es-AR')}
+                  ${formatearPrecio(p.precio, p.moneda)}
                 </div>
 
                 <a href="https://wa.me/543492508683?text=${encodeURIComponent(mensajeIndividual)}"
