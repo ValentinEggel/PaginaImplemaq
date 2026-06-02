@@ -694,36 +694,94 @@ if (!precio || precio === 'Consultar') {
 
 async function cargarRelacionados(cat, idActual) {
   try {
+
     const snap = await getDocs(collection(db, "Productos"));
-    const rel = snap.docs
-      .filter(d => d.id !== idActual && (d.data().Categoria || d.data().categoria) === cat)
+
+    const relacionados = snap.docs
+      .filter(d => {
+
+        if (d.id === idActual) return false;
+
+        const data = d.data();
+
+        const categoria =
+          data.Categoría ||
+          data.Categoria ||
+          data.categoria ||
+          '';
+
+        return categoria === cat;
+
+      })
       .slice(0, 4)
-      .map(d => ({ id: d.id, ...d.data() }));
+      .map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
 
     const grid = document.getElementById('rel-grid');
-    if (!rel.length) { grid.parentElement.style.display='none'; return; }
 
-    grid.innerHTML = rel.map(p => {
-      const img = p.Imagen || p.imagen || '';
-      const nom = p.Nombre || p.nombre || '';
-      const mar = p.Marca  || p.marca  || '';
-      const est = p.Estado || p.estado || 'Nuevo';
-      const pre = p.Precio || p.precio || 'Consultar';
+    if (!relacionados.length) {
+      grid.parentElement.style.display = 'none';
+      return;
+    }
+
+    grid.innerHTML = relacionados.map(p => {
+
+      const img =
+        p.Imagen ||
+        p.imagen ||
+        '';
+
+      const nombre =
+        p.Nombre ||
+        p.nombre ||
+        '';
+
+      const marca =
+        p.Marca ||
+        p.marca ||
+        '';
+
+      const precio =
+        p.Precio ||
+        p.precio ||
+        'Consultar';
+
       return `
         <a href="producto.html?id=${p.id}" class="cat-card" style="text-decoration:none;color:inherit;">
           <div class="cat-img">
-            <img src="${img}" alt="${nom}" onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
-            <span class="cat-overlay">${est}</span>
+            <img src="${img}" alt="${nombre}">
           </div>
+
           <div class="cat-body">
-            <div class="prod-cat" style="margin-bottom:4px;font-size:11px;">${mar}</div>
-            <h3>${nom}</h3>
-            <p style="font-size:13px;color:var(--texto-suave);">${pre === 'Consultar' ? 'Consultar precio' : '$'+Number(pre).toLocaleString('es-AR')}</p>
-            <span class="cat-link">Ver producto <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <div class="prod-cat">${marca}</div>
+
+            <h3>${nombre}</h3>
+
+            <p>
+              ${precio === 'Consultar'
+                ? 'Consultar precio'
+                : '$' + Number(precio).toLocaleString('es-AR')}
+            </p>
+
+            <span class="cat-link">
+              Ver producto
+            </span>
           </div>
-        </a>`;
+        </a>
+      `;
+
     }).join('');
-  } catch {}
+
+  } catch (error) {
+
+    console.error(
+      "Error cargando relacionados:",
+      error
+    );
+
+  }
 }
 
 cargar();

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preguntas Frecuentes — IMPLEMAQ RURAL</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+  /* ── HERO FAQ ── */
+  .faq-hero {
+    background: var(--gris-oscuro);
+    padding: 140px 5vw 60px;
+    border-bottom: 2px solid var(--amarillo);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .faq-hero::before {
+    content: '?';
+    position: absolute;
+    right: 5vw; top: 50%; transform: translateY(-50%);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900; font-size: 320px; line-height: 1;
+    color: rgba(245,200,66,0.04);
+    pointer-events: none; user-select: none;
+  }
+
+  .faq-hero .section-tag { color: var(--amarillo); }
+  .faq-hero .section-tag::before { background: var(--amarillo); }
+
+  .faq-hero h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: clamp(42px, 6vw, 72px);
+    text-transform: uppercase;
+    color: var(--blanco);
+    line-height: 0.95;
+    margin-bottom: 14px;
+  }
+
+  .faq-hero h1 .hl { color: var(--amarillo); }
+
+  .faq-hero p {
+    font-size: 16px;
+    color: rgba(255,255,255,0.65);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* ── SEARCH BAR ── */
+  .faq-search-wrap {
+    background: var(--blanco);
+    border-bottom: 1px solid #e8e5de;
+    padding: 20px 5vw;
+    position: sticky;
+    top: 120px;
+    z-index: 100;
+  }
+
+  .faq-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--gris-claro);
+    border: 1.5px solid #e8e5de;
+    border-radius: 8px;
+    padding: 12px 20px;
+    max-width: 560px;
+    transition: border-color .2s;
+  }
+
+  .faq-search:focus-within {
+    border-color: var(--amarillo);
+    background: var(--blanco);
+  }
+
+  .faq-search svg { width: 18px; height: 18px; flex-shrink: 0; color: #aaa; }
+
+  .faq-search input {
+    border: none; background: transparent;
+    font-family: 'Barlow', sans-serif; font-size: 15px;
+    color: var(--texto); width: 100%; outline: none;
+  }
+  .faq-search input::placeholder { color: #bbb; }
+
+  /* ── BODY ── */
+  .faq-body {
+    padding: 60px 5vw 80px;
+    background: var(--gris-claro);
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 48px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── SIDEBAR CATEGORÍAS ── */
+  .faq-sidebar {
+    position: sticky;
+    top: 180px;
+  }
+
+  .faq-sidebar h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--texto-suave);
+    margin-bottom: 12px;
+  }
+
+  .faq-cat-btn {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; padding: 10px 14px;
+    background: var(--blanco); border: 1.5px solid #e8e5de;
+    border-radius: 6px; cursor: pointer;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; font-size: 14px; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--texto-suave);
+    transition: all .2s; margin-bottom: 6px; text-align: left;
+  }
+
+  .faq-cat-btn:hover { border-color: var(--amarillo); color: var(--texto); }
+  .faq-cat-btn.active { background: var(--amarillo); border-color: var(--amarillo); color: var(--gris-oscuro); }
+  .faq-cat-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  .faq-sidebar-cta {
+    margin-top: 28px;
+    padding: 20px;
+    background: var(--gris-oscuro);
+    border-radius: 8px;
+    border: 1px solid #2a2a2a;
+  }
+
+  .faq-sidebar-cta p {
+    font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.5; margin-bottom: 14px;
+  }
+
+  .faq-sidebar-cta a {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: #25d366; color: var(--blanco);
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700;
+    font-size: 13px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 10px 16px; border-radius: 6px; text-decoration: none;
+    transition: background .2s;
+  }
+  .faq-sidebar-cta a:hover { background: #1da851; }
+  .faq-sidebar-cta a svg { width: 16px; height: 16px; fill: white; }
+
+  /* ── GRUPOS FAQ ── */
+  .faq-grupos { display: flex; flex-direction: column; gap: 32px; }
+
+  .faq-grupo { display: none; }
+  .faq-grupo.visible { display: block; }
+
+  .faq-grupo-titulo {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .faq-grupo-titulo svg {
+    width: 20px; height: 20px;
+    background: var(--amarillo); padding: 4px;
+    border-radius: 5px; flex-shrink: 0;
+    color: var(--gris-oscuro);
+  }
+
+  .faq-grupo-titulo h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800; font-size: 20px;
+    text-transform: uppercase; color: var(--gris-oscuro);
+  }
+
+  /* ── ACORDEÓN ── */
+  .faq-lista { display: flex; flex-direction: column; gap: 8px; }
+
+  .faq-item {
+    background: var(--blanco);
+    border: 1.5px solid #e8e5de;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  .faq-item:hover { border-color: #d0ccc0; }
+  .faq-item.open { border-color: var(--amarillo); box-shadow: 0 4px 16px rgba(245,200,66,.15); }
+
+  .faq-question {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 18px 20px;
+    cursor: pointer; user-select: none;
+  }
+
+  .faq-question-text {
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600; font-size: 15px;
+    color: var(--gris-oscuro); line-height: 1.4;
+  }
+
+  .faq-item.open .faq-question-text { color: var(--gris-oscuro); }
+
+  .faq-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    background: var(--gris-claro); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s, transform .3s;
+  }
+
+  .faq-icon svg { width: 14px; height: 14px; transition: transform .3s; }
+  .faq-item.open .faq-icon { background: var(--amarillo); }
+  .faq-item.open .faq-icon svg { transform: rotate(45deg); }
+
+  .faq-answer {
+    max-height: 0; overflow: hidden;
+    transition: max-height .4s ease, padding .3s ease;
+    padding: 0 20px;
+  }
+
+  .faq-item.open .faq-answer {
+    max-height: 400px;
+    padding: 0 20px 18px;
+  }
+
+  .faq-answer p {
+    font-size: 14px; color: var(--texto-suave);
+    line-height: 1.7; border-top: 1px solid #f0ede6;
+    padding-top: 14px;
+  }
+
+  .faq-answer a { color: var(--amarillo-dark, #d4a800); font-weight: 600; text-decoration: none; }
+  .faq-answer a:hover { text-decoration: underline; }
+
+  /* Sin resultados */
+  .faq-vacio {
+    text-align: center; padding: 60px 20px;
+    display: none;
+  }
+  .faq-vacio svg { width: 48px; height: 48px; stroke: #ccc; margin-bottom: 12px; display: block; margin-left: auto; margin-right: auto; }
+  .faq-vacio h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 22px; text-transform: uppercase; color: #bbb; margin-bottom: 6px; }
+  .faq-vacio p { font-size: 14px; color: #ccc; }
+
+  /* ── CTA BANDA ── */
+  .faq-cta {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+    padding: 70px 5vw;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .faq-cta::before {
+    content: ''; position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: rgba(245,200,66,0.06); border-radius: 50%;
+  }
+  .faq-cta h2 {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 900;
+    font-size: clamp(32px, 4vw, 52px); text-transform: uppercase;
+    color: var(--blanco); margin-bottom: 12px;
+  }
+  .faq-cta h2 span { color: var(--amarillo); }
+  .faq-cta p { font-size: 16px; color: rgba(255,255,255,.65); margin-bottom: 28px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .faq-body { grid-template-columns: 1fr; }
+    .faq-sidebar { position: static; display: flex; gap: 8px; flex-wrap: wrap; }
+    .faq-sidebar h4 { display: none; }
+    .faq-sidebar-cta { display: none; }
+    .faq-cat-btn { width: auto; }
+  }
+
+  @media (max-width: 600px) {
+    .faq-search-wrap { top: 90px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo-area">
+    <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 90px; width: auto;">
+  </a>
+  <nav>
+    <a href="index.html#nosotros">Nosotros</a>
+    <a href="catalogo.html">Catálogo</a>
+    <a href="index.html#repuestos">Repuestos</a>
+    <a href="index.html#servicios">Atención</a>
+    <a href="index.html#contacto" class="btn-contacto-nav">Contacto</a>
+    <a href="faq.html">Preguntas Frecuentes</a>
+
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="faq-hero">
+  <div class="section-tag">Ayuda y soporte</div>
+  <h1>Preguntas <span class="hl">frecuentes</span></h1>
+  <p>Todo lo que necesitás saber antes de comprar o consultar. Si no encontrás tu respuesta, escribinos por WhatsApp.</p>
+</div>
+
+<!-- BUSCADOR -->
+<div class="faq-search-wrap">
+  <div class="faq-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="faq-buscador" placeholder="Buscá una pregunta... (ej: envío, repuesto, precio)">
+  </div>
+</div>
+
+<!-- BODY -->
+<div style="background: var(--gris-claro); padding: 60px 5vw 80px;">
+<div style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: start;" id="faq-layout">
+
+  <!-- SIDEBAR -->
+  <div class="faq-sidebar" id="faq-sidebar">
+    <h4>Categorías</h4>
+    <button class="faq-cat-btn active" data-grupo="todos" onclick="filtrarGrupo('todos', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Todas
+    </button>
+    <button class="faq-cat-btn" data-grupo="compras" onclick="filtrarGrupo('compras', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Compras
+    </button>
+    <button class="faq-cat-btn" data-grupo="maquinaria" onclick="filtrarGrupo('maquinaria', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      Maquinaria
+    </button>
+    <button class="faq-cat-btn" data-grupo="repuestos" onclick="filtrarGrupo('repuestos', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      Repuestos
+    </button>
+    <button class="faq-cat-btn" data-grupo="envios" onclick="filtrarGrupo('envios', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Envíos
+    </button>
+    <button class="faq-cat-btn" data-grupo="atencion" onclick="filtrarGrupo('atencion', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Atención
+    </button>
+
+    <div class="faq-sidebar-cta">
+      <p>¿No encontrás lo que buscás? Escribinos directo.</p>
+      <a href="https://wa.me/543492508683" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        WhatsApp directo
+      </a>
+    </div>
+  </div>
+
+  <!-- PREGUNTAS -->
+  <div>
+    <div class="faq-grupos" id="faq-grupos">
+
+
+      <!-- COMPRAS -->
+      <div class="faq-grupo visible" data-grupo="compras">
+        <div class="faq-grupo-titulo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <h3>Compras y presupuestos</h3>
+        </div>
+        <div class="faq-lista">
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Cómo solicito un presupuesto?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Podés solicitar un presupuesto directamente por WhatsApp o mediante nuestro formulario de contacto. Te responderemos con disponibilidad y precio actualizado.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Los productos publicados tienen stock disponible?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>La disponibilidad puede variar según el producto. Recomendamos consultar previamente para confirmar stock, precio actualizado y tiempos de entrega.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Puedo financiar una compra?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Dependiendo del producto y la operación, contamos con distintas alternativas de financiación. Consultanos para conocer las opciones vigentes.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Puedo consultar por un producto que no aparece en el catálogo?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. Si no encontrás lo que buscás, comunicate con nosotros. Podemos ayudarte a conseguir maquinaria, implementos, insumos o repuestos específicos.</p></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAQUINARIA -->
+      <div class="faq-grupo visible" data-grupo="maquinaria">
+        <div class="faq-grupo-titulo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          <h3>Maquinaria</h3>
+        </div>
+        <div class="faq-lista">
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Venden maquinaria nueva y usada?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. Comercializamos maquinaria nueva y también unidades usadas seleccionadas según disponibilidad.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Qué tipos de maquinaria comercializan?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Trabajamos con maquinaria agrícola, implementos, equipos para el campo, insumos y soluciones para productores agropecuarios.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Puedo recibir asesoramiento antes de comprar?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. Brindamos asesoramiento personalizado para ayudarte a elegir la opción más adecuada según tu necesidad, tipo de trabajo y presupuesto.</p></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- REPUESTOS -->
+      <div class="faq-grupo visible" data-grupo="repuestos">
+        <div class="faq-grupo-titulo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          <h3>Repuestos</h3>
+        </div>
+        <div class="faq-lista">
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Trabajan con repuestos para todas las marcas?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Contamos con una amplia variedad de repuestos originales y alternativos para las principales marcas del mercado agrícola. Consultanos por el repuesto que necesitás.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Cómo encuentro el repuesto correcto para mi máquina?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Podés enviarnos una foto del repuesto, el modelo de la máquina o el número de pieza. Nuestro equipo te ayudará a identificar la opción adecuada.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Los repuestos son originales?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Disponemos tanto de repuestos originales como alternativos de calidad, según disponibilidad y necesidad del cliente.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Qué marcas trabajan?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Trabajamos con una amplia variedad de marcas reconocidas del sector agrícola, ofreciendo tanto repuestos originales como alternativas de calidad.</p></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ENVÍOS -->
+      <div class="faq-grupo visible" data-grupo="envios">
+        <div class="faq-grupo-titulo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <h3>Envíos y logística</h3>
+        </div>
+        <div class="faq-lista">
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Realizan envíos a todo el país?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. Trabajamos con diferentes transportes y empresas logísticas para enviar maquinaria, implementos, repuestos e insumos a cualquier punto de Argentina.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Cuánto demora un envío?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Los tiempos de entrega dependen del destino, el producto y el transporte seleccionado. Te informaremos el plazo estimado al momento de la compra.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Puedo retirar personalmente?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. También podés coordinar el retiro de tu compra directamente con nosotros en Susana, Santa Fe.</p></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ATENCIÓN -->
+      <div class="faq-grupo visible" data-grupo="atencion">
+        <div class="faq-grupo-titulo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <h3>Atención y asesoramiento</h3>
+        </div>
+        <div class="faq-lista">
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Cómo puedo comunicarme con un asesor?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Podés contactarnos por WhatsApp, correo electrónico o mediante el formulario de contacto de la página. Nuestro equipo responderá a la brevedad.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Ofrecen asesoramiento técnico?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Sí. Brindamos asesoramiento para ayudarte a encontrar la maquinaria, implemento o repuesto adecuado para cada trabajo.</p></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question">
+              <span class="faq-question-text">¿Dónde se encuentra IMPLEMAQ RURAL?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+            </div>
+            <div class="faq-answer"><p>Estamos ubicados en Susana, provincia de Santa Fe, y atendemos clientes de toda la región y del resto del país.</p></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sin resultados -->
+    <div class="faq-vacio" id="faq-vacio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <h3>Sin resultados</h3>
+      <p>Probá con otro término o <a href="https://wa.me/543492508683" style="color:var(--amarillo-dark,#d4a800)">consultanos por WhatsApp</a>.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- CTA -->
+<div class="faq-cta">
+  <h2>¿No encontraste <span>tu respuesta?</span></h2>
+  <p>Escribinos por WhatsApp y te respondemos en el momento.</p>
+  <a href="https://wa.me/543492508683" target="_blank" class="btn-primary" style="display:inline-flex;font-size:17px;padding:16px 40px;" rel="noopener noreferrer">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+    Escribir por WhatsApp
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div style="margin-bottom:14px;"><img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height:84px;width:auto;"></div>
+      <p>Más de 30 años acompañando al productor agropecuario de Santa Fe y la región. Contamos con repuestos para todas las marcas.</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank" class="social-link" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://wa.me/543492508683" target="_blank" class="social-link" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h5>Catálogo</h5>
+      <a href="catalogo.html">Todos los productos</a>
+      <a href="catalogo.html?cat=maquinaria">Maquinaria</a>
+      <a href="catalogo.html?cat=implementos">Implementos</a>
+      <a href="catalogo.html?cat=repuestos">Repuestos</a>
+    </div>
+    <div class="footer-col">
+      <h5>Empresa</h5>
+      <a href="index.html#nosotros">Nosotros</a>
+      <a href="index.html#servicios">Atención</a>
+      <a href="faq.html">Preguntas frecuentes</a>
+      <a href="index.html#contacto">Contacto</a>
+    </div>
+    <div class="footer-col">
+      <h5>Contacto</h5>
+      <a href="tel:03492-15508683">03492 - 15 508683</a>
+      <a href="https://wa.me/543492508683" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a href="mailto:GUSTAVODANIELDESUQUE@GMAIL.COM">GUSTAVODANIELDESUQUE@GMAIL.COM</a>
+      <a style="color:rgba(255,255,255,0.4);cursor:default;">Corrientes 152, Susana, SF</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 IMPLEMAQ RURAL. Todos los derechos reservados.</span>
+    <span>Susana, Santa Fe, Argentina</span>
+  </div>
+</footer>
+
+<a href="https://wa.me/543492508683" target="_blank" class="wa-float" rel="noopener noreferrer">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+</a>
+
+<script>
+  // ── ACORDEÓN ──
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+
+  // ── FILTRO POR CATEGORÍA ──
+  window.filtrarGrupo = (grupo, btn) => {
+    document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.faq-grupo').forEach(g => {
+      g.classList.toggle('visible', grupo === 'todos' || g.dataset.grupo === grupo);
+    });
+    document.getElementById('faq-buscador').value = '';
+    document.getElementById('faq-vacio').style.display = 'none';
+  };
+
+  // ── BUSCADOR ──
+  document.getElementById('faq-buscador').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.faq-cat-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('[data-grupo="todos"]').classList.add('active');
+
+    let totalVisible = 0;
+
+    document.querySelectorAll('.faq-grupo').forEach(grupo => {
+      let grupoVisible = false;
+      grupo.querySelectorAll('.faq-item').forEach(item => {
+        const texto = item.querySelector('.faq-question-text').textContent.toLowerCase()
+          + ' ' + item.querySelector('.faq-answer p').textContent.toLowerCase();
+        const match = q === '' || texto.includes(q);
+        item.style.display = match ? '' : 'none';
+        if (match) { grupoVisible = true; totalVisible++; }
+      });
+      grupo.classList.toggle('visible', grupoVisible || q === '');
+    });
+
+    document.getElementById('faq-vacio').style.display = (q !== '' && totalVisible === 0) ? 'block' : 'none';
+  });
+</script>
+</body>
+</html>
