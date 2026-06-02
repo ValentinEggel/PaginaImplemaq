@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestor de Clientes Fiscales</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -97,8 +97,12 @@
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
   .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 900px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  }
   @media (max-width: 700px) {
     .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .stats-bar { grid-template-columns: 1fr; }
   }
 
   /* Fields */
@@ -149,7 +153,7 @@
   .alert-info { background: var(--accent-light); color: var(--accent); border: 1px solid #a3bcd4; }
 
   /* Stats bar */
-  .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 1.5rem; }
   .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; box-shadow: var(--shadow); }
   .stat-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
   .stat-val { font-size: 22px; color: var(--text); font-weight: normal; }
@@ -399,13 +403,18 @@
         <div class="stat-label">Otras condiciones</div>
         <div class="stat-val amber" id="st-otros">0</div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">Provincias distintas</div>
+        <div class="stat-val" id="st-provincias">0</div>
+      </div>
     </div>
 
     <!-- Toolbar -->
     <div class="table-wrap">
       <div class="table-toolbar">
-        <input class="search-input" id="search-input" placeholder="🔍  Buscar por nombre, CUIT, localidad..." oninput="renderTabla()" />
-        <select class="filter-select" id="filter-cond" onchange="renderTabla()">
+        <input class="search-input" id="search-input" placeholder="🔍  Buscar por nombre, CUIT, localidad..." oninput="currentPage=1; renderTabla()" />
+
+        <select class="filter-select" id="filter-cond" onchange="currentPage=1; renderTabla()">
           <option value="">Todas las condiciones</option>
           <option>Responsable Inscripto</option>
           <option>Monotributista</option>
@@ -414,13 +423,22 @@
           <option>No Responsable</option>
           <option>Sujeto No Categorizado</option>
         </select>
-        <select class="filter-select" id="filter-prov" onchange="renderTabla()">
+
+        <select class="filter-select" id="filter-prov" onchange="currentPage=1; renderTabla()">
           <option value="">Todas las provincias</option>
-          <option>Buenos Aires</option><option>Córdoba</option><option>Santa Fe</option>
-          <option>CABA</option><option>Mendoza</option><option>Tucumán</option>
-          <option>Entre Ríos</option><option>Corrientes</option><option>Salta</option>
-          <option>Misiones</option>
+          <option>Buenos Aires</option><option>Catamarca</option><option>Chaco</option>
+          <option>Chubut</option><option>Córdoba</option><option>Corrientes</option>
+          <option>Entre Ríos</option><option>Formosa</option><option>Jujuy</option>
+          <option>La Pampa</option><option>La Rioja</option><option>Mendoza</option>
+          <option>Misiones</option><option>Neuquén</option><option>Río Negro</option>
+          <option>Salta</option><option>San Juan</option><option>San Luis</option>
+          <option>Santa Fe</option><option>Santiago del Estero</option>
+          <option>Tierra del Fuego</option><option>Tucumán</option><option>CABA</option>
         </select>
+
+        <input class="search-input" id="filter-localidad" placeholder="🔍 Localidad..." oninput="currentPage=1; renderTabla()" />
+        <input class="search-input" id="filter-rubro" placeholder="🔍 Rubro..." oninput="currentPage=1; renderTabla()" />
+
         <div style="margin-left:auto; display:flex; gap:8px;">
           <button class="btn btn-success btn-sm" onclick="exportarExcel()">⬇ Exportar Excel</button>
           <button class="btn btn-sm" onclick="exportarCSV()">⬇ Exportar CSV</button>
@@ -496,7 +514,7 @@
   </div>
 </div>
 
-<div class="footer">Gestor de Clientes Fiscales · Todos los datos se almacenan localmente en su navegador</div>
+<div class="footer">Gestor de Clientes Fiscales·</div>
 
 <script>
 // ─── Estado ───────────────────────────────────────────────────────────────────
@@ -578,6 +596,8 @@ function actualizarStats() {
   document.getElementById('st-ri').textContent = clientes.filter(c => c.cond === 'Responsable Inscripto').length;
   document.getElementById('st-mo').textContent = clientes.filter(c => c.cond === 'Monotributista').length;
   document.getElementById('st-otros').textContent = clientes.filter(c => !['Responsable Inscripto','Monotributista'].includes(c.cond)).length;
+  const provincias = new Set(clientes.map(c => c.prov).filter(Boolean));
+  document.getElementById('st-provincias').textContent = provincias.size;
 }
 
 // ─── Tabla ────────────────────────────────────────────────────────────────────
@@ -590,11 +610,17 @@ function filtrados() {
   const q = document.getElementById('search-input')?.value.toLowerCase() || '';
   const fc = document.getElementById('filter-cond')?.value || '';
   const fp = document.getElementById('filter-prov')?.value || '';
+  const fl = document.getElementById('filter-localidad')?.value.toLowerCase() || '';
+  const fr = document.getElementById('filter-rubro')?.value.toLowerCase() || '';
+
   return clientes.filter(c => {
-    const match = !q || [c.nombre,c.cuit,c.local,c.email,c.rubro].join(' ').toLowerCase().includes(q);
+    const match = !q || [c.nombre,c.cuit,c.local,c.email,c.rubro,c.prov,c.tel].join(' ').toLowerCase().includes(q);
     const mc = !fc || c.cond === fc;
     const mp = !fp || c.prov === fp;
-    return match && mc && mp;
+    const ml = !fl || (c.local || '').toLowerCase().includes(fl);
+    const mr = !fr || (c.rubro || '').toLowerCase().includes(fr);
+
+    return match && mc && mp && ml && mr;
   }).sort((a,b) => {
     const va = (a[sortCol]||'').toLowerCase(), vb = (b[sortCol]||'').toLowerCase();
     return sortAsc ? va.localeCompare(vb,'es') : vb.localeCompare(va,'es');
@@ -723,63 +749,215 @@ function guardarEdicion() {
 function cerrarModal() { document.getElementById('modal-overlay').classList.remove('open'); }
 
 // ─── Exportar Excel ───────────────────────────────────────────────────────────
-function exportarExcel() {
-  if (!clientes.length) { showAlert('err', 'No hay clientes para exportar.'); return; }
-  const data = clientes.map((c,i) => ({
-    'N°': i+1,
-    'Razón Social / Nombre': c.nombre,
-    'CUIT/CUIL': c.cuit,
-    'Tipo Persona': c.tipo,
-    'Condición Fiscal': c.cond,
-    'Categoría Monotributo': c.mono,
-    'Calle y Número': c.calle,
-    'Piso/Dpto': c.piso,
-    'Localidad': c.local,
-    'Partido/Departamento': c.partido,
-    'Provincia': c.prov,
-    'Código Postal': c.cp,
-    'Teléfono': c.tel,
-    'Teléfono Alt.': c.tel2,
-    'Correo Electrónico': c.email,
-    'Sitio Web': c.web,
-    'Contacto Referente': c.ref,
-    'Actividad / Rubro': c.rubro,
-    'N° Ingresos Brutos': c.iibb,
-    'Fecha de Alta': c.alta,
-    'Observaciones': c.obs,
-    'Fecha de Carga': c.fechaCarga
-  }));
+function contarPor(campo, data) {
+  return data.reduce((acc, c) => {
+    const valor = (c[campo] || `Sin ${campo}`).trim() || `Sin ${campo}`;
+    acc[valor] = (acc[valor] || 0) + 1;
+    return acc;
+  }, {});
+}
 
-  const ws = XLSX.utils.json_to_sheet(data);
-  ws['!cols'] = [
-    {wch:5},{wch:32},{wch:16},{wch:16},{wch:24},{wch:12},
-    {wch:24},{wch:12},{wch:16},{wch:18},{wch:14},{wch:8},
-    {wch:16},{wch:16},{wch:28},{wch:22},{wch:22},{wch:24},
-    {wch:16},{wch:14},{wch:30},{wch:14}
+function tablaConteo(titulo, conteo) {
+  return [
+    [titulo, 'Cantidad'],
+    ...Object.entries(conteo).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0], 'es'))
   ];
+}
 
-  // Estilo encabezado (color azul)
-  const range = XLSX.utils.decode_range(ws['!ref']);
-  for (let C=range.s.c; C<=range.e.c; C++) {
-    const addr = XLSX.utils.encode_cell({r:0, c:C});
-    if (!ws[addr]) continue;
-    ws[addr].s = { font:{bold:true,color:{rgb:'FFFFFF'}}, fill:{fgColor:{rgb:'1D4E8F'}}, alignment:{horizontal:'center'} };
+function aplicarEstiloTabla(ws, desdeFila, hastaFila, hastaCol, headerStyle, cellStyle, altCellStyle) {
+  for (let c=0; c<=hastaCol; c++) {
+    const celda = XLSX.utils.encode_cell({r:desdeFila, c});
+    if (ws[celda]) ws[celda].s = headerStyle;
   }
 
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Clientes');
+  for (let r=desdeFila+1; r<=hastaFila; r++) {
+    for (let c=0; c<=hastaCol; c++) {
+      const celda = XLSX.utils.encode_cell({r, c});
+      if (ws[celda]) ws[celda].s = r % 2 === 0 ? altCellStyle : cellStyle;
+    }
+  }
+}
+
+function exportarExcel() {
+  const clientesExportar = filtrados();
+  if (!clientesExportar.length) { showAlert('err', 'No hay clientes filtrados para exportar.'); return; }
 
   const hoy = new Date();
-  const fecha = `${hoy.getFullYear()}${String(hoy.getMonth()+1).padStart(2,'0')}${String(hoy.getDate()).padStart(2,'0')}`;
-  XLSX.writeFile(wb, `clientes_fiscales_${fecha}.xlsx`);
-  showAlert('ok', `${clientes.length} clientes exportados a Excel.`);
+  const fechaVisible = hoy.toLocaleDateString('es-AR');
+  const horaVisible = hoy.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  const fechaArchivo = `${hoy.getFullYear()}${String(hoy.getMonth()+1).padStart(2,'0')}${String(hoy.getDate()).padStart(2,'0')}`;
+
+  const headers = [
+    'N°','Razón Social / Nombre','CUIT/CUIL','Tipo Persona','Condición Fiscal',
+    'Categoría Monotributo','Calle y Número','Piso/Dpto','Localidad',
+    'Partido/Departamento','Provincia','Código Postal','Teléfono','Teléfono Alt.',
+    'Correo Electrónico','Sitio Web','Contacto Referente','Actividad / Rubro',
+    'N° Ingresos Brutos','Fecha de Alta','Observaciones','Fecha de Carga'
+  ];
+
+  const rows = clientesExportar.map((c,i) => [
+    i + 1, c.nombre || '', c.cuit || '', c.tipo || '', c.cond || '', c.mono || '',
+    c.calle || '', c.piso || '', c.local || '', c.partido || '', c.prov || '', c.cp || '',
+    c.tel || '', c.tel2 || '', c.email || '', c.web || '', c.ref || '', c.rubro || '',
+    c.iibb || '', c.alta || '', c.obs || '', c.fechaCarga || ''
+  ]);
+
+  const titleStyle = {
+    font: { bold: true, sz: 18, color: { rgb: '111111' } },
+    fill: { fgColor: { rgb: 'F5C842' } },
+    alignment: { horizontal: 'center', vertical: 'center' }
+  };
+
+  const subtitleStyle = {
+    font: { bold: true, sz: 12, color: { rgb: '111111' } },
+    fill: { fgColor: { rgb: 'FFF4C2' } },
+    alignment: { horizontal: 'center', vertical: 'center' }
+  };
+
+  const infoStyle = {
+    font: { italic: true, sz: 10, color: { rgb: '6B6560' } },
+    fill: { fgColor: { rgb: 'F9F7F4' } },
+    alignment: { horizontal: 'center', vertical: 'center' }
+  };
+
+  const headerStyle = {
+    font: { bold: true, color: { rgb: '111111' }, sz: 10 },
+    fill: { fgColor: { rgb: 'F5C842' } },
+    alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+    border: {
+      top: { style: 'thin', color: { rgb: '111111' } },
+      bottom: { style: 'thin', color: { rgb: '111111' } }
+    }
+  };
+
+  const cellStyle = {
+    font: { sz: 10, color: { rgb: '1A1814' } },
+    alignment: { vertical: 'top', wrapText: true },
+    border: { bottom: { style: 'thin', color: { rgb: 'E2DDD6' } } }
+  };
+
+  const altCellStyle = {
+    font: { sz: 10, color: { rgb: '1A1814' } },
+    alignment: { vertical: 'top', wrapText: true },
+    fill: { fgColor: { rgb: 'FAF9F6' } },
+    border: { bottom: { style: 'thin', color: { rgb: 'E2DDD6' } } }
+  };
+
+  const numberStyle = {
+    font: { bold: true, sz: 11, color: { rgb: '111111' } },
+    fill: { fgColor: { rgb: 'FFF4C2' } },
+    alignment: { horizontal: 'center', vertical: 'center' },
+    border: { bottom: { style: 'thin', color: { rgb: 'E2DDD6' } } }
+  };
+
+  const clientesSheet = [
+    ['IMPLEMAQ RURAL'],
+    ['Base de Clientes Fiscales'],
+    [`Exportado el ${fechaVisible} a las ${horaVisible} · Registros incluidos: ${clientesExportar.length}`],
+    [],
+    headers,
+    ...rows
+  ];
+
+  const wsClientes = XLSX.utils.aoa_to_sheet(clientesSheet);
+  wsClientes['!merges'] = [
+    { s:{r:0,c:0}, e:{r:0,c:21} },
+    { s:{r:1,c:0}, e:{r:1,c:21} },
+    { s:{r:2,c:0}, e:{r:2,c:21} }
+  ];
+  wsClientes['!cols'] = [
+    {wch:6}, {wch:34}, {wch:16}, {wch:18}, {wch:24}, {wch:16},
+    {wch:26}, {wch:12}, {wch:18}, {wch:22}, {wch:16}, {wch:12},
+    {wch:18}, {wch:18}, {wch:30}, {wch:24}, {wch:24}, {wch:26},
+    {wch:20}, {wch:14}, {wch:40}, {wch:16}
+  ];
+  wsClientes['!freeze'] = { xSplit: 0, ySplit: 5 };
+  wsClientes['!autofilter'] = { ref: `A5:V${rows.length + 5}` };
+  wsClientes['!rows'] = [{hpt:28},{hpt:22},{hpt:20},{hpt:8},{hpt:32}];
+
+  for (let c=0; c<22; c++) {
+    ['0','1','2'].forEach(r => {
+      const cell = XLSX.utils.encode_cell({r:Number(r), c});
+      if (!wsClientes[cell]) wsClientes[cell] = { t:'s', v:'' };
+    });
+    wsClientes[XLSX.utils.encode_cell({r:0,c})].s = titleStyle;
+    wsClientes[XLSX.utils.encode_cell({r:1,c})].s = subtitleStyle;
+    wsClientes[XLSX.utils.encode_cell({r:2,c})].s = infoStyle;
+  }
+  aplicarEstiloTabla(wsClientes, 4, rows.length + 4, 21, headerStyle, cellStyle, altCellStyle);
+
+  const resumenSheet = [
+    ['IMPLEMAQ RURAL'],
+    ['Resumen Ejecutivo'],
+    [`Exportado el ${fechaVisible} a las ${horaVisible}`],
+    [],
+    ['Indicador', 'Valor'],
+    ['Total clientes exportados', clientesExportar.length],
+    ['Responsables Inscriptos', clientesExportar.filter(c => c.cond === 'Responsable Inscripto').length],
+    ['Monotributistas', clientesExportar.filter(c => c.cond === 'Monotributista').length],
+    ['Exentos', clientesExportar.filter(c => c.cond === 'Exento').length],
+    ['Consumidor Final', clientesExportar.filter(c => c.cond === 'Consumidor Final').length],
+    ['Otras condiciones', clientesExportar.filter(c => !['Responsable Inscripto','Monotributista','Exento','Consumidor Final'].includes(c.cond)).length],
+    ['Provincias distintas', new Set(clientesExportar.map(c => c.prov).filter(Boolean)).size],
+    ['Localidades distintas', new Set(clientesExportar.map(c => c.local).filter(Boolean)).size],
+    ['Rubros distintos', new Set(clientesExportar.map(c => c.rubro).filter(Boolean)).size]
+  ];
+
+  const wsResumen = XLSX.utils.aoa_to_sheet(resumenSheet);
+  wsResumen['!cols'] = [{wch:34}, {wch:18}];
+  wsResumen['!merges'] = [
+    { s:{r:0,c:0}, e:{r:0,c:1} },
+    { s:{r:1,c:0}, e:{r:1,c:1} },
+    { s:{r:2,c:0}, e:{r:2,c:1} }
+  ];
+  ['A1','B1'].forEach(cell => { if (!wsResumen[cell]) wsResumen[cell] = {t:'s',v:''}; wsResumen[cell].s = titleStyle; });
+  ['A2','B2'].forEach(cell => { if (!wsResumen[cell]) wsResumen[cell] = {t:'s',v:''}; wsResumen[cell].s = subtitleStyle; });
+  ['A3','B3'].forEach(cell => { if (!wsResumen[cell]) wsResumen[cell] = {t:'s',v:''}; wsResumen[cell].s = infoStyle; });
+  aplicarEstiloTabla(wsResumen, 4, resumenSheet.length - 1, 1, headerStyle, cellStyle, altCellStyle);
+  for (let r=5; r<resumenSheet.length; r++) {
+    const cell = XLSX.utils.encode_cell({r, c:1});
+    if (wsResumen[cell]) wsResumen[cell].s = numberStyle;
+  }
+
+  const crearHojaConteo = (nombreHoja, titulo, campo) => {
+    const data = [
+      ['IMPLEMAQ RURAL'],
+      [titulo],
+      [`Exportado el ${fechaVisible} a las ${horaVisible}`],
+      [],
+      ...tablaConteo(titulo.replace('Clientes por ', ''), contarPor(campo, clientesExportar))
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{wch:34}, {wch:14}];
+    ws['!merges'] = [
+      { s:{r:0,c:0}, e:{r:0,c:1} },
+      { s:{r:1,c:0}, e:{r:1,c:1} },
+      { s:{r:2,c:0}, e:{r:2,c:1} }
+    ];
+    ['A1','B1'].forEach(cell => { if (!ws[cell]) ws[cell] = {t:'s',v:''}; ws[cell].s = titleStyle; });
+    ['A2','B2'].forEach(cell => { if (!ws[cell]) ws[cell] = {t:'s',v:''}; ws[cell].s = subtitleStyle; });
+    ['A3','B3'].forEach(cell => { if (!ws[cell]) ws[cell] = {t:'s',v:''}; ws[cell].s = infoStyle; });
+    aplicarEstiloTabla(ws, 4, data.length - 1, 1, headerStyle, cellStyle, altCellStyle);
+    return ws;
+  };
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, wsClientes, 'Clientes');
+  XLSX.utils.book_append_sheet(wb, wsResumen, 'Resumen Ejecutivo');
+  XLSX.utils.book_append_sheet(wb, crearHojaConteo('Provincias', 'Clientes por Provincia', 'prov'), 'Provincias');
+  XLSX.utils.book_append_sheet(wb, crearHojaConteo('Localidades', 'Clientes por Localidad', 'local'), 'Localidades');
+  XLSX.utils.book_append_sheet(wb, crearHojaConteo('Rubros', 'Clientes por Rubro', 'rubro'), 'Rubros');
+
+  XLSX.writeFile(wb, `clientes_fiscales_implemaq_${fechaArchivo}.xlsx`);
+  showAlert('ok', `${clientesExportar.length} clientes exportados con formato profesional.`);
 }
 
 // ─── Exportar CSV ─────────────────────────────────────────────────────────────
 function exportarCSV() {
-  if (!clientes.length) { showAlert('err', 'No hay clientes para exportar.'); return; }
+  const clientesExportar = filtrados();
+  if (!clientesExportar.length) { showAlert('err', 'No hay clientes filtrados para exportar.'); return; }
   const headers = ['Nombre','CUIT','Condicion','Localidad','Provincia','Telefono','Email','Rubro','Observaciones'];
-  const rows = clientes.map(c => [c.nombre,c.cuit,c.cond,c.local,c.prov,c.tel,c.email,c.rubro,c.obs]
+  const rows = clientesExportar.map(c => [c.nombre,c.cuit,c.cond,c.local,c.prov,c.tel,c.email,c.rubro,c.obs]
     .map(v => `"${(v||'').replace(/"/g,'""')}"`).join(','));
   const csv = [headers.join(','), ...rows].join('\n');
   const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
@@ -852,11 +1030,12 @@ function mostrarPreview() {
 }
 
 function confirmarImport() {
+  const cantidadImportada = importBuffer.length;
   clientes.push(...importBuffer);
   guardar(); importBuffer = [];
   document.getElementById('import-preview').style.display = 'none';
   document.getElementById('file-input').value = '';
-  showAlert('ok', `${importBuffer.length || clientes.length} clientes importados. Revisá la base de clientes.`);
+  showAlert('ok', `${cantidadImportada} clientes importados. Revisá la base de clientes.`);
   showTab('tab-base');
 }
 

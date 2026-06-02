@@ -258,14 +258,16 @@
         <div class="fgr"><label>Ubicación</label><input type="text" id="fu" value="Susana, Santa Fe"></div>
 
         <div class="fsec">Descripción</div>
-        <div class="fgr full"><label>Descripción general</label><textarea id="fd" placeholder="Descripción del producto..."></textarea></div>
-        <div class="fgr full"><label>Características técnicas (una por línea)</label><textarea id="fcar" placeholder="Motor: 90 HP&#10;Horas de uso: 1200&#10;Tracción: 4x4"></textarea></div>
+        <div class="fgr full">
+          <label>Descripción / Especificación técnica</label>
+          <textarea id="fd" placeholder="Descripción completa del producto, características técnicas, estado, medidas, potencia, accesorios, etc." style="min-height:220px;"></textarea>
+        </div>
 
         <div class="fsec">Fotos</div>
         <div class="fgr full">
           <label>URLs de fotos (una por línea)</label>
           <textarea id="ffo" placeholder="https://...&#10;https://..." style="min-height:80px;"></textarea>
-          <small style="color:#aaa;font-size:12px;margin-top:4px;">Podés usar links de Google Drive, Imgur o cualquier imagen pública</small>
+          <small style="color:#aaa;font-size:12px;margin-top:4px;">Podés usar links de imágenes públicas, Google Drive, Imgur, Postimages, Mercado Libre o archivos alojados en el proyecto.</small>
         </div>
 
         <div class="fgr full"><label>Visibilidad</label>
@@ -484,6 +486,7 @@ window.filterEstado = (cat, v) => {
   document.getElementById('tb-' + cat).innerHTML = renderTabla(ps, cat);
 };
 
+
 window.openModal = (id, cat) => {
   editId = id;
   document.getElementById('fc').value = catValueFromKey(cat || 'maquinaria');
@@ -510,13 +513,14 @@ window.openModal = (id, cat) => {
     document.getElementById('fmon').value = val(p,'Moneda','moneda') || 'ARS';
     document.getElementById('fmp').value = (!precio || precio === 'Consultar') ? 'no' : 'si';
     document.getElementById('fu').value = val(p,'Ubicación','ubicacion') || 'Susana, Santa Fe';
-    document.getElementById('fd').value = val(p,'Descripción','descripcion') || '';
-    document.getElementById('fcar').value = (val(p,'Características','caracteristicas') || []).join('\n');
+    const descripcionActual = val(p,'Descripción','descripcion') || '';
+    const caracteristicasActuales = Array.isArray(val(p,'Características','caracteristicas')) ? val(p,'Características','caracteristicas') : [];
+    document.getElementById('fd').value = descripcionActual + (caracteristicasActuales.length ? '\n\nEspecificación técnica:\n' + caracteristicasActuales.join('\n') : '');
     document.getElementById('ffo').value = fotos.join('\n');
     document.getElementById('fes').value = !activo ? 'inactivo' : destacado ? 'destacado' : 'activo';
   } else {
     document.getElementById('mt').textContent = 'Nuevo Producto';
-    ['fn','fsc','fa','fm','fmo','fp','fd','fcar','ffo'].forEach(i => document.getElementById(i).value = '');
+    ['fn','fsc','fa','fm','fmo','fp','fd','ffo'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('fco').value = 'Nuevo';
     document.getElementById('fmon').value = 'ARS';
     document.getElementById('fmp').value = 'no';
@@ -536,7 +540,6 @@ window.saveProd = async () => {
   if (!nombre) { toast('El nombre es obligatorio', true); return; }
 
   const fotos = document.getElementById('ffo').value.trim().split('\n').map(f => f.trim()).filter(Boolean);
-  const carac = document.getElementById('fcar').value.trim().split('\n').map(c => c.trim()).filter(Boolean);
   const visibilidad = document.getElementById('fes').value;
   const mostrarPrecio = document.getElementById('fmp').value;
   const precioInput = document.getElementById('fp').value.trim();
@@ -556,7 +559,6 @@ window.saveProd = async () => {
     MostrarPrecio: mostrarPrecio,
     Ubicación: document.getElementById('fu').value.trim(),
     Descripción: document.getElementById('fd').value.trim(),
-    Características: carac,
     Imagen: fotos[0] || '',
     Imagenes: fotos,
     Activo: visibilidad !== 'inactivo',
@@ -613,7 +615,6 @@ function badge(cat) {
   const key = catKeyFromValue(cat);
   const m = {
     maquinaria: ['bm','Maquinaria'],
-    maquinaria: ['bi','Maquinaria'],
     implementos: ['bi','Implementos'],
     repuestos: ['br','Repuestos'],
     insumos: ['bh','Insumos']

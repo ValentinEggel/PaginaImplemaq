@@ -1376,3 +1376,69 @@
   text-decoration: none;
   display: block;
 }
+
+/* ===== AJUSTE HERO IMPLEMAQ ===== */
+
+.hero-copy h1 {
+  font-size: clamp(80px, 9vw, 140px);
+  line-height: 0.88;
+}
+
+.hero-copy .accent {
+  margin-top: 6px;
+}
+
+.hero-sub {
+  max-width: 620px;
+  font-size: 22px;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+.hero-side {
+  justify-content: center;
+}
+
+.hero-stats {
+  padding: 34px 42px;
+  gap: 42px;
+  min-width: 420px;
+}
+
+.stat-num {
+  font-size: 58px;
+}
+
+.stat-label {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.hero-content {
+  gap: 90px;
+}
+
+.cta-banda{
+  text-align:center;
+}
+
+.marcas-repuestos-cta{
+  max-width:850px;
+  margin:0 auto 35px;
+}
+
+.marcas-repuestos-cta img{
+  width:100%;
+  height:auto;
+  display:block;
+  border-radius:8px;
+}
+
+.cta-banda h2{
+  margin-bottom:15px;
+}
+
+.cta-banda p{
+  max-width:700px;
+  margin:0 auto 25px;
+}
