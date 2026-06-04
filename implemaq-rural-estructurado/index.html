@@ -8,6 +8,106 @@
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+.menu-toggle{
+  display:none;
+}
+
+@media (max-width:900px){
+  header{
+    height:85px;
+    padding:0 16px;
+  }
+
+  .logo-area img{
+    height:72px !important;
+    width:auto;
+  }
+
+  .menu-toggle{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    width:44px;
+    height:44px;
+    border:1.5px solid rgba(255,255,255,.22);
+    border-radius:8px;
+    background:rgba(255,255,255,.06);
+    cursor:pointer;
+    z-index:1201;
+  }
+
+  .menu-toggle span{
+    width:26px;
+    height:2px;
+    background:var(--amarillo);
+    border-radius:999px;
+    transition:.25s;
+  }
+
+  .menu-toggle.open span:nth-child(1){
+    transform:translateY(8px) rotate(45deg);
+  }
+
+  .menu-toggle.open span:nth-child(2){
+    opacity:0;
+  }
+
+  .menu-toggle.open span:nth-child(3){
+    transform:translateY(-8px) rotate(-45deg);
+  }
+
+  header nav{
+    position:fixed;
+    top:85px;
+    left:0;
+    right:0;
+    display:flex !important;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    background:rgba(17,17,17,.98);
+    border-bottom:2px solid var(--amarillo);
+    padding:12px 16px 18px;
+    transform:translateY(-120%);
+    opacity:0;
+    pointer-events:none;
+    transition:transform .25s ease, opacity .25s ease;
+    z-index:1200;
+  }
+
+  header nav.open{
+    transform:translateY(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  header nav a{
+    width:100%;
+    padding:14px 10px;
+    font-size:14px;
+    border-radius:6px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+
+  header nav a:last-child{
+    border-bottom:none;
+  }
+
+  header nav .btn-contacto-nav{
+    margin-top:8px;
+    text-align:center;
+  }
+
+  body.menu-open{
+    overflow:hidden;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -16,7 +116,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <a href="#inicio" class="logo-area">
     <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 120px; width: auto;">
   </a>
-  <nav>
+
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <nav id="main-nav">
     <a href="#nosotros">Nosotros</a>
     <a href="#productos">Productos</a>
     <a href="#repuestos">Repuestos</a>
@@ -63,7 +170,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         </div>
         <div class="stat-item">
           <div class="stat-num">Todas</div>
-          <div class="stat-label">Marcas con repuestos</div>
+          <div class="stat-label">Las marcas de repuestos</div>
         </div>
       </div>
     </div>
@@ -412,6 +519,11 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         <i class="fa-solid fa-tractor"></i>
         Agroads
       </a>
+
+      <a href="https://www.mercadolibre.com.ar/pagina/impremaqrural" target="_blank" rel="noopener noreferrer">
+        <i class="fa-solid fa-store"></i>
+        Mercado Libre
+      </a>
     </div>
 
     <div class="redes-img">
@@ -424,83 +536,84 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <div class="reveal">
     <div class="section-tag">Estamos cerca</div>
     <h2 class="section-title">Ponete en <span class="hl">contacto</span></h2>
+
     <div class="contacto-grid">
       <div class="contacto-info">
+
         <div class="contacto-dato">
           <div class="dato-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="dato-text">
             <span>Dirección</span>
             <p>Corrientes 152, S2301<br>Susana, Santa Fe</p>
           </div>
         </div>
+
         <div class="contacto-dato">
           <div class="dato-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="dato-text">
             <span>Teléfono</span>
             <a href="tel:03492-15508683">03492-15508683</a>
           </div>
         </div>
+
         <div class="contacto-dato">
           <div class="dato-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="dato-text">
             <span>WhatsApp</span>
             <a href="https://wa.me/543492508683" target="_blank" rel="noopener noreferrer">+54 9 3492 508683</a>
           </div>
         </div>
+
         <div class="contacto-dato">
           <div class="dato-icon">
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-linecap="round" stroke-linejoin="round"/><polyline points="22,6 12,13 2,6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="22,6 12,13 2,6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
           </div>
           <div class="dato-text">
             <span>Email</span>
             <a href="mailto:GUSTAVODANIELDESUQUE@GMAIL.COM">GUSTAVODANIELDESUQUE@GMAIL.COM</a>
           </div>
         </div>
-        <div style="margin-top: 8px;">
-          <div style="font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color: var(--texto-suave); margin-bottom:12px;">Seguinos en redes</div>
-          <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            <a href="https://www.facebook.com/implemaqruralrafaela/" target="_blank" class="btn-primary" style="font-size:13px; padding:9px 18px; gap:7px; border-radius:5px;" rel="noopener noreferrer">
-              Facebook
-            </a>
-            <a href="https://www.agroads.com.ar/e/implemaq/?subcat=440" target="_blank" class="btn-primary" style="font-size:13px; padding:9px 18px; gap:7px; border-radius:5px;" rel="noopener noreferrer">
-              Agroads
-            </a>
-            <a href="https://www.youtube.com/@GustavoDesuque-s2q" target="_blank" class="btn-primary" style="font-size:13px; padding:9px 18px; gap:7px; border-radius:5px;" rel="noopener noreferrer">
-              YouTube
-            </a>
-            <a href="https://www.instagram.com/implemaq/" target="_blank" class="btn-primary" style="font-size:13px; padding:9px 18px; gap:7px; border-radius:5px;" rel="noopener noreferrer">
-              Instagram
-            </a>
-            <a href="https://www.mercadolibre.com.ar/pagina/impremaqrural" target="_blank" class="btn-primary" style="font-size:13px; padding:9px 18px; background:var(--amarillo); border-radius:5px;" rel="noopener noreferrer">
-              Mercado Libre
-            </a>
-          </div>
-        </div>
+
       </div>
+
       <div class="contacto-form">
         <h3>Envianos tu consulta</h3>
+
         <div class="form-row">
           <div class="form-group">
             <label for="nombre">Nombre</label>
             <input type="text" id="nombre" placeholder="Tu nombre">
           </div>
+
           <div class="form-group">
             <label for="tel">Teléfono</label>
             <input type="tel" id="tel" placeholder="Tu teléfono">
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group full">
             <label for="email">Email</label>
             <input type="email" id="email" placeholder="tucorreo@ejemplo.com">
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group full">
             <label for="asunto">Asunto</label>
@@ -515,12 +628,14 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             </select>
           </div>
         </div>
+
         <div class="form-row">
           <div class="form-group full">
             <label for="mensaje">Mensaje</label>
             <textarea id="mensaje" placeholder="Contanos qué necesitás..."></textarea>
           </div>
         </div>
+
         <button class="btn-enviar" onclick="enviarFormulario()">Enviar consulta</button>
       </div>
     </div>
@@ -564,6 +679,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     <span>© 2026 IMPLEMAQ RURAL. Todos los derechos reservados.</span>
     <span>Mandarina Software</span>
   </div>
+  <a href="admin.html" class="admin-link">
+  ADM
+</a>
 </footer>
 
 <!-- WHATSAPP FLOAT -->
@@ -572,5 +690,27 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 </a>
   <script src="js/script.js"></script>
   <script type="module" src="js/catalogo.js"></script>
+
+<script>
+const menuToggle = document.getElementById('menu-toggle');
+const mainNav = document.getElementById('main-nav');
+
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('open');
+    mainNav.classList.toggle('open');
+    document.body.classList.toggle('menu-open');
+  });
+
+  mainNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      menuToggle.classList.remove('open');
+      mainNav.classList.remove('open');
+      document.body.classList.remove('menu-open');
+    });
+  });
+}
+</script>
+
 </body>
 </html>

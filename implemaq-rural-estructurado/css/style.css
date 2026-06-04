@@ -1443,7 +1443,6 @@
   margin:0 auto 25px;
 }
 
-/* ─── REDES SOCIALES ─── */
 .redes-section {
   background: var(--gris-claro);
   padding: 90px 5vw;
@@ -1464,61 +1463,32 @@
   gap: 14px;
 }
 
-.redes-desc {
-  color: #666;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
 .redes-links a {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: #111;
-  color: #fff;
+  background: var(--gris-oscuro);
+  color: white;
   text-decoration: none;
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 24px;
   font-weight: 800;
   text-transform: uppercase;
-  padding: 18px 24px;
+  padding: 18px 26px;
   border-radius: 8px;
   border-left: 6px solid var(--amarillo);
-  transition: all .25s;
-}
-
-.redes-links a i {
-  width: 28px;
-  text-align: center;
-  color: var(--amarillo);
-  font-size: 22px;
+  transition: all .2s;
 }
 
 .redes-links a:hover {
   background: var(--amarillo);
-  color: #111;
-  transform: translateX(10px);
-  box-shadow: 0 10px 25px rgba(0,0,0,.15);
-}
-
-.redes-links a:hover i {
-  color: #111;
-}
-
-.redes-img {
-  background: transparent;
-  padding: 0;
-  border: none;
+  color: var(--gris-oscuro);
+  transform: translateX(8px);
 }
 
 .redes-img img {
   width: 100%;
   max-width: 900px;
-  height: auto;
   display: block;
   margin-left: auto;
-  border-radius: 0;
-  box-shadow: none;
+  border-radius: 18px;
 }
 
 @media (max-width: 800px) {
@@ -1529,4 +1499,697 @@
   .redes-img img {
     margin: 0 auto;
   }
+}
+
+.redes-desc{
+  color:#666;
+  margin-bottom:20px;
+  line-height:1.6;
+}
+
+.redes-links a{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  background:#111;
+  color:#fff;
+
+  text-decoration:none;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:24px;
+  font-weight:700;
+
+  padding:18px 24px;
+  border-radius:8px;
+
+  transition:.25s;
+}
+
+.redes-links a i{
+  width:28px;
+  text-align:center;
+  color:#F5C842;
+  font-size:22px;
+}
+
+.redes-links a:hover{
+  transform:translateX(8px);
+  background:#F5C842;
+  color:#111;
+}
+
+.redes-links a:hover i{
+  color:#111;
+}
+
+.redes-links a:hover{
+    transform: translateX(10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,.15);
+}
+.redes-img{
+    background:none;
+    padding:0;
+    border:none;
+}
+
+/* ─── RESPONSIVE FINAL MOBILE ─── */
+@media (max-width: 768px) {
+  header {
+    height: 85px;
+    padding: 0 12px;
+  }
+
+  .logo-area img {
+    height: 70px !important;
+    width: auto;
+  }
+
+  nav {
+    display: none;
+  }
+
+  section {
+    padding: 60px 20px;
+  }
+
+  #inicio {
+    min-height: auto;
+    padding: 130px 20px 70px;
+    align-items: flex-start;
+  }
+
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .hero-copy h1 {
+    font-size: 58px;
+    line-height: .9;
+  }
+
+  .hero-sub {
+    max-width: 100%;
+    font-size: 17px;
+    line-height: 1.6;
+    text-align: left;
+    margin: 22px 0 28px;
+  }
+
+  .hero-ctas {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    justify-content: center;
+    width: 100%;
+    padding: 14px 20px;
+  }
+
+  .hero-side {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .hero-stats {
+    width: 100%;
+    min-width: 0;
+    padding: 24px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .hero-stats .stat-item:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.20);
+    padding-right: 0;
+    padding-bottom: 14px;
+    width: 100%;
+  }
+
+  .stat-num {
+    font-size: 38px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+  }
+
+  .productos-header,
+  .relacionados-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .categorias-grid,
+  .dest-grid,
+  .servicios-grid,
+  .videos-grid,
+  .mant-grid,
+  .footer-grid,
+  .repuestos-info {
+    grid-template-columns: 1fr;
+  }
+
+  .nosotros-grid,
+  .contacto-grid {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .nosotros-img {
+    aspect-ratio: auto;
+  }
+
+  .nosotros-img iframe {
+    height: 340px;
+  }
+
+  .info-widget {
+    grid-template-columns: 1fr;
+  }
+
+  .contacto-form {
+    padding: 24px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .redes-content {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+
+  .redes-links a {
+    font-size: 18px;
+    padding: 14px 18px;
+  }
+
+  .redes-img img {
+    max-width: 360px;
+    margin: 0 auto;
+  }
+
+  .marcas-repuestos-cta {
+    max-width: 100%;
+    margin-bottom: 28px;
+  }
+
+  .cta-banda {
+    padding: 55px 20px;
+  }
+
+  .cta-banda h2 {
+    font-size: 38px;
+  }
+
+  .repuestos-carousel .dest-card-link {
+    flex-basis: 240px;
+  }
+
+  .carousel-btn {
+    display: none;
+  }
+
+  .wa-float {
+    width: 52px;
+    height: 52px;
+    right: 18px;
+    bottom: 18px;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-copy h1 {
+    font-size: 50px;
+  }
+
+  .section-title {
+    font-size: 34px;
+  }
+
+  .redes-img img {
+    max-width: 310px;
+  }
+
+  .contacto-dato {
+    padding: 16px;
+  }
+
+  .dato-text a,
+  .dato-text p {
+    font-size: 16px;
+    word-break: break-word;
+  }
+}
+
+/* ─── MENU HAMBURGUESA MOBILE ─── */
+.menu-toggle {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  header {
+    height: 85px;
+    padding: 0 16px;
+  }
+
+  .logo-area img {
+    height: 72px !important;
+    width: auto;
+  }
+
+  .menu-toggle {
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.06);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 1201;
+  }
+
+  .menu-toggle span {
+    width: 24px;
+    height: 2px;
+    background: var(--amarillo);
+    border-radius: 99px;
+    transition: all .25s ease;
+  }
+
+  .menu-toggle.open span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .menu-toggle.open span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.open span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+
+  header nav {
+    position: fixed;
+    top: 85px;
+    left: 0;
+    right: 0;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: rgba(17,17,17,.98);
+    border-bottom: 2px solid var(--amarillo);
+    padding: 12px 16px 18px;
+    transform: translateY(-120%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .25s ease, opacity .25s ease;
+    z-index: 1200;
+  }
+
+  header nav.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  header nav a {
+    width: 100%;
+    padding: 14px 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  header nav a:last-child {
+    border-bottom: none;
+  }
+
+  header nav .btn-contacto-nav {
+    margin-top: 8px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+}
+
+@media (min-width: 901px) {
+  header nav {
+    display: flex !important;
+  }
+}
+
+/* ─── AJUSTE VISUAL 90 POR CIENTO ─── */
+@media (min-width: 901px) {
+  header {
+    height: 96px;
+    padding: 0 2rem;
+  }
+
+  .logo-area img {
+    height: 96px !important;
+    width: auto;
+  }
+
+  nav a {
+    font-size: 12px;
+    padding: 6px 11px;
+  }
+
+  .btn-contacto-nav {
+    padding: 7px 16px !important;
+  }
+
+  section {
+    padding: 76px 5vw;
+  }
+
+  #inicio {
+    padding-top: 96px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(68px, 7.5vw, 118px);
+    line-height: .88;
+  }
+
+  .hero-sub {
+    font-size: 19px;
+    line-height: 1.65;
+    max-width: 590px;
+  }
+
+  .hero-content {
+    gap: 70px;
+  }
+
+  .hero-stats {
+    padding: 26px 34px;
+    gap: 32px;
+    min-width: 360px;
+  }
+
+  .stat-num {
+    font-size: 48px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+  }
+
+  .section-title {
+    font-size: clamp(34px, 4vw, 50px);
+  }
+
+  .productos-header {
+    margin-bottom: 38px;
+  }
+
+  .categorias-grid,
+  .dest-grid,
+  .servicios-grid,
+  .videos-grid,
+  .mant-grid {
+    gap: 20px;
+  }
+
+  .dest-grid {
+    margin-top: 38px;
+  }
+
+  .servicios-grid,
+  .videos-grid,
+  .mant-grid {
+    margin-top: 36px;
+  }
+
+  .cat-body {
+    padding: 18px 20px 22px;
+  }
+
+  .cat-body h3 {
+    font-size: 20px;
+  }
+
+  .dest-body h4,
+  .serv-card h3 {
+    font-size: 18px;
+  }
+
+  .mant-card {
+    padding: 22px;
+  }
+
+  .mant-card h3 {
+    font-size: 22px;
+  }
+
+  .contacto-grid {
+    gap: 46px;
+    margin-top: 40px;
+  }
+
+  .contacto-form {
+    padding: 30px;
+  }
+
+  footer {
+    padding-top: 42px;
+  }
+}
+
+/* Producto.html y FAQ: mejora global si usan el mismo style.css */
+@media (min-width: 901px) {
+  .prod-layout {
+    padding-top: 24px;
+    padding-bottom: 48px;
+  }
+
+  .prod-titulo {
+    font-size: clamp(26px, 3vw, 40px);
+  }
+
+  .precio-valor {
+    font-size: 36px;
+  }
+
+  .prod-descripcion {
+    padding-top: 34px;
+    padding-bottom: 34px;
+  }
+
+  .relacionados {
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .faq-hero,
+  .faq-section {
+    padding-top: 72px;
+    padding-bottom: 72px;
+  }
+}
+
+/* Ajuste móvil conservador */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  header {
+    height: 84px;
+  }
+
+  .logo-area img {
+    height: 70px !important;
+  }
+
+  section {
+    padding: 54px 20px;
+  }
+
+  #inicio {
+    padding-top: 120px;
+  }
+
+  .hero-copy h1 {
+    font-size: 52px;
+  }
+
+  .hero-sub {
+    font-size: 16px;
+  }
+
+  .section-title {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .categorias-grid,
+  .dest-grid,
+  .videos-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 18px;
+  }
+
+  .categorias-grid .cat-card,
+  .dest-grid .dest-card-link,
+  .videos-grid .video-card {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+
+  .categorias-grid::-webkit-scrollbar,
+  .dest-grid::-webkit-scrollbar,
+  .videos-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .categorias-grid::-webkit-scrollbar-thumb,
+  .dest-grid::-webkit-scrollbar-thumb,
+  .videos-grid::-webkit-scrollbar-thumb {
+    background: var(--amarillo);
+    border-radius: 20px;
+  }
+}
+
+/* ─── CORRECCIONES FINALES REDES Y MOBILE ─── */
+.redes-section {
+  background: var(--gris-claro);
+}
+
+.redes-content {
+  grid-template-columns: 360px 1fr;
+  gap: 56px;
+}
+
+.redes-img {
+  background: transparent !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.redes-img img {
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,.16));
+  background: transparent !important;
+}
+
+.redes-links a {
+  min-height: 56px;
+}
+
+@media (max-width: 768px) {
+  .categorias-grid,
+  .dest-grid,
+  .videos-grid {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 16px;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 18px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .categorias-grid .cat-card,
+  .dest-grid .dest-card-link,
+  .dest-grid .dest-card,
+  .videos-grid .video-card {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+
+  .dest-grid .dest-card-link .dest-card {
+    height: 100%;
+  }
+
+  .categorias-grid::-webkit-scrollbar,
+  .dest-grid::-webkit-scrollbar,
+  .videos-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .categorias-grid::-webkit-scrollbar-thumb,
+  .dest-grid::-webkit-scrollbar-thumb,
+  .videos-grid::-webkit-scrollbar-thumb {
+    background: var(--amarillo);
+    border-radius: 20px;
+  }
+
+  .redes-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .redes-img {
+    justify-content: center;
+  }
+
+  .redes-img img {
+    max-width: 360px;
+    filter: drop-shadow(0 12px 22px rgba(0,0,0,.14));
+  }
+}
+
+@media (max-width: 420px) {
+  .categorias-grid .cat-card,
+  .dest-grid .dest-card-link,
+  .dest-grid .dest-card,
+  .videos-grid .video-card {
+    flex-basis: 88%;
+  }
+
+  .redes-img img {
+    max-width: 315px;
+  }
+}
+.admin-link{
+  font-size:12px;
+  opacity:.4;
+  color:#999;
+}
+
+.admin-link:hover{
+  opacity:1;
 }
