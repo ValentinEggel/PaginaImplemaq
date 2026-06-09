@@ -282,14 +282,17 @@
   <a href="index.html" class="logo-area">
     <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 90px; width: auto;">
   </a>
-  <nav>
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <nav id="main-nav">
     <a href="index.html#nosotros">Nosotros</a>
     <a href="catalogo.html">Catálogo</a>
     <a href="index.html#repuestos">Repuestos</a>
-    <a href="index.html#servicios">Atención</a>
-    <a href="index.html#contacto" class="btn-contacto-nav">Contacto</a>
     <a href="faq.html">Preguntas Frecuentes</a>
-
+    <a href="index.html#contacto" class="btn-contacto-nav">Contacto</a>
   </nav>
 </header>
 
@@ -658,6 +661,27 @@
 
     document.getElementById('faq-vacio').style.display = (q !== '' && totalVisible === 0) ? 'block' : 'none';
   });
+
+
+  const menuToggle = document.getElementById("menu-toggle");
+  const mainNav = document.getElementById("main-nav");
+
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener("click", () => {
+      menuToggle.classList.toggle("open");
+      mainNav.classList.toggle("open");
+      document.body.classList.toggle("menu-open");
+    });
+
+    mainNav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        menuToggle.classList.remove("open");
+        mainNav.classList.remove("open");
+        document.body.classList.remove("menu-open");
+      });
+    });
+  }
+</script>
 </script>
 </body>
 </html>

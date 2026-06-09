@@ -2193,3 +2193,163 @@
 .admin-link:hover{
   opacity:1;
 }
+
+.repuestos-carousel .dest-card {
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.repuestos-carousel .dest-img {
+  height: 180px;
+  flex-shrink: 0;
+}
+
+.repuestos-carousel .dest-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.repuestos-carousel .dest-body h4 {
+  min-height: 55px;
+  overflow: hidden;
+}
+
+.repuestos-carousel .dest-body p {
+  min-height: 90px;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+.repuestos-carousel .cat-link {
+  margin-top: auto;
+}
+
+@media (max-width: 600px) {
+  .faq-hero {
+    padding: 120px 20px 44px;
+  }
+
+  .faq-search-wrap {
+    top: 84px;
+    padding: 14px 20px;
+  }
+
+  #faq-layout {
+    display: block !important;
+  }
+
+  .faq-sidebar {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+
+  .faq-cat-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+
+  .faq-question {
+    padding: 16px;
+  }
+
+  .faq-question-text {
+    font-size: 14px;
+  }
+
+  .faq-answer p {
+    font-size: 13px;
+  }
+  
+.login-logo{
+  width:110px;
+  height:110px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 18px;
+  border-radius:10px;
+}
+}
+
+
+/* ─── CORRECCIÓN FINAL: LIMITAR TEXTOS EN CARDS DEL CATÁLOGO ─── */
+.prod-card {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.prod-body {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.prod-body h3 {
+  display: -webkit-box !important;
+  line-clamp: 2;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  min-height: 42px !important;
+}
+
+.prod-body p {
+  display: -webkit-box !important;
+  line-clamp: 4;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  min-height: 74px !important;
+  max-height: 74px !important;
+  text-align: justify !important;
+}
+
+.prod-footer {
+  margin-top: auto !important;
+}
+
+/* ─── CORRECCIÓN FINAL: LIMITAR TEXTOS EN CARDS DINÁMICAS / REPUESTOS ─── */
+.dest-card {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dest-body {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.dest-body h4 {
+  display: -webkit-box !important;
+  line-clamp: 2;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.dest-body p {
+  display: -webkit-box !important;
+  line-clamp: 4;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-align: justify !important;
+}
+
+.dest-body .cat-link {
+  margin-top: auto !important;
+}
+
+.desc-texto{
+    text-align: justify;
+    line-height: 1.8;
+    color: var(--texto);
+}

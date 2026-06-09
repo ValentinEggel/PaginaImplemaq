@@ -59,7 +59,16 @@ const obtenerPrecio = (producto) => {
 const crearCardProducto = (producto, id) => {
   const nombre = producto.Nombre || producto.nombre || "Producto sin nombre";
   const marca = producto.Marca || producto.marca || "";
-  const descripcion = producto.Descripción || producto.Descripcion || producto.descripcion || "";
+  const descripcionCompleta =
+  producto.Descripción ||
+  producto.Descripcion ||
+  producto.descripcion ||
+  "";
+
+const descripcion =
+  descripcionCompleta.length > 90
+    ? descripcionCompleta.substring(0, 90) + "..."
+    : descripcionCompleta;
   const imagen = obtenerImagen(producto);
 
   return `
@@ -73,6 +82,9 @@ const crearCardProducto = (producto, id) => {
           <span class="dest-tag">${marca || "IMPLEMAQ"}</span>
           <h4>${nombre}</h4>
           <p>${descripcion}</p>
+          <span class="cat-link">
+            Ver más
+          </span>   
         </div>
       </div>
     </a>
@@ -118,10 +130,18 @@ async function cargarCarruselRepuestos(productos) {
 
   if (!contenedor) return;
 
-  const repuestos = productos.filter((producto) => {
-    const categoria = normalizar(producto.Categoría || producto.Categoria || producto.categoria);
+const repuestos = productos
+  .filter((producto) => {
+    const categoria = normalizar(
+      producto.Categoría ||
+      producto.Categoria ||
+      producto.categoria
+    );
+
     return categoria.includes("repuesto");
-  });
+  })
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 15);
 
   if (repuestos.length === 0) {
     contenedor.innerHTML = `

@@ -28,6 +28,12 @@
   .btn-li{width:100%;padding:13px;background:var(--am);color:var(--ng);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .2s;}
   .btn-li:hover{background:var(--am2);}
   #lerr{color:#ff6b6b;font-size:13px;margin-top:10px;display:none;}
+  .login-logo{
+  width:100px;
+  height:auto;
+  display:block;
+  margin:0 auto 20px;
+}
 
   /* ADMIN */
   #as{display:none;}
@@ -142,7 +148,7 @@
 <!-- LOGIN -->
 <div id="ls">
   <div class="lb">
-    <div class="ll">IMP<br>LEMAQ</div>
+    <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" class="login-logo">
     <h2>Panel de Administración</h2>
     <p>Ingresá con tu cuenta de administrador</p>
     <input type="email" id="le" placeholder="Email" autocomplete="email">
@@ -606,9 +612,22 @@ window.closeCo = () => { document.getElementById('co').classList.remove('open');
 function fmtP(p) {
   const precio = val(p,'Precio','precio');
   const mostrar = val(p,'MostrarPrecio','mostrarPrecio');
-  if (mostrar === 'no' || !precio || precio === 'Consultar') return 'Consultar';
+  if (mostrar === 'no' || !precio || precio === 'Consultar') {
+    return 'Consultar';
+  }
   const moneda = val(p,'Moneda','moneda') || 'ARS';
-  return (moneda === 'USD' ? 'U$S ' : '$ ') + Number(precio).toLocaleString('es-AR');
+
+  const numero = Number(
+    String(precio)
+      .replace(/[^\d]/g, '')
+  );
+
+  if (isNaN(numero)) {
+    return String(precio);
+  }
+
+  return (moneda === 'USD' ? 'U$S ' : '$ ') +
+         numero.toLocaleString('es-AR');
 }
 
 function badge(cat) {

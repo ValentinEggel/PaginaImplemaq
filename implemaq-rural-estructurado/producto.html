@@ -308,6 +308,22 @@
     gap: 20px;
   }
 
+
+  .rel-grid .cat-card {
+    min-height: 100%;
+  }
+
+  .rel-grid .cat-body h3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .rel-grid .cat-body p {
+    min-height: 22px;
+  }
+
   /* ── LIGHTBOX ── */
   .lightbox {
     display: none; position: fixed; inset: 0;
@@ -336,6 +352,17 @@
   @media (max-width: 600px) {
     .rel-grid { grid-template-columns: 1fr 1fr; }
   }
+  .rel-grid .cat-body p {
+  display: inline-block;
+  background: #111;
+  color: var(--am);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
 </style>
 </head>
 <body>
@@ -345,7 +372,14 @@
   <a href="index.html" class="logo-area">
     <img src="src/logo.jpg" alt="IMPLEMAQ RURAL" style="height: 90px; width: auto;">
   </a>
-  <nav>
+
+  <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Abrir menú">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <nav id="main-nav">
     <a href="index.html#nosotros">Nosotros</a>
     <a href="catalogo.html">Catálogo</a>
     <a href="index.html#repuestos">Repuestos</a>
@@ -627,19 +661,46 @@ const precioNota = document.getElementById('precio-nota');
 
 const moneda = p.Moneda || p.moneda || "ARS";
 
-if (!precio || precio === 'Consultar') {
+const normalizarPrecio = valor => {
+  if (!valor) return null;
 
+  if (typeof valor === "number") {
+    return Number.isFinite(valor) && valor > 0 ? valor : null;
+  }
+
+  const texto = String(valor).trim().toLowerCase();
+
+  if (
+    !texto ||
+    texto.includes("consultar") ||
+    texto.includes("a consultar") ||
+    texto.includes("nan")
+  ) {
+    return null;
+  }
+
+  const soloNumeros = texto.replace(/[^0-9]/g, "");
+
+  if (!soloNumeros) return null;
+
+  const numero = Number(soloNumeros);
+
+  return Number.isFinite(numero) && numero > 0 ? numero : null;
+};
+
+const precioNormalizado = normalizarPrecio(precio);
+
+if (!precioNormalizado) {
   precioEl.textContent = 'Consultar precio';
   precioEl.classList.add('consultar');
-
   precioNota.textContent = 'Precio a consultar';
-
 } else {
+  precioEl.classList.remove('consultar');
 
   precioEl.textContent =
     moneda === "USD"
-      ? 'U$S ' + Number(precio).toLocaleString('es-AR')
-      : '$' + Number(precio).toLocaleString('es-AR');
+      ? 'U$S ' + precioNormalizado.toLocaleString('es-AR')
+      : '$ ' + precioNormalizado.toLocaleString('es-AR');
 
   precioNota.textContent =
     moneda === "USD"
@@ -694,12 +755,53 @@ if (!precio || precio === 'Consultar') {
 
 async function cargarRelacionados(cat, idActual) {
   try {
+    const normalizar = txt =>
+      String(txt || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .trim();
+
+    const formatearPrecio = (precio, moneda = "ARS") => {
+      if (!precio) return 'Consultar precio';
+
+      const monedaNormalizada = String(moneda || "ARS").toUpperCase().trim();
+      const prefijo = monedaNormalizada === "USD" ? "U$S " : "$ ";
+
+      if (typeof precio === "number") {
+        return Number.isFinite(precio) && precio > 0
+          ? prefijo + precio.toLocaleString('es-AR')
+          : 'Consultar precio';
+      }
+
+      const texto = String(precio).trim().toLowerCase();
+
+      if (
+        !texto ||
+        texto.includes('consultar') ||
+        texto.includes('a consultar') ||
+        texto.includes('nan')
+      ) {
+        return 'Consultar precio';
+      }
+
+      const soloNumeros = texto.replace(/[^0-9]/g, '');
+
+      if (!soloNumeros) return 'Consultar precio';
+
+      const numero = Number(soloNumeros);
+
+      if (!Number.isFinite(numero) || numero <= 0) {
+        return 'Consultar precio';
+      }
+
+      return prefijo + numero.toLocaleString('es-AR');
+    };
 
     const snap = await getDocs(collection(db, "Productos"));
 
     const relacionados = snap.docs
       .filter(d => {
-
         if (d.id === idActual) return false;
 
         const data = d.data();
@@ -710,9 +812,9 @@ async function cargarRelacionados(cat, idActual) {
           data.categoria ||
           '';
 
-        return categoria === cat;
-
+        return normalizar(categoria) === normalizar(cat);
       })
+      .sort(() => Math.random() - 0.5)
       .slice(0, 4)
       .map(d => ({
         id: d.id,
@@ -727,7 +829,6 @@ async function cargarRelacionados(cat, idActual) {
     }
 
     grid.innerHTML = relacionados.map(p => {
-
       const img =
         p.Imagen ||
         p.imagen ||
@@ -736,54 +837,59 @@ async function cargarRelacionados(cat, idActual) {
       const nombre =
         p.Nombre ||
         p.nombre ||
-        '';
+        'Producto sin nombre';
 
       const marca =
         p.Marca ||
         p.marca ||
-        '';
+        'Sin marca';
 
       const precio =
         p.Precio ||
         p.precio ||
         'Consultar';
 
+      const moneda =
+        p.Moneda ||
+        p.moneda ||
+        'ARS';
+
+      const estado =
+        p.Estado ||
+        p.estado ||
+        'Nuevo';
+
       return `
         <a href="producto.html?id=${p.id}" class="cat-card" style="text-decoration:none;color:inherit;">
           <div class="cat-img">
-            <img src="${img}" alt="${nombre}">
+            <img src="${img}" alt="${nombre}" onerror="this.src='https://via.placeholder.com/400x300/f5f3ee/aaa?text=Sin+imagen'">
+            <span class="cat-overlay">${estado}</span>
           </div>
 
           <div class="cat-body">
-            <div class="prod-cat">${marca}</div>
+            <div class="prod-cat" style="margin-bottom:4px;font-size:11px;">${marca}</div>
 
             <h3>${nombre}</h3>
 
-            <p>
-              ${precio === 'Consultar'
-                ? 'Consultar precio'
-                : '$' + Number(precio).toLocaleString('es-AR')}
+            <p style="font-size:13px;color:var(--texto-suave);">
+              ${formatearPrecio(precio, moneda)}
             </p>
 
             <span class="cat-link">
               Ver producto
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
             </span>
           </div>
         </a>
       `;
-
     }).join('');
 
   } catch (error) {
-
-    console.error(
-      "Error cargando relacionados:",
-      error
-    );
-
+    console.error("Error cargando relacionados:", error);
   }
 }
-
 cargar();
 
 // ── GALERÍA ──
@@ -808,6 +914,26 @@ window.copiarLink = () => {
     alert('Link copiado al portapapeles');
   });
 };
+
+  const menuToggle = document.getElementById("menu-toggle");
+  const mainNav = document.getElementById("main-nav");
+
+  if (menuToggle && mainNav) {
+    menuToggle.addEventListener("click", () => {
+      menuToggle.classList.toggle("open");
+      mainNav.classList.toggle("open");
+      document.body.classList.toggle("menu-open");
+    });
+
+    mainNav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", () => {
+        menuToggle.classList.remove("open");
+        mainNav.classList.remove("open");
+        document.body.classList.remove("menu-open");
+      });
+    });
+  }
+</script>
 </script>
 </body>
 </html>
