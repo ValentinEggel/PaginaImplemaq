@@ -182,10 +182,6 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         Maquinaria <span class="sbc" id="cm">0</span>
       </button>
-      <button class="sbt" onclick="showPage('implementos',this)">
-        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-        Implementos <span class="sbc" id="ci">0</span>
-      </button>
       <button class="sbt" onclick="showPage('repuestos',this)">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         Repuestos <span class="sbc" id="cr">0</span>
@@ -200,7 +196,6 @@
         <div class="ph"><h2>Dashboard</h2></div>
         <div class="sg">
           <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="num" id="dm">0</div><div class="lbl">Maquinaria</div></div>
-          <div class="sc"><div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="num" id="di">0</div><div class="lbl">Implementos</div></div>
           <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></div><div class="num" id="dr">0</div><div class="lbl">Repuestos</div></div>
           <div class="sc"><div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div><div class="num" id="dh">0</div><div class="lbl">Insumos</div></div>
         </div>
@@ -210,7 +205,6 @@
         </div>
       </div>
       <div id="pg-maquinaria" class="pg"></div>
-      <div id="pg-implementos" class="pg"></div>
       <div id="pg-repuestos" class="pg"></div>
       <div id="pg-insumos" class="pg"></div>
     </main>
@@ -230,8 +224,7 @@
         <div class="fgr full"><label>Nombre *</label><input type="text" id="fn" placeholder="Ej: Tractor John Deere 5090E"></div>
         <div class="fgr"><label>Categoría *</label>
           <select id="fc">
-            <option value="Maquinaria">Maquinaria</option>
-            <option value="Implementos">Implementos</option>
+            <option value="Maquinaria">Maquinaria e Implementos</option>
             <option value="Repuestos">Repuestos</option>
             <option value="Insumos">Insumos</option>
           </select>
@@ -327,12 +320,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const CATS = [
-  { key: 'maquinaria', label: 'Maquinaria', value: 'Maquinaria', countId: 'cm', dashId: 'dm' },
-  { key: 'implementos', label: 'Implementos', value: 'Implementos', countId: 'ci', dashId: 'di' },
+  { key: 'maquinaria', label: 'Maquinaria e Implementos', value: 'Maquinaria', countId: 'cm', dashId: 'dm' },
   { key: 'repuestos', label: 'Repuestos', value: 'Repuestos', countId: 'cr', dashId: 'dr' },
   { key: 'insumos', label: 'Insumos', value: 'Insumos', countId: 'ch', dashId: 'dh' }
 ];
-
 let editId = null;
 let prods = [];
 

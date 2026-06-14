@@ -1,4 +1,4 @@
-// Próximo paso: conectar este archivo con Firebase Auth y Firestore.
+
 
 const btnLogin = document.getElementById('btnLogin');
 const btnSalir = document.getElementById('btnSalir');
