@@ -190,10 +190,29 @@
         <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Insumos <span class="sbc" id="ch">0</span>
       </button>
+      <button class="sbt" onclick="window.open('clientesfiscales.html','_blank')">
+        <svg viewBox="0 0 24 24">
+         <path d="M4 4h16v16H4z"/>
+         <path d="M8 8h8"/>
+         <path d="M8 12h8"/>
+         <path d="M8 16h5"/>
+        </svg>
+        Clientes Fiscales
+      </button>
     </aside>
     <main class="am">
       <div id="pg-dash" class="pg active">
-        <div class="ph"><h2>Dashboard</h2></div>
+        <div class="ph">
+          <h2>Dashboard</h2>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-y" onclick="abrirModalAumento()">
+              ↑ Actualizar precios
+            </button>
+            <button class="btn btn-o" onclick="deshacerUltimoAumento()">
+              ↺ Deshacer último aumento
+            </button>
+          </div>
+        </div>
         <div class="sg">
           <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="num" id="dm">0</div><div class="lbl">Maquinaria</div></div>
           <div class="sc"><div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2"/></svg></div><div class="num" id="dr">0</div><div class="lbl">Repuestos</div></div>
@@ -210,7 +229,50 @@
     </main>
   </div>
 </div>
+<div class="mo" id="modal-aumento">
+  <div class="md">
+    <div class="mh">
+      <h3>Actualizar precios</h3>
+      <button class="mc" onclick="cerrarModalAumento()">✕</button>
+    </div>
 
+    <div class="mb">
+      <div class="fg">
+        <div class="fgr">
+          <label>Porcentaje de aumento</label>
+          <input type="number" id="porcentaje-aumento" placeholder="Ej: 15">
+        </div>
+
+        <div class="fgr">
+          <label>Categoría</label>
+          <select id="categoria-aumento">
+            <option value="todos">Todos los productos</option>
+            <option value="maquinaria">Maquinaria</option>
+            <option value="repuestos">Repuestos</option>
+            <option value="insumos">Insumos</option>
+          </select>
+        </div>
+
+        <div class="fgr full">
+          <button class="btn btn-y" onclick="generarPreviewAumento()">
+            Ver productos a actualizar
+          </button>
+        </div>
+
+        <div class="fgr full">
+          <div id="preview-aumento" style="max-height:300px;overflow:auto;border:1px solid var(--gr2);border-radius:8px;padding:12px;">
+            Ingresá un porcentaje y tocá “Ver productos a actualizar”.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mf">
+      <button class="btn btn-o" onclick="cerrarModalAumento()">Cancelar</button>
+      <button class="btn btn-y" onclick="confirmarAumentoPrecios()">Confirmar actualización</button>
+    </div>
+  </div>
+</div>
 <!-- MODAL -->
 <div class="mo" id="mo">
   <div class="md">
@@ -326,6 +388,8 @@ const CATS = [
 ];
 let editId = null;
 let prods = [];
+let previewAumento = [];
+let ultimoAumento = [];
 
 const ADMIN_EMAIL = "adminimplemaq@gmail.com";
 
@@ -396,7 +460,21 @@ async function loadAll() {
     toast('Error al cargar productos: ' + e.message, true);
   }
 }
+function fmtFecha(p) {
+  const fecha = val(p, 'Actualizado', 'actualizado');
 
+  if (!fecha) return 'Sin registro';
+
+  if (fecha.seconds) {
+    return new Date(fecha.seconds * 1000).toLocaleString('es-AR');
+  }
+
+  if (fecha.toDate) {
+    return fecha.toDate().toLocaleString('es-AR');
+  }
+
+  return 'Sin registro';
+}
 function renderDash() {
   const rec = prods.slice(0,5);
   const el = document.getElementById('drec');
@@ -404,11 +482,12 @@ function renderDash() {
     el.innerHTML = '<p style="color:#aaa;font-size:14px;">No hay productos cargados aún.</p>';
     return;
   }
-  el.innerHTML = `<table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th></tr></thead><tbody>
+  el.innerHTML = `<table><thead><tr><th>Producto</th><th>Categoría</th><th>Precio</th><th>Última modificación</th></tr></thead><tbody>
     ${rec.map(p=>`<tr>
       <td style="font-weight:600;font-size:14px;padding:10px 12px;border-bottom:1px solid #f0ede8;">${val(p,'Nombre','nombre') || 'Sin nombre'}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #f0ede8;">${badge(val(p,'Categoría','categoria'))}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #f0ede8;font-family:'Barlow Condensed',sans-serif;font-weight:700;">${fmtP(p)}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #f0ede8;color:#666;font-size:13px;">${fmtFecha(p)}</td>
     </tr>`).join('')}
   </tbody></table>`;
 }
@@ -437,7 +516,7 @@ function renderCat(cat) {
 function renderTabla(ps, cat) {
   if (!ps.length) return `<div class="es"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><p>No hay productos</p></div>`;
   return `<table><thead><tr>
-    <th>Producto</th><th>Marca</th><th>Estado</th><th>Precio</th><th>Visibilidad</th><th>Acciones</th>
+    <th>Producto</th><th>Marca</th><th>Estado</th><th>Precio</th><th>Última modificación</th><th>Visibilidad</th><th>Acciones</th>
   </tr></thead><tbody>
     ${ps.map(p=>{
       const nombre = val(p,'Nombre','nombre') || 'Sin nombre';
@@ -457,6 +536,7 @@ function renderTabla(ps, cat) {
         <td style="font-size:13px;color:#666;">${marca || '—'}</td>
         <td><span class="badge ${String(estado).toLowerCase()==='nuevo'?'bn':'bu'}">${estado}</span></td>
         <td class="pc">${fmtP(p)}</td>
+        <td style="font-size:12px;color:#666;">${fmtFecha(p)}</td>
         <td><span class="badge ${!activo?'bu':destacado?'bm':'bn'}">${!activo ? 'Inactivo' : destacado ? 'Destacado' : 'Activo'}</span></td>
         <td><div class="acc">
           <button class="btn btn-k btn-sm" onclick="openModal('${p.id}','${cat}')">✏ Editar</button>
@@ -649,6 +729,143 @@ function toast(msg, err=false) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 window.toast = toast;
+
+window.abrirModalAumento = () => {
+  document.getElementById('modal-aumento').classList.add('open');
+};
+
+window.cerrarModalAumento = () => {
+  document.getElementById('modal-aumento').classList.remove('open');
+};
+
+function precioNumero(precio) {
+  const numero = Number(String(precio).replace(/[^\d]/g, ''));
+  return Number.isFinite(numero) ? numero : 0;
+}
+
+function formatoMoneda(valor, moneda) {
+  const simbolo = moneda === 'USD' ? 'U$S' : '$';
+  return `${simbolo} ${Number(valor).toLocaleString('es-AR')}`;
+}
+
+window.generarPreviewAumento = () => {
+  const porcentaje = Number(document.getElementById('porcentaje-aumento').value);
+  const categoria = document.getElementById('categoria-aumento').value;
+  const contenedor = document.getElementById('preview-aumento');
+
+  if (!porcentaje || porcentaje <= 0) {
+    contenedor.innerHTML = 'Ingresá un porcentaje válido.';
+    previewAumento = [];
+    return;
+  }
+
+  previewAumento = prods
+    .filter(p => {
+      const precio = val(p, 'Precio', 'precio');
+      const mostrar = val(p, 'MostrarPrecio', 'mostrarPrecio');
+      const cat = catKeyFromValue(val(p, 'Categoría', 'categoria'));
+
+      if (categoria !== 'todos' && cat !== categoria) return false;
+      if (mostrar === 'no' || !precio || precio === 'Consultar') return false;
+
+      return precioNumero(precio) > 0;
+    })
+    .map(p => {
+      const precioActual = precioNumero(val(p, 'Precio', 'precio'));
+      const precioNuevo = Math.round(precioActual * (1 + porcentaje / 100));
+      const moneda = val(p, 'Moneda', 'moneda') || 'ARS';
+
+      return {
+        id: p.id,
+        nombre: val(p, 'Nombre', 'nombre') || 'Sin nombre',
+        categoria: val(p, 'Categoría', 'categoria') || '',
+        moneda,
+        precioAnterior: val(p, 'Precio', 'precio'),
+        precioNuevo
+      };
+    });
+
+  if (!previewAumento.length) {
+    contenedor.innerHTML = 'No hay productos válidos para actualizar.';
+    return;
+  }
+
+  contenedor.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Antes</th>
+          <th>Después</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${previewAumento.map(p => `
+          <tr>
+            <td>${p.nombre}</td>
+            <td>${formatoMoneda(precioNumero(p.precioAnterior), p.moneda)}</td>
+            <td>${formatoMoneda(p.precioNuevo, p.moneda)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+};
+
+window.confirmarAumentoPrecios = async () => {
+  if (!previewAumento.length) {
+    toast('Primero generá la vista previa.', true);
+    return;
+  }
+
+  const ok = confirm(`¿Actualizar ${previewAumento.length} productos?`);
+  if (!ok) return;
+
+  ultimoAumento = [...previewAumento];
+
+  try {
+    for (const item of previewAumento) {
+      await updateDoc(doc(db, 'Productos', item.id), {
+        Precio: String(item.precioNuevo),
+        Actualizado: serverTimestamp()
+      });
+    }
+
+    toast(`${previewAumento.length} productos actualizados ✓`);
+    previewAumento = [];
+    cerrarModalAumento();
+    await loadAll();
+
+  } catch (e) {
+    toast('Error al actualizar precios: ' + e.message, true);
+  }
+};
+
+window.deshacerUltimoAumento = async () => {
+  if (!ultimoAumento.length) {
+    toast('No hay un aumento para deshacer.', true);
+    return;
+  }
+
+  const ok = confirm(`¿Deshacer el último aumento aplicado a ${ultimoAumento.length} productos?`);
+  if (!ok) return;
+
+  try {
+    for (const item of ultimoAumento) {
+      await updateDoc(doc(db, 'Productos', item.id), {
+        Precio: String(item.precioAnterior),
+        Actualizado: serverTimestamp()
+      });
+    }
+
+    toast(`Se deshizo el aumento en ${ultimoAumento.length} productos ✓`);
+    ultimoAumento = [];
+    await loadAll();
+
+  } catch (e) {
+    toast('Error al deshacer aumento: ' + e.message, true);
+  }
+};
 
 document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') window.doLogin(); });
 </script>
