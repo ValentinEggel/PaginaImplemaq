@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMPLEMAQ — Gestor de Imágenes</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================================================
+     BASE — variables y estilos idénticos a admin.html
+     ============================================================ */
+  :root {
+    --am: #f5c842; --am2: #f7d460;
+    --ng: #111; --ng2: #1e1e1e; --ng3: #2a2a2a;
+    --gr: #f5f3ee; --gr2: #e0ddd6;
+    --tx: #111; --tx2: #666;
+    --rd: #e53935;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow',sans-serif;background:var(--gr);color:var(--tx);}
+
+  /* HEADER */
+  .ah{background:var(--ng);border-bottom:2px solid var(--am);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .ahl{display:flex;align-items:center;gap:14px;}
+  .als{width:38px;height:38px;background:var(--am);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:var(--ng);text-align:center;line-height:1.1;}
+  .ah h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+  .ah h1 span{color:#888;font-weight:400;font-size:13px;margin-left:6px;}
+  .btn-lo{background:transparent;border:1px solid #444;color:#aaa;font-size:13px;padding:7px 16px;border-radius:5px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;text-decoration:none;display:inline-flex;align-items:center;}
+  .btn-lo:hover{border-color:var(--am);color:var(--am);}
+  .ab{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);}
+
+  /* SIDEBAR */
+  .sb{background:#fff;border-right:1px solid var(--gr2);padding:20px 12px;}
+  .sbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:0 10px;margin:16px 0 6px;}
+  .sbl:first-child{margin-top:0;}
+  .sbt{width:100%;text-align:left;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;border:none;background:transparent;font-size:14px;color:var(--tx2);cursor:pointer;transition:all .2s;margin-bottom:2px;font-family:'Barlow',sans-serif;text-decoration:none;}
+  .sbt:hover{background:var(--gr);color:var(--tx);}
+  .sbt.active{background:var(--am);color:var(--ng);font-weight:600;}
+  .sbt svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .sbc{margin-left:auto;background:var(--ng3);color:#fff;font-size:11px;padding:2px 7px;border-radius:20px;}
+  .sbt.active .sbc{background:var(--ng);}
+
+  /* MAIN */
+  .am{padding:32px;overflow-y:auto;}
+  .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;}
+  .ph h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;text-transform:uppercase;}
+  .ph h2 span{color:#aaa;font-weight:400;font-size:16px;margin-left:8px;}
+
+  /* BOTONES */
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;padding:10px 20px;border-radius:6px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
+  .btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+  .btn-y{background:var(--am);color:var(--ng);}.btn-y:hover{background:var(--am2);}
+  .btn-y:disabled{background:#eee;color:#aaa;cursor:not-allowed;}
+  .btn-k{background:var(--ng);color:#fff;}.btn-k:hover{background:#333;}
+  .btn-r{background:#ffebee;color:var(--rd);}.btn-r:hover{background:#ffcdd2;}
+  .btn-o{background:transparent;border:1.5px solid var(--gr2);color:var(--tx2);}.btn-o:hover{border-color:#aaa;color:var(--tx);}
+  .btn-sm{font-size:12px;padding:6px 12px;}
+  .btn-block{width:100%;justify-content:center;}
+
+  /* STATS (contadores) */
+  .sg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+  .sc{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;padding:20px;}
+  .sc .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;color:var(--ng);line-height:1;}
+  .sc .lbl{font-size:13px;color:var(--tx2);margin-top:4px;}
+  .sc .ico{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .iy{background:#fff8d0;}.ik{background:#f0f0f0;}
+
+  /* SECCIONES */
+  .card-wrap{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;margin-bottom:28px;overflow:hidden;}
+  .card-head{padding:16px 20px;border-bottom:1px solid var(--gr2);display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between;}
+  .card-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;}
+  .card-body{padding:20px;}
+
+  /* DRAG & DROP */
+  .dz{border:2px dashed var(--gr2);border-radius:10px;padding:52px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--gr);}
+  .dz:hover{border-color:#bbb;}
+  .dz.drag{border-color:var(--am);background:#fff8d0;}
+  .dz svg{width:40px;height:40px;stroke:#aaa;fill:none;stroke-width:1.6;margin-bottom:12px;}
+  .dz.drag svg{stroke:#c49a00;}
+  .dz p{font-size:15px;font-weight:600;margin-bottom:4px;}
+  .dz small{color:var(--tx2);font-size:13px;}
+  .dz small.ext{display:block;margin-top:10px;color:#bbb;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+
+  /* PREVIEW ANTES DE SUBIR */
+  .prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:18px;}
+  .prev-card{border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;position:relative;background:#fff;}
+  .prev-thumb{width:100%;aspect-ratio:1/1;background:var(--gr);overflow:hidden;cursor:pointer;}
+  .prev-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .prev-info{padding:9px 10px;}
+  .prev-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .prev-meta{font-size:11px;color:var(--tx2);margin-top:2px;}
+  .prev-del{position:absolute;top:6px;right:6px;width:26px;height:26px;border:none;border-radius:6px;background:rgba(17,17,17,.75);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+  .prev-del:hover{background:var(--rd);}
+
+  /* BUSCADOR */
+  .ts{flex:1;min-width:200px;padding:8px 14px;border:1.5px solid var(--gr2);border-radius:6px;font-size:14px;font-family:'Barlow',sans-serif;transition:border-color .2s;}
+  .ts:focus{outline:none;border-color:var(--am);}
+
+  /* GALERÍA */
+  .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+  .gal-card{border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;background:#fff;transition:box-shadow .2s;}
+  .gal-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);}
+  .gal-thumb{width:100%;aspect-ratio:4/3;background:var(--gr);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+  .gal-thumb svg{width:30px;height:30px;stroke:#ccc;fill:none;stroke-width:1.5;}
+  .gal-thumb img{width:100%;height:100%;object-fit:cover;}
+  .gal-body{padding:12px 14px;}
+  .gal-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .gal-url{font-size:11px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;margin-bottom:12px;}
+  .gal-actions{display:flex;gap:6px;}
+  .gal-actions .btn{flex:1;justify-content:center;}
+
+  .es{text-align:center;padding:60px 20px;color:#aaa;}
+  .es svg{width:48px;height:48px;margin-bottom:12px;stroke:#ccc;fill:none;stroke-width:1.5;}
+
+  /* CONFIRM */
+  .co{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;}
+  .co.open{display:flex;}
+  .cb{background:#fff;border-radius:10px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .cb h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;margin-bottom:10px;text-transform:uppercase;}
+  .cb p{font-size:14px;color:var(--tx2);margin-bottom:24px;}
+  .cbb{display:flex;gap:10px;justify-content:center;}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--ng);color:#fff;padding:14px 20px;border-radius:8px;font-size:14px;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;border-left:3px solid var(--am);}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.err{border-left-color:var(--rd);}
+
+  input[type="file"]{display:none;}
+
+  /* LIGHTBOX (visor fullscreen) */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;overflow:hidden;}
+  .lightbox.open{display:flex;}
+  .lightbox-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+  .lightbox-inner img{max-width:90%;max-height:90%;object-fit:contain;transition:transform .08s ease-out;cursor:grab;user-select:none;-webkit-user-drag:none;transform-origin:center center;}
+  .lightbox-close{position:absolute;top:20px;right:24px;width:42px;height:42px;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:3001;}
+  .lightbox-close:hover{background:rgba(255,255,255,.22);}
+  .lightbox-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.5px;text-transform:uppercase;}
+
+  @media (max-width:900px){
+    .ab{grid-template-columns:1fr;}
+    .sb{display:flex;overflow-x:auto;gap:6px;padding:12px;border-right:none;border-bottom:1px solid var(--gr2);}
+    .sb .sbl{display:none;}
+    .sbt{width:auto;white-space:nowrap;}
+    .sg{grid-template-columns:repeat(2,1fr);}
+    .am{padding:18px;}
+  }
+  @media (max-width:520px){
+    .sg{grid-template-columns:1fr 1fr;}
+    .dz{padding:36px 14px;}
+    .card-head{flex-direction:column;align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+
+<div id="as">
+  <header class="ah">
+    <div class="ahl">
+      <div class="als">IMP<br>LEMAQ</div>
+      <h1>Admin <span>Gestor de Imágenes</span></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="admin.html" class="btn btn-o btn-sm">← Volver al panel</a>
+    </div>
+  </header>
+
+  <div class="ab">
+    <!-- SIDEBAR -->
+    <aside class="sb">
+      <div class="sbl">General</div>
+      <a href="admin.html" class="sbt">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="sbl">Productos</div>
+      <a href="admin.html#maquinaria" class="sbt">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        Maquinaria
+      </a>
+      <a href="admin.html#repuestos" class="sbt">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        Repuestos
+      </a>
+      <a href="admin.html#insumos" class="sbt">
+        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        Insumos
+      </a>
+      <div class="sbl">Multimedia</div>
+      <a href="imagenes.html" class="sbt active">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Imágenes
+      </a>
+      <a href="clientesfiscales.html" class="sbt">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
+        Clientes Fiscales
+      </a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="am">
+      <div class="ph">
+        <h2>Gestor de Imágenes <span>Subí y administrá las fotos de los productos</span></h2>
+      </div>
+
+      <!-- CONTADORES -->
+      <div class="sg">
+        <div class="sc">
+          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="num" id="ct-total">0</div>
+          <div class="lbl">Imágenes totales</div>
+        </div>
+        <div class="sc">
+          <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 21h16"/></svg></div>
+          <div class="num" id="ct-space">0 MB</div>
+          <div class="lbl">Espacio utilizado</div>
+        </div>
+        <div class="sc">
+          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="num" id="ct-pending">0</div>
+          <div class="lbl">Pendientes de subir</div>
+        </div>
+        <div class="sc">
+          <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="num" id="ct-filtered">0</div>
+          <div class="lbl">Resultados filtrados</div>
+        </div>
+      </div>
+
+      <!-- ÁREA DE SUBIDA -->
+      <div class="card-wrap">
+        <div class="card-head">
+          <h3>Subir imágenes</h3>
+        </div>
+        <div class="card-body">
+          <div class="dz" id="dz">
+            <svg viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M7 8l5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>
+            <p>Arrastrá y soltá tus imágenes acá</p>
+            <small>o hacé clic para seleccionar desde tu equipo</small>
+            <small class="ext">JPG · JPEG · PNG · WEBP</small>
+          </div>
+          <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp" multiple>
+
+          <div id="prevGrid" class="prev-grid"></div>
+
+          <div style="margin-top:18px;" id="uploadBtnWrap"></div>
+        </div>
+      </div>
+
+      <!-- GALERÍA -->
+      <div class="card-wrap">
+        <div class="card-head">
+          <h3>Galería de imágenes</h3>
+          <input type="text" class="ts" id="buscador" placeholder="Buscar por nombre..." style="max-width:280px;">
+        </div>
+        <div class="card-body">
+          <div id="galContainer" class="gal-grid"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- CONFIRMAR ELIMINACIÓN -->
+<div class="co" id="co">
+  <div class="cb">
+    <h4>¿Eliminar imagen?</h4>
+    <p>Esta acción no se puede deshacer.</p>
+    <div class="cbb">
+      <button class="btn btn-o" onclick="cerrarConfirmacion()">Cancelar</button>
+      <button class="btn btn-r" id="cok">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- VISOR FULLSCREEN (LIGHTBOX) -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose" title="Cerrar (ESC)">✕</button>
+  <div class="lightbox-inner" id="lightboxInner">
+    <img id="lightboxImg" src="" alt="">
+  </div>
+  <div class="lightbox-hint">Rueda del mouse para hacer zoom · ESC o clic afuera para cerrar</div>
+</div>
+
+<script type="module">
+/* ==================================================================
+   GESTOR DE IMÁGENES — IMPLEMAQ RURAL
+   Los archivos se suben a Cloudinary (sin backend, upload sin firmar).
+   Firestore guarda un pequeño índice (nombre, url, tamaño, fecha) para
+   poder listar, buscar y "eliminar" desde la galería.
+   Las funciones subirArchivo(), eliminarArchivo() y generarLink()
+   quedan encapsuladas: son las únicas que habría que tocar si algún
+   día se reemplaza Cloudinary por un backend propio.
+   ================================================================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
+  authDomain: "implemaq-4bce2.firebaseapp.com",
+  projectId: "implemaq-4bce2",
+  storageBucket: "implemaq-4bce2.firebasestorage.app",
+  messagingSenderId: "433504757908",
+  appId: "1:433504757908:web:21cb6d1c0b333bec84ac81",
+  measurementId: "G-43YC2W9YHZ"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const ADMIN_EMAIL = "adminimplemaq@gmail.com";
+
+// -------------------- CLOUDINARY (almacenamiento real de archivos) --------------------
+const CLOUDINARY_CLOUD_NAME = 'bntkunqu';
+const CLOUDINARY_UPLOAD_PRESET = 'imagenes';
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+
+// -------------------- FIRESTORE (índice de la galería) --------------------
+const GALERIA_COLLECTION = 'ImagenesGaleria';
+
+// Protege esta página igual que admin.html: si no hay sesión de
+// administrador activa, redirige al login del panel.
+onAuthStateChanged(auth, (u) => {
+  if (!u || u.email !== ADMIN_EMAIL) {
+    window.location.href = 'admin.html';
+  }
+});
+
+// -------------------- ESTADO --------------------
+let colaSubida = [];      // archivos seleccionados, pendientes de "subir"
+let galeria = [];         // índice de imágenes ya subidas (Firestore + Cloudinary)
+let idPendiente = null;   // id en espera de confirmación de borrado
+
+galeria = [];
+
+// -------------------- HELPERS --------------------
+function formatoTamano(bytes) {
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function iconoSinImagen() {
+  return `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+}
+
+// Reemplaza el thumbnail por un ícono genérico si la imagen no carga (URL de ejemplo/mock)
+function manejarErrorImagen(imgEl) {
+  imgEl.parentElement.innerHTML = iconoSinImagen();
+}
+window.manejarErrorImagen = manejarErrorImagen;
+
+// ==================================================================
+// GENERADOR DE ENLACE (preparado para migrar a un backend propio)
+// ==================================================================
+// Ahora que las imágenes viven en Firebase Storage, la URL que
+// devuelve getDownloadURL() YA es el enlace público definitivo.
+// El día que se reemplace Storage por un backend propio (PHP/S3/etc),
+// esta es la única función que habría que tocar.
+function generarLink(urlReal) {
+  return urlReal;
+}
+
+// ==================================================================
+// VISOR FULLSCREEN (LIGHTBOX) con zoom
+// ==================================================================
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxInner = document.getElementById('lightboxInner');
+const lightboxClose = document.getElementById('lightboxClose');
+let zoomActual = 1;
+const ZOOM_MIN = 1;
+const ZOOM_MAX = 5;
+const ZOOM_PASO = 0.12;
+
+function abrirLightbox(url, nombre) {
+  if (!url) return;
+  zoomActual = 1;
+  lightboxImg.src = url;
+  lightboxImg.alt = nombre || '';
+  lightboxImg.style.transform = 'scale(1)';
+  lightbox.classList.add('open');
+}
+window.abrirLightbox = abrirLightbox;
+
+function cerrarLightbox() {
+  lightbox.classList.remove('open');
+  lightboxImg.src = '';
+  zoomActual = 1;
+}
+window.cerrarLightbox = cerrarLightbox;
+
+lightboxClose.addEventListener('click', cerrarLightbox);
+
+// Cerrar haciendo click fuera de la imagen (en el fondo oscuro)
+lightbox.addEventListener('click', e => {
+  if (e.target === lightbox || e.target === lightboxInner) {
+    cerrarLightbox();
+  }
+});
+
+// Cerrar con ESC
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && lightbox.classList.contains('open')) {
+    cerrarLightbox();
+  }
+});
+
+// Zoom suave con la rueda del mouse
+lightboxInner.addEventListener('wheel', e => {
+  if (!lightbox.classList.contains('open')) return;
+  e.preventDefault();
+
+  if (e.deltaY < 0) {
+    zoomActual = Math.min(ZOOM_MAX, zoomActual + ZOOM_PASO);
+  } else {
+    zoomActual = Math.max(ZOOM_MIN, zoomActual - ZOOM_PASO);
+  }
+
+  lightboxImg.style.transform = `scale(${zoomActual})`;
+}, { passive: false });
+
+// ==================================================================
+// ARRASTRAR IMAGEN HACIA admin.html
+// ==================================================================
+// Al soltar sobre el campo "URLs de imágenes" del formulario de
+// productos, el navegador inserta este texto (la URL real de
+// Storage) tal como si se hubiera pegado a mano.
+function arrastrarImagen(e, link) {
+  e.dataTransfer.setData('text/plain', link);
+  e.dataTransfer.effectAllowed = 'copy';
+}
+window.arrastrarImagen = arrastrarImagen;
+
+// ==================================================================
+// 1) DRAG & DROP + SELECCIÓN MANUAL
+// ==================================================================
+const dz = document.getElementById('dz');
+const fileInput = document.getElementById('fileInput');
+const EXT_VALIDAS = ['jpg', 'jpeg', 'png', 'webp'];
+
+dz.addEventListener('click', () => fileInput.click());
+
+dz.addEventListener('dragover', e => {
+  e.preventDefault();
+  dz.classList.add('drag');
+});
+
+dz.addEventListener('dragleave', () => dz.classList.remove('drag'));
+
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag');
+  manejarArchivos(e.dataTransfer.files);
+});
+
+fileInput.addEventListener('change', e => {
+  manejarArchivos(e.target.files);
+  fileInput.value = ''; // permite volver a elegir el mismo archivo
+});
+
+function manejarArchivos(fileList) {
+  const archivos = Array.from(fileList);
+  let rechazados = 0;
+
+  archivos.forEach(file => {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!EXT_VALIDAS.includes(ext)) {
+      rechazados++;
+      return;
+    }
+
+    const item = {
+      id: 'p-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7),
+      file,
+      nombre: file.name,
+      tamano: file.size,
+      resolucion: null,
+      previewUrl: URL.createObjectURL(file)
+    };
+
+    colaSubida.push(item);
+
+    // Obtener resolución real de la imagen de forma asíncrona
+    const img = new Image();
+    img.onload = () => {
+      item.resolucion = `${img.naturalWidth}×${img.naturalHeight}px`;
+      renderPreviews();
+    };
+    img.src = item.previewUrl;
+  });
+
+  if (rechazados > 0) {
+    toast(`${rechazados} archivo(s) no válidos (solo JPG, JPEG, PNG o WEBP)`, true);
+  }
+
+  renderPreviews();
+}
+
+// ==================================================================
+// 2) VISTA PREVIA
+// ==================================================================
+function renderPreviews() {
+  const cont = document.getElementById('prevGrid');
+
+  cont.innerHTML = colaSubida.map(item => `
+    <div class="prev-card">
+      <button class="prev-del" onclick="quitarDeCola('${item.id}')" title="Quitar">✕</button>
+      <div class="prev-thumb" onclick="abrirLightbox('${item.previewUrl}', '${item.nombre}')">
+        <img src="${item.previewUrl}" alt="${item.nombre}">
+      </div>
+      <div class="prev-info">
+        <div class="prev-name" title="${item.nombre}">${item.nombre}</div>
+        <div class="prev-meta">${formatoTamano(item.tamano)}${item.resolucion ? ' · ' + item.resolucion : ''}</div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('ct-pending').textContent = colaSubida.length;
+  renderBotonSubir();
+}
+
+function quitarDeCola(id) {
+  const item = colaSubida.find(i => i.id === id);
+  if (item) URL.revokeObjectURL(item.previewUrl);
+  colaSubida = colaSubida.filter(i => i.id !== id);
+  renderPreviews();
+}
+window.quitarDeCola = quitarDeCola;
+
+// ==================================================================
+// 3) BOTÓN SUBIR
+// ==================================================================
+function renderBotonSubir() {
+  const wrap = document.getElementById('uploadBtnWrap');
+  if (!colaSubida.length) {
+    wrap.innerHTML = '';
+    return;
+  }
+  wrap.innerHTML = `
+    <button class="btn btn-y btn-block" onclick="subirImagenes()">
+      ↑ Subir ${colaSubida.length} imagen${colaSubida.length > 1 ? 'es' : ''}
+    </button>
+  `;
+}
+
+// ------------------------------------------------------------------
+// subirArchivo(item)
+// Encapsula la subida de UN solo archivo. Sube el archivo real a
+// Cloudinary (sin backend, preset sin firmar) y guarda su ficha en
+// Firestore para que la galería pueda listarlo/buscarlo/borrarlo.
+// El día que se reemplace Cloudinary por un backend propio, esta es
+// la única función que hay que tocar (subirImagenes() no cambia).
+// ------------------------------------------------------------------
+async function subirArchivo(item) {
+  const formData = new FormData();
+  formData.append('file', item.file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+  const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: 'POST', body: formData });
+  if (!res.ok) throw new Error('No se pudo subir la imagen a Cloudinary');
+  const data = await res.json();
+
+  const url = generarLink(data.secure_url);
+  await addDoc(collection(db, GALERIA_COLLECTION), {
+    nombre: item.nombre,
+    url,
+    tamano: data.bytes || item.tamano,
+    resolucion: data.width && data.height ? `${data.width}×${data.height}px` : item.resolucion,
+    creado: serverTimestamp()
+  });
+
+  return url;
+}
+window.subirArchivo = subirArchivo;
+
+// Recorre la cola de subida y sube cada archivo real a Cloudinary.
+// Al terminar, resincroniza la galería contra Firestore (fuente de verdad).
+async function subirImagenes() {
+  if (!colaSubida.length) {
+    toast('No hay imágenes seleccionadas', true);
+    return;
+  }
+
+  const cola = [...colaSubida];
+  toast(`Subiendo ${cola.length} imagen(es)...`);
+
+  try {
+    await Promise.all(cola.map(item => subirArchivo(item)));
+    toast(`${cola.length} imagen(es) subida(s) correctamente`);
+  } catch (e) {
+    toast('Error al subir imágenes: ' + e.message, true);
+  }
+
+  cola.forEach(item => URL.revokeObjectURL(item.previewUrl));
+  colaSubida = colaSubida.filter(item => !cola.includes(item));
+  renderPreviews();
+  await sincronizarGaleria();
+}
+window.subirImagenes = subirImagenes;
+
+// ==================================================================
+// SINCRONIZAR GALERÍA CON FIRESTORE (índice de lo subido a Cloudinary)
+// ==================================================================
+async function sincronizarGaleria() {
+  const cont = document.getElementById('galContainer');
+  cont.innerHTML = `<div class="es" style="grid-column:1/-1;"><p>Cargando imágenes...</p></div>`;
+
+  try {
+    const snap = await getDocs(collection(db, GALERIA_COLLECTION));
+    galeria = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        nombre: data.nombre,
+        url: data.url,
+        previewUrl: null,
+        link: data.url,
+        tamano: data.tamano || null,
+        resolucion: data.resolucion || null,
+        sizeMB: (data.tamano || 0) / (1024 * 1024),
+        creado: data.creado
+      };
+    });
+
+    galeria.sort((a, b) => {
+      const ta = a.creado?.seconds || 0;
+      const tb = b.creado?.seconds || 0;
+      return tb - ta; // más recientes primero
+    });
+  } catch (e) {
+    toast('Error al cargar la galería: ' + e.message, true);
+    galeria = [];
+  }
+
+  cargarGaleria();
+}
+window.sincronizarGaleria = sincronizarGaleria;
+
+// ==================================================================
+// 4) GALERÍA + 5) BUSCADOR
+// ==================================================================
+function cargarGaleria() {
+  const termino = document.getElementById('buscador').value.trim().toLowerCase();
+  const filtradas = termino
+    ? galeria.filter(img => img.nombre.toLowerCase().includes(termino))
+    : galeria;
+
+  const cont = document.getElementById('galContainer');
+
+  if (!filtradas.length) {
+    cont.innerHTML = `
+      <div class="es" style="grid-column:1/-1;">
+        ${iconoSinImagen()}
+        <p>No se encontraron imágenes${termino ? ' para "' + termino + '"' : ''}.</p>
+      </div>`;
+  } else {
+    cont.innerHTML = filtradas.map(img => {
+      const meta = (img.tamano ? formatoTamano(img.tamano) : '') +
+                   (img.resolucion ? (img.tamano ? ' · ' : '') + img.resolucion : '');
+      return `
+      <div class="gal-card">
+        <div class="gal-thumb"
+             draggable="true"
+             ondragstart="arrastrarImagen(event, '${img.link}')"
+             onclick="abrirLightbox('${img.url}', '${img.nombre}')"
+             title="Arrastrá esta imagen al campo de fotos en el panel de productos">
+          <img src="${img.url}" alt="${img.nombre}" onerror="manejarErrorImagen(this)">
+        </div>
+        <div class="gal-body">
+          <div class="gal-name" title="${img.nombre}">${img.nombre}</div>
+          <div class="gal-url" title="${img.link}">${meta || 'listo para usar'}</div>
+          <div class="gal-actions">
+            <button class="btn btn-o btn-sm" onclick="copiarLink('${img.link}')">📋 Copiar enlace</button>
+            <button class="btn btn-r btn-sm" onclick="pedirEliminarImagen('${img.id}')">🗑 Eliminar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    }).join('');
+  }
+
+  actualizarContadores(filtradas.length);
+}
+window.cargarGaleria = cargarGaleria;
+
+document.getElementById('buscador').addEventListener('input', cargarGaleria);
+
+// ==================================================================
+// 6) COPIAR ENLACE
+// ==================================================================
+// copiarLink() encapsula la copia al portapapeles. Hoy copia el
+// nombre de archivo / ruta local; el día que exista subir.php,
+// "link" ya vendrá con la URL real y esta función no cambia.
+function copiarLink(link) {
+  navigator.clipboard.writeText(link)
+    .then(() => toast('Enlace copiado'))
+    .catch(() => toast('No se pudo copiar el enlace', true));
+}
+window.copiarLink = copiarLink;
+
+// Alias retrocompatible (se mantiene por si algo del panel aún la usa)
+function copiarURL(url) {
+  copiarLink(url);
+}
+window.copiarURL = copiarURL;
+
+// ==================================================================
+// 7) ELIMINAR IMAGEN (con confirmación)
+// ==================================================================
+function pedirEliminarImagen(id) {
+  idPendiente = id;
+  document.getElementById('co').classList.add('open');
+}
+window.pedirEliminarImagen = pedirEliminarImagen;
+
+function cerrarConfirmacion() {
+  idPendiente = null;
+  document.getElementById('co').classList.remove('open');
+}
+window.cerrarConfirmacion = cerrarConfirmacion;
+
+document.getElementById('cok').addEventListener('click', () => {
+  if (idPendiente) eliminarImagen(idPendiente);
+  cerrarConfirmacion();
+});
+
+// ------------------------------------------------------------------
+// eliminarArchivo(id)
+// Encapsula la eliminación real de UN registro. Hoy borra la ficha
+// del índice en Firestore (deja de verse en la galería). El archivo
+// físico en Cloudinary NO se borra desde acá porque requeriría
+// exponer una clave secreta en el navegador — eso necesita backend.
+// El día que exista ese backend, esta es la única función a tocar.
+// ------------------------------------------------------------------
+async function eliminarArchivo(id) {
+  await deleteDoc(doc(db, GALERIA_COLLECTION, id));
+}
+window.eliminarArchivo = eliminarArchivo;
+
+// Función preparada para conectar con un backend propio más adelante.
+// Hoy quita la imagen de la galería (índice en Firestore).
+async function eliminarImagen(id) {
+  try {
+    await eliminarArchivo(id);
+    toast('Imagen quitada de la galería');
+  } catch (e) {
+    toast('Error al eliminar: ' + e.message, true);
+  }
+  await sincronizarGaleria();
+}
+window.eliminarImagen = eliminarImagen;
+
+// ==================================================================
+// 8) CONTADORES
+// ==================================================================
+function actualizarContadores(cantidadFiltrada) {
+  document.getElementById('ct-total').textContent = galeria.length;
+
+  const totalMB = galeria.reduce((acc, img) => acc + img.sizeMB, 0);
+  document.getElementById('ct-space').textContent = totalMB.toFixed(0) + ' MB';
+
+  document.getElementById('ct-filtered').textContent = cantidadFiltrada;
+}
+
+// -------------------- INICIALIZACIÓN --------------------
+sincronizarGaleria();
+</script>
+</body>
+</html>
