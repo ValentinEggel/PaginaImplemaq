@@ -1984,7 +1984,7 @@
   }
 }
 
-/* Producto.html y FAQ: mejora global si usan el mismo style.css */
+
 @media (min-width: 901px) {
   .prod-layout {
     padding-top: 24px;
@@ -2016,7 +2016,7 @@
   }
 }
 
-/* Ajuste móvil conservador */
+
 @media (max-width: 768px) {
   body {
     font-size: 15px;
@@ -2083,7 +2083,7 @@
   }
 }
 
-/* ─── CORRECCIONES FINALES REDES Y MOBILE ─── */
+
 .redes-section {
   background: var(--gris-claro);
 }
@@ -2277,8 +2277,6 @@
 }
 }
 
-
-/* ─── CORRECCIÓN FINAL: LIMITAR TEXTOS EN CARDS DEL CATÁLOGO ─── */
 .prod-card {
   height: 100% !important;
   display: flex !important;
@@ -2315,7 +2313,7 @@
   margin-top: auto !important;
 }
 
-/* ─── CORRECCIÓN FINAL: LIMITAR TEXTOS EN CARDS DINÁMICAS / REPUESTOS ─── */
+
 .dest-card {
   display: flex !important;
   flex-direction: column !important;
