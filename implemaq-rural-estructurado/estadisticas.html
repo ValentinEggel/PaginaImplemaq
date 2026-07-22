@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMPLEMAQ — Estadísticas</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --am: #f5c842; --am2: #f7d460;
+    --ng: #111; --ng2: #1e1e1e; --ng3: #2a2a2a;
+    --gr: #f5f3ee; --gr2: #e0ddd6;
+    --tx: #111; --tx2: #666;
+    --rd: #e53935;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Barlow',sans-serif;background:var(--gr);color:var(--tx);}
+
+  /* LOGIN (idéntico a admin.html) */
+  #ls{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ng);}
+  .lb{background:var(--ng2);border:1px solid #333;border-radius:12px;padding:48px 40px;width:100%;max-width:380px;text-align:center;}
+  .ll{width:72px;height:72px;background:var(--am);border-radius:10px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:var(--ng);line-height:1.2;flex-direction:column;}
+  .lb h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:#fff;text-transform:uppercase;margin-bottom:4px;}
+  .lb p{font-size:13px;color:#777;margin-bottom:28px;}
+  .lb input{width:100%;padding:11px 14px;background:#111;border:1.5px solid #333;border-radius:6px;color:#fff;font-size:15px;margin-bottom:12px;transition:border-color .2s;font-family:'Barlow',sans-serif;}
+  .lb input:focus{outline:none;border-color:var(--am);}
+  .lb input::placeholder{color:#555;}
+  .btn-li{width:100%;padding:13px;background:var(--am);color:var(--ng);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;border:none;border-radius:6px;cursor:pointer;transition:background .2s;}
+  .btn-li:hover{background:var(--am2);}
+  #lerr{color:#ff6b6b;font-size:13px;margin-top:10px;display:none;}
+
+  /* ADMIN SHELL */
+  #as{display:none;}
+  .ah{background:var(--ng);border-bottom:2px solid var(--am);padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .ahl{display:flex;align-items:center;gap:14px;}
+  .als{width:38px;height:38px;background:var(--am);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:11px;color:var(--ng);text-align:center;line-height:1.1;}
+  .ah h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+  .ah h1 span{color:#888;font-weight:400;font-size:13px;margin-left:6px;}
+  .btn-lo{background:transparent;border:1px solid #444;color:#aaa;font-size:13px;padding:7px 16px;border-radius:5px;cursor:pointer;transition:all .2s;font-family:'Barlow',sans-serif;}
+  .btn-lo:hover{border-color:#ff6b6b;color:#ff6b6b;}
+  .ab{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px);}
+
+  /* SIDEBAR */
+  .sb{background:#fff;border-right:1px solid var(--gr2);padding:20px 12px;}
+  .sbl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#bbb;padding:0 10px;margin:16px 0 6px;}
+  .sbl:first-child{margin-top:0;}
+  .sbt{width:100%;text-align:left;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;border:none;background:transparent;font-size:14px;color:var(--tx2);cursor:pointer;transition:all .2s;margin-bottom:2px;font-family:'Barlow',sans-serif;text-decoration:none;}
+  .sbt:hover{background:var(--gr);color:var(--tx);}
+  .sbt.active{background:var(--am);color:var(--ng);font-weight:600;}
+  .sbt svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+  /* MAIN */
+  .am{padding:32px;overflow-y:auto;}
+  .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:14px;}
+  .ph h2{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:28px;text-transform:uppercase;}
+  .ph h2 span{color:#aaa;font-weight:400;font-size:16px;margin-left:8px;}
+
+  .btn{display:inline-flex;align-items:center;gap:7px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;padding:10px 20px;border-radius:6px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
+  .btn-o{background:transparent;border:1.5px solid var(--gr2);color:var(--tx2);}.btn-o:hover{border-color:#aaa;color:var(--tx);}
+  .btn-sm{font-size:12px;padding:6px 12px;}
+
+  /* STATS CARDS */
+  .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+  .sc{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;padding:20px;}
+  .sc .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;color:var(--ng);line-height:1.1;}
+  .sc .lbl{font-size:13px;color:var(--tx2);margin-top:4px;}
+  .sc .ico{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .iy{background:#fff8d0;}.ik{background:#f0f0f0;}
+
+  /* RANKING */
+  .tw{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;margin-bottom:28px;}
+  .ttb{padding:16px 20px;border-bottom:1px solid var(--gr2);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+  .ttb h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;}
+  .rank-body{padding:20px;}
+  .rank-row{display:grid;grid-template-columns:28px 1fr 90px;align-items:center;gap:14px;padding:9px 0;}
+  .rank-pos{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#bbb;text-align:center;}
+  .rank-row:nth-child(1) .rank-pos{color:var(--am2);-webkit-text-stroke:1px #c49a00;}
+  .rank-name{font-size:13px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .rank-bar-wrap{background:var(--gr);border-radius:20px;height:8px;overflow:hidden;}
+  .rank-bar{background:var(--am);height:100%;border-radius:20px;transition:width .4s;}
+  .rank-num{text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;}
+
+  /* TABLA */
+  table{width:100%;border-collapse:collapse;}
+  thead{background:var(--gr);}
+  th{text-align:left;padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--tx2);border-bottom:1px solid var(--gr2);}
+  td{padding:12px 16px;border-bottom:1px solid #f0ede8;vertical-align:middle;font-size:14px;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#fafaf8;}
+  .pn{font-weight:600;font-size:14px;}
+  .pc{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;}
+  .es{text-align:center;padding:60px 20px;color:#aaa;}
+  .es svg{width:48px;height:48px;margin-bottom:12px;stroke:#ccc;fill:none;stroke-width:1.5;}
+  .ld{text-align:center;padding:40px;color:#aaa;}
+
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--ng);color:#fff;padding:14px 20px;border-radius:8px;font-size:14px;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;border-left:3px solid var(--am);}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.err{border-left-color:var(--rd);}
+
+  @media (max-width:900px){
+    .ab{grid-template-columns:1fr;}
+    .sb{display:flex;overflow-x:auto;gap:6px;padding:12px;border-right:none;border-bottom:1px solid var(--gr2);}
+    .sb .sbl{display:none;}
+    .sbt{width:auto;white-space:nowrap;}
+    .sg{grid-template-columns:1fr 1fr;}
+    .am{padding:18px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lb">
+    <div class="ll">IMP<br>LEMAQ</div>
+    <h2>Panel de Administración</h2>
+    <p>Ingresá con tu cuenta de administrador</p>
+    <input type="email" id="le" placeholder="Email" autocomplete="email">
+    <input type="password" id="lp" placeholder="Contraseña">
+    <button class="btn-li" onclick="doLogin()">Ingresar</button>
+    <div id="lerr">Email o contraseña incorrectos</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="as">
+  <header class="ah">
+    <div class="ahl">
+      <div class="als">IMP<br>LEMAQ</div>
+      <h1>Admin <span>Estadísticas</span></h1>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="admin.html" class="btn btn-o btn-sm">← Volver al panel</a>
+      <button class="btn-lo" onclick="doLogout()">Salir</button>
+    </div>
+  </header>
+
+  <div class="ab">
+    <!-- SIDEBAR -->
+    <aside class="sb">
+      <div class="sbl">General</div>
+      <a href="admin.html" class="sbt">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="sbl">Multimedia</div>
+      <a href="imagenes.html" class="sbt">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        Imágenes
+      </a>
+      <div class="sbl">Tráfico</div>
+      <a href="estadisticas.html" class="sbt active">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        Estadísticas
+      </a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="am">
+      <div class="ph">
+        <h2>Estadísticas <span>Visitas al sitio y productos más buscados</span></h2>
+        <button class="btn btn-o btn-sm" onclick="cargarEstadisticas()">↻ Actualizar</button>
+      </div>
+
+      <!-- CARDS -->
+      <div class="sg">
+        <div class="sc">
+          <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="num" id="st-visitas">—</div>
+          <div class="lbl">Visitas totales al sitio</div>
+        </div>
+        <div class="sc">
+          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <div class="num" id="st-top" style="font-size:18px;">—</div>
+          <div class="lbl">Producto más visitado</div>
+        </div>
+        <div class="sc">
+          <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div>
+          <div class="num" id="st-total-prod">—</div>
+          <div class="lbl">Productos con visitas registradas</div>
+        </div>
+      </div>
+
+      <!-- RANKING TOP 10 -->
+      <div class="tw">
+        <div class="ttb"><h3>Top 10 — Productos más buscados</h3></div>
+        <div class="rank-body" id="rankingBody">
+          <div class="ld">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- TABLA COMPLETA -->
+      <div class="tw">
+        <div class="ttb"><h3>Detalle completo</h3></div>
+        <table>
+          <thead>
+            <tr><th>Producto</th><th>Visitas</th></tr>
+          </thead>
+          <tbody id="tablaBody">
+            <tr><td colspan="2" class="ld">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
+  authDomain: "implemaq-4bce2.firebaseapp.com",
+  projectId: "implemaq-4bce2",
+  storageBucket: "implemaq-4bce2.firebasestorage.app",
+  messagingSenderId: "433504757908",
+  appId: "1:433504757908:web:21cb6d1c0b333bec84ac81",
+  measurementId: "G-43YC2W9YHZ"
+});
+
+const auth = getAuth(app);
+const db = getFirestore(app);
+const ADMIN_EMAIL = "adminimplemaq@gmail.com";
+
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// -------------------- AUTENTICACIÓN (idéntico patrón a admin.html) --------------------
+onAuthStateChanged(auth, (u) => {
+  const loginSection = document.getElementById('ls');
+  const adminSection = document.getElementById('as');
+  const errorBox = document.getElementById('lerr');
+
+  if (u && u.email === ADMIN_EMAIL) {
+    loginSection.style.display = 'none';
+    adminSection.style.display = 'block';
+    errorBox.style.display = 'none';
+    cargarEstadisticas();
+    return;
+  }
+
+  if (u && u.email !== ADMIN_EMAIL) {
+    signOut(auth);
+    errorBox.textContent = 'Usuario no autorizado para administrar este sitio';
+    errorBox.style.display = 'block';
+  }
+
+  loginSection.style.display = 'flex';
+  adminSection.style.display = 'none';
+});
+
+window.doLogin = async () => {
+  const e = document.getElementById('le').value.trim();
+  const p = document.getElementById('lp').value;
+  const errorBox = document.getElementById('lerr');
+  try {
+    await signInWithEmailAndPassword(auth, e, p);
+  } catch {
+    errorBox.textContent = 'Email o contraseña incorrectos';
+    errorBox.style.display = 'block';
+  }
+};
+
+window.doLogout = () => signOut(auth);
+
+// -------------------- CARGA DE ESTADÍSTICAS --------------------
+window.cargarEstadisticas = async function cargarEstadisticas() {
+  document.getElementById('rankingBody').innerHTML = '<div class="ld">Cargando...</div>';
+  document.getElementById('tablaBody').innerHTML = '<tr><td colspan="2" class="ld">Cargando...</td></tr>';
+
+  try {
+    // 1) Visitas generales del sitio
+    const genSnap = await getDoc(doc(db, 'EstadisticasGeneral', 'general'));
+    const visitasTotales = genSnap.exists() ? (genSnap.data().visitasTotales || 0) : 0;
+    document.getElementById('st-visitas').textContent = visitasTotales.toLocaleString('es-AR');
+
+    // 2) Productos ordenados por visitas descendente
+    const q = query(collection(db, 'EstadisticasProductos'), orderBy('visitas', 'desc'));
+    const snap = await getDocs(q);
+    const productos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    document.getElementById('st-total-prod').textContent = productos.length;
+    document.getElementById('st-top').textContent = productos.length ? productos[0].nombre : 'Sin datos aún';
+
+    renderRanking(productos.slice(0, 10));
+    renderTabla(productos);
+  } catch (err) {
+    console.error(err);
+    toast('Error al cargar estadísticas', true);
+    document.getElementById('rankingBody').innerHTML = '<div class="es">No se pudieron cargar los datos.</div>';
+  }
+};
+
+function renderRanking(top10) {
+  const cont = document.getElementById('rankingBody');
+
+  if (!top10.length) {
+    cont.innerHTML = `
+      <div class="es">
+        <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        <p>Todavía no hay visitas registradas.</p>
+      </div>`;
+    return;
+  }
+
+  const maxVisitas = top10[0].visitas || 1;
+
+  cont.innerHTML = top10.map((p, i) => {
+    const pct = Math.max(4, Math.round((p.visitas / maxVisitas) * 100));
+    return `
+      <div class="rank-row">
+        <div class="rank-pos">${i + 1}</div>
+        <div>
+          <div class="rank-name" title="${p.nombre}">${p.nombre}</div>
+          <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
+        </div>
+        <div class="rank-num">${p.visitas.toLocaleString('es-AR')}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderTabla(productos) {
+  const body = document.getElementById('tablaBody');
+
+  if (!productos.length) {
+    body.innerHTML = '<tr><td colspan="2" class="es">Sin datos todavía.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = productos.map(p => `
+    <tr>
+      <td class="pn">${p.nombre}</td>
+      <td class="pc">${p.visitas.toLocaleString('es-AR')}</td>
+    </tr>
+  `).join('');
+}
+</script>
+</body>
+</html>
