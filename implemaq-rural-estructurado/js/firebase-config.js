@@ -10,6 +10,8 @@ import {
   increment
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
   authDomain: "implemaq-4bce2.firebaseapp.com",
@@ -22,9 +24,11 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 export {
   db,
+  auth,
   collection,
   getDocs,
   doc,

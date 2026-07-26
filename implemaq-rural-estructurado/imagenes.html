@@ -84,7 +84,7 @@
   /* PREVIEW ANTES DE SUBIR */
   .prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-top:18px;}
   .prev-card{border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;position:relative;background:#fff;}
-  .prev-thumb{width:100%;aspect-ratio:1/1;background:var(--gr);overflow:hidden;cursor:pointer;}
+  .prev-thumb{width:100%;aspect-ratio:1/1;background:var(--gr);overflow:hidden;}
   .prev-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
   .prev-info{padding:9px 10px;}
   .prev-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -100,7 +100,7 @@
   .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
   .gal-card{border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;background:#fff;transition:box-shadow .2s;}
   .gal-card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08);}
-  .gal-thumb{width:100%;aspect-ratio:4/3;background:var(--gr);display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:pointer;}
+  .gal-thumb{width:100%;aspect-ratio:4/3;background:var(--gr);display:flex;align-items:center;justify-content:center;overflow:hidden;}
   .gal-thumb svg{width:30px;height:30px;stroke:#ccc;fill:none;stroke-width:1.5;}
   .gal-thumb img{width:100%;height:100%;object-fit:cover;}
   .gal-body{padding:12px 14px;}
@@ -127,15 +127,6 @@
 
   input[type="file"]{display:none;}
 
-  /* LIGHTBOX (visor fullscreen) */
-  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:3000;display:none;align-items:center;justify-content:center;overflow:hidden;}
-  .lightbox.open{display:flex;}
-  .lightbox-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-  .lightbox-inner img{max-width:90%;max-height:90%;object-fit:contain;transition:transform .08s ease-out;cursor:grab;user-select:none;-webkit-user-drag:none;transform-origin:center center;}
-  .lightbox-close{position:absolute;top:20px;right:24px;width:42px;height:42px;border:none;border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:3001;}
-  .lightbox-close:hover{background:rgba(255,255,255,.22);}
-  .lightbox-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.5px;text-transform:uppercase;}
-
   @media (max-width:900px){
     .ab{grid-template-columns:1fr;}
     .sb{display:flex;overflow-x:auto;gap:6px;padding:12px;border-right:none;border-bottom:1px solid var(--gr2);}
@@ -160,7 +151,7 @@
       <h1>Admin <span>Gestor de Imágenes</span></h1>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <a href="admin.html" class="btn btn-o btn-sm">← Volver al panel</a>
+      <a href="admin" class="btn btn-o btn-sm">← Volver al panel</a>
     </div>
   </header>
 
@@ -168,29 +159,29 @@
     <!-- SIDEBAR -->
     <aside class="sb">
       <div class="sbl">General</div>
-      <a href="admin.html" class="sbt">
+      <a href="admin" class="sbt">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </a>
       <div class="sbl">Productos</div>
-      <a href="admin.html#maquinaria" class="sbt">
+      <a href="admin#maquinaria" class="sbt">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         Maquinaria
       </a>
-      <a href="admin.html#repuestos" class="sbt">
+      <a href="admin#repuestos" class="sbt">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
         Repuestos
       </a>
-      <a href="admin.html#insumos" class="sbt">
+      <a href="admin#insumos" class="sbt">
         <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
         Insumos
       </a>
       <div class="sbl">Multimedia</div>
-      <a href="imagenes.html" class="sbt active">
+      <a href="imagenes" class="sbt active">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
         Imágenes
       </a>
-      <a href="clientesfiscales.html" class="sbt">
+      <a href="clientesfiscales" class="sbt">
         <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8h8"/><path d="M8 12h8"/><path d="M8 16h5"/></svg>
         Clientes Fiscales
       </a>
@@ -274,65 +265,29 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- VISOR FULLSCREEN (LIGHTBOX) -->
-<div class="lightbox" id="lightbox">
-  <button class="lightbox-close" id="lightboxClose" title="Cerrar (ESC)">✕</button>
-  <div class="lightbox-inner" id="lightboxInner">
-    <img id="lightboxImg" src="" alt="">
-  </div>
-  <div class="lightbox-hint">Rueda del mouse para hacer zoom · ESC o clic afuera para cerrar</div>
-</div>
-
-<script type="module">
+<script>
 /* ==================================================================
    GESTOR DE IMÁGENES — IMPLEMAQ RURAL
-   Los archivos se suben a Cloudinary (sin backend, upload sin firmar).
-   Firestore guarda un pequeño índice (nombre, url, tamaño, fecha) para
-   poder listar, buscar y "eliminar" desde la galería.
-   Las funciones subirArchivo(), eliminarArchivo() y generarLink()
-   quedan encapsuladas: son las únicas que habría que tocar si algún
-   día se reemplaza Cloudinary por un backend propio.
+   Vanilla JS. Sin frameworks, sin librerías externas.
+   Las funciones subirImagenes(), eliminarImagen(), copiarURL()
+   y cargarGaleria() quedan preparadas para conectarse más adelante
+   con subir.php / eliminar.php.
    ================================================================== */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
-
-const app = initializeApp({
-  apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
-  authDomain: "implemaq-4bce2.firebaseapp.com",
-  projectId: "implemaq-4bce2",
-  storageBucket: "implemaq-4bce2.firebasestorage.app",
-  messagingSenderId: "433504757908",
-  appId: "1:433504757908:web:21cb6d1c0b333bec84ac81",
-  measurementId: "G-43YC2W9YHZ"
-});
-
-const auth = getAuth(app);
-const db = getFirestore(app);
-const ADMIN_EMAIL = "adminimplemaq@gmail.com";
-
-// -------------------- CLOUDINARY (almacenamiento real de archivos) --------------------
-const CLOUDINARY_CLOUD_NAME = 'bntkunqu';
-const CLOUDINARY_UPLOAD_PRESET = 'imagenes';
-const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-// -------------------- FIRESTORE (índice de la galería) --------------------
-const GALERIA_COLLECTION = 'ImagenesGaleria';
-
-// Protege esta página igual que admin.html: si no hay sesión de
-// administrador activa, redirige al login del panel.
-onAuthStateChanged(auth, (u) => {
-  if (!u || u.email !== ADMIN_EMAIL) {
-    window.location.href = 'admin.html';
-  }
-});
 
 // -------------------- ESTADO --------------------
 let colaSubida = [];      // archivos seleccionados, pendientes de "subir"
-let galeria = [];         // índice de imágenes ya subidas (Firestore + Cloudinary)
+let galeria = [];         // imágenes ya "subidas" (mock)
 let idPendiente = null;   // id en espera de confirmación de borrado
 
-galeria = [];
+// -------------------- DATOS DE EJEMPLO (MOCK) --------------------
+// Estos valores simulan lo que vendría del servidor (subir.php / eliminar.php).
+galeria = [
+  { id: 'img-1', nombre: 'tractor.jpg',     url: 'https://implemaqrural.com.ar/uploads/tractor.jpg',     sizeMB: 4.2  },
+  { id: 'img-2', nombre: 'sembradora.png',  url: 'https://implemaqrural.com.ar/uploads/sembradora.png',  sizeMB: 6.8  },
+  { id: 'img-3', nombre: 'fumigadora.webp', url: 'https://implemaqrural.com.ar/uploads/fumigadora.webp', sizeMB: 3.1  },
+  { id: 'img-4', nombre: 'rastra.jpg',      url: 'https://implemaqrural.com.ar/uploads/rastra.jpg',      sizeMB: 2.9  },
+  { id: 'img-5', nombre: 'arado.jpg',       url: 'https://implemaqrural.com.ar/uploads/arado.jpg',       sizeMB: 5.4  }
+];
 
 // -------------------- HELPERS --------------------
 function formatoTamano(bytes) {
@@ -357,88 +312,6 @@ function manejarErrorImagen(imgEl) {
   imgEl.parentElement.innerHTML = iconoSinImagen();
 }
 window.manejarErrorImagen = manejarErrorImagen;
-
-// ==================================================================
-// GENERADOR DE ENLACE (preparado para migrar a un backend propio)
-// ==================================================================
-// Ahora que las imágenes viven en Firebase Storage, la URL que
-// devuelve getDownloadURL() YA es el enlace público definitivo.
-// El día que se reemplace Storage por un backend propio (PHP/S3/etc),
-// esta es la única función que habría que tocar.
-function generarLink(urlReal) {
-  return urlReal;
-}
-
-// ==================================================================
-// VISOR FULLSCREEN (LIGHTBOX) con zoom
-// ==================================================================
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const lightboxInner = document.getElementById('lightboxInner');
-const lightboxClose = document.getElementById('lightboxClose');
-let zoomActual = 1;
-const ZOOM_MIN = 1;
-const ZOOM_MAX = 5;
-const ZOOM_PASO = 0.12;
-
-function abrirLightbox(url, nombre) {
-  if (!url) return;
-  zoomActual = 1;
-  lightboxImg.src = url;
-  lightboxImg.alt = nombre || '';
-  lightboxImg.style.transform = 'scale(1)';
-  lightbox.classList.add('open');
-}
-window.abrirLightbox = abrirLightbox;
-
-function cerrarLightbox() {
-  lightbox.classList.remove('open');
-  lightboxImg.src = '';
-  zoomActual = 1;
-}
-window.cerrarLightbox = cerrarLightbox;
-
-lightboxClose.addEventListener('click', cerrarLightbox);
-
-// Cerrar haciendo click fuera de la imagen (en el fondo oscuro)
-lightbox.addEventListener('click', e => {
-  if (e.target === lightbox || e.target === lightboxInner) {
-    cerrarLightbox();
-  }
-});
-
-// Cerrar con ESC
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && lightbox.classList.contains('open')) {
-    cerrarLightbox();
-  }
-});
-
-// Zoom suave con la rueda del mouse
-lightboxInner.addEventListener('wheel', e => {
-  if (!lightbox.classList.contains('open')) return;
-  e.preventDefault();
-
-  if (e.deltaY < 0) {
-    zoomActual = Math.min(ZOOM_MAX, zoomActual + ZOOM_PASO);
-  } else {
-    zoomActual = Math.max(ZOOM_MIN, zoomActual - ZOOM_PASO);
-  }
-
-  lightboxImg.style.transform = `scale(${zoomActual})`;
-}, { passive: false });
-
-// ==================================================================
-// ARRASTRAR IMAGEN HACIA admin.html
-// ==================================================================
-// Al soltar sobre el campo "URLs de imágenes" del formulario de
-// productos, el navegador inserta este texto (la URL real de
-// Storage) tal como si se hubiera pegado a mano.
-function arrastrarImagen(e, link) {
-  e.dataTransfer.setData('text/plain', link);
-  e.dataTransfer.effectAllowed = 'copy';
-}
-window.arrastrarImagen = arrastrarImagen;
 
 // ==================================================================
 // 1) DRAG & DROP + SELECCIÓN MANUAL
@@ -514,9 +387,7 @@ function renderPreviews() {
   cont.innerHTML = colaSubida.map(item => `
     <div class="prev-card">
       <button class="prev-del" onclick="quitarDeCola('${item.id}')" title="Quitar">✕</button>
-      <div class="prev-thumb" onclick="abrirLightbox('${item.previewUrl}', '${item.nombre}')">
-        <img src="${item.previewUrl}" alt="${item.nombre}">
-      </div>
+      <div class="prev-thumb"><img src="${item.previewUrl}" alt="${item.nombre}"></div>
       <div class="prev-info">
         <div class="prev-name" title="${item.nombre}">${item.nombre}</div>
         <div class="prev-meta">${formatoTamano(item.tamano)}${item.resolucion ? ' · ' + item.resolucion : ''}</div>
@@ -552,98 +423,32 @@ function renderBotonSubir() {
   `;
 }
 
-// ------------------------------------------------------------------
-// subirArchivo(item)
-// Encapsula la subida de UN solo archivo. Sube el archivo real a
-// Cloudinary (sin backend, preset sin firmar) y guarda su ficha en
-// Firestore para que la galería pueda listarlo/buscarlo/borrarlo.
-// El día que se reemplace Cloudinary por un backend propio, esta es
-// la única función que hay que tocar (subirImagenes() no cambia).
-// ------------------------------------------------------------------
-async function subirArchivo(item) {
-  const formData = new FormData();
-  formData.append('file', item.file);
-  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-  const res = await fetch(CLOUDINARY_UPLOAD_URL, { method: 'POST', body: formData });
-  if (!res.ok) throw new Error('No se pudo subir la imagen a Cloudinary');
-  const data = await res.json();
-
-  const url = generarLink(data.secure_url);
-  await addDoc(collection(db, GALERIA_COLLECTION), {
-    nombre: item.nombre,
-    url,
-    tamano: data.bytes || item.tamano,
-    resolucion: data.width && data.height ? `${data.width}×${data.height}px` : item.resolucion,
-    creado: serverTimestamp()
-  });
-
-  return url;
-}
-window.subirArchivo = subirArchivo;
-
-// Recorre la cola de subida y sube cada archivo real a Cloudinary.
-// Al terminar, resincroniza la galería contra Firestore (fuente de verdad).
-async function subirImagenes() {
+// Función preparada para conectar con subir.php más adelante.
+// De momento, simula la subida agregando los archivos a la galería.
+function subirImagenes() {
   if (!colaSubida.length) {
     toast('No hay imágenes seleccionadas', true);
     return;
   }
 
-  const cola = [...colaSubida];
-  toast(`Subiendo ${cola.length} imagen(es)...`);
+  // TODO: reemplazar este bloque por el envío real (fetch/FormData a subir.php)
+  colaSubida.forEach(item => {
+    galeria.unshift({
+      id: item.id,
+      nombre: item.nombre,
+      url: `https://implemaqrural.com.ar/uploads/${item.nombre}`,
+      sizeMB: item.tamano / (1024 * 1024)
+    });
+  });
 
-  try {
-    await Promise.all(cola.map(item => subirArchivo(item)));
-    toast(`${cola.length} imagen(es) subida(s) correctamente`);
-  } catch (e) {
-    toast('Error al subir imágenes: ' + e.message, true);
-  }
+  toast(`${colaSubida.length} imagen(es) subida(s) correctamente`);
 
-  cola.forEach(item => URL.revokeObjectURL(item.previewUrl));
-  colaSubida = colaSubida.filter(item => !cola.includes(item));
+  colaSubida.forEach(item => URL.revokeObjectURL(item.previewUrl));
+  colaSubida = [];
   renderPreviews();
-  await sincronizarGaleria();
-}
-window.subirImagenes = subirImagenes;
-
-// ==================================================================
-// SINCRONIZAR GALERÍA CON FIRESTORE (índice de lo subido a Cloudinary)
-// ==================================================================
-async function sincronizarGaleria() {
-  const cont = document.getElementById('galContainer');
-  cont.innerHTML = `<div class="es" style="grid-column:1/-1;"><p>Cargando imágenes...</p></div>`;
-
-  try {
-    const snap = await getDocs(collection(db, GALERIA_COLLECTION));
-    galeria = snap.docs.map(d => {
-      const data = d.data();
-      return {
-        id: d.id,
-        nombre: data.nombre,
-        url: data.url,
-        previewUrl: null,
-        link: data.url,
-        tamano: data.tamano || null,
-        resolucion: data.resolucion || null,
-        sizeMB: (data.tamano || 0) / (1024 * 1024),
-        creado: data.creado
-      };
-    });
-
-    galeria.sort((a, b) => {
-      const ta = a.creado?.seconds || 0;
-      const tb = b.creado?.seconds || 0;
-      return tb - ta; // más recientes primero
-    });
-  } catch (e) {
-    toast('Error al cargar la galería: ' + e.message, true);
-    galeria = [];
-  }
-
   cargarGaleria();
 }
-window.sincronizarGaleria = sincronizarGaleria;
+window.subirImagenes = subirImagenes;
 
 // ==================================================================
 // 4) GALERÍA + 5) BUSCADOR
@@ -663,29 +468,19 @@ function cargarGaleria() {
         <p>No se encontraron imágenes${termino ? ' para "' + termino + '"' : ''}.</p>
       </div>`;
   } else {
-    cont.innerHTML = filtradas.map(img => {
-      const meta = (img.tamano ? formatoTamano(img.tamano) : '') +
-                   (img.resolucion ? (img.tamano ? ' · ' : '') + img.resolucion : '');
-      return `
+    cont.innerHTML = filtradas.map(img => `
       <div class="gal-card">
-        <div class="gal-thumb"
-             draggable="true"
-             ondragstart="arrastrarImagen(event, '${img.link}')"
-             onclick="abrirLightbox('${img.url}', '${img.nombre}')"
-             title="Arrastrá esta imagen al campo de fotos en el panel de productos">
-          <img src="${img.url}" alt="${img.nombre}" onerror="manejarErrorImagen(this)">
-        </div>
+        <div class="gal-thumb"><img src="${img.url}" alt="${img.nombre}" onerror="manejarErrorImagen(this)"></div>
         <div class="gal-body">
           <div class="gal-name" title="${img.nombre}">${img.nombre}</div>
-          <div class="gal-url" title="${img.link}">${meta || 'listo para usar'}</div>
+          <div class="gal-url" title="${img.url}">${img.url}</div>
           <div class="gal-actions">
-            <button class="btn btn-o btn-sm" onclick="copiarLink('${img.link}')">📋 Copiar enlace</button>
+            <button class="btn btn-o btn-sm" onclick="copiarURL('${img.url}')">📋 Copiar URL</button>
             <button class="btn btn-r btn-sm" onclick="pedirEliminarImagen('${img.id}')">🗑 Eliminar</button>
           </div>
         </div>
       </div>
-    `;
-    }).join('');
+    `).join('');
   }
 
   actualizarContadores(filtradas.length);
@@ -695,21 +490,12 @@ window.cargarGaleria = cargarGaleria;
 document.getElementById('buscador').addEventListener('input', cargarGaleria);
 
 // ==================================================================
-// 6) COPIAR ENLACE
+// 6) COPIAR URL
 // ==================================================================
-// copiarLink() encapsula la copia al portapapeles. Hoy copia el
-// nombre de archivo / ruta local; el día que exista subir.php,
-// "link" ya vendrá con la URL real y esta función no cambia.
-function copiarLink(link) {
-  navigator.clipboard.writeText(link)
-    .then(() => toast('Enlace copiado'))
-    .catch(() => toast('No se pudo copiar el enlace', true));
-}
-window.copiarLink = copiarLink;
-
-// Alias retrocompatible (se mantiene por si algo del panel aún la usa)
 function copiarURL(url) {
-  copiarLink(url);
+  navigator.clipboard.writeText(url)
+    .then(() => toast('URL copiada'))
+    .catch(() => toast('No se pudo copiar la URL', true));
 }
 window.copiarURL = copiarURL;
 
@@ -733,29 +519,12 @@ document.getElementById('cok').addEventListener('click', () => {
   cerrarConfirmacion();
 });
 
-// ------------------------------------------------------------------
-// eliminarArchivo(id)
-// Encapsula la eliminación real de UN registro. Hoy borra la ficha
-// del índice en Firestore (deja de verse en la galería). El archivo
-// físico en Cloudinary NO se borra desde acá porque requeriría
-// exponer una clave secreta en el navegador — eso necesita backend.
-// El día que exista ese backend, esta es la única función a tocar.
-// ------------------------------------------------------------------
-async function eliminarArchivo(id) {
-  await deleteDoc(doc(db, GALERIA_COLLECTION, id));
-}
-window.eliminarArchivo = eliminarArchivo;
-
-// Función preparada para conectar con un backend propio más adelante.
-// Hoy quita la imagen de la galería (índice en Firestore).
-async function eliminarImagen(id) {
-  try {
-    await eliminarArchivo(id);
-    toast('Imagen quitada de la galería');
-  } catch (e) {
-    toast('Error al eliminar: ' + e.message, true);
-  }
-  await sincronizarGaleria();
+// Función preparada para conectar con eliminar.php más adelante.
+// De momento solo elimina la tarjeta del HTML (simulado).
+function eliminarImagen(id) {
+  galeria = galeria.filter(img => img.id !== id);
+  cargarGaleria();
+  toast('Imagen eliminada');
 }
 window.eliminarImagen = eliminarImagen;
 
@@ -772,7 +541,7 @@ function actualizarContadores(cantidadFiltrada) {
 }
 
 // -------------------- INICIALIZACIÓN --------------------
-sincronizarGaleria();
+cargarGaleria();
 </script>
 </body>
 </html>

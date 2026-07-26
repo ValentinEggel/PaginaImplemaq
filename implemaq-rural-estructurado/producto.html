@@ -607,197 +607,66 @@ import {
   getDoc,
   getDocs,
   collection,
-  updateDoc,
   increment
 } from "./js/firebase-config.js";
 
-// ── OBTENER ID DE LA URL ──
+import {
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+// ── VARIABLES GLOBALES ──
 const params = new URLSearchParams(window.location.search);
 const prodId = params.get('id');
-
 let imgActual = '';
 
-async function cargar() {
-  if (!prodId) { window.location.href = 'catalogo.html'; return; }
+// ── FUNCIONES AUXILIARES GLOBALES ──
+function normalizar(texto) {
+  return String(texto || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
 
-  try {
-    const snap = await getDoc(doc(db, "Productos", prodId));
-    if (!snap.exists()) { window.location.href = 'catalogo.html'; return; }
+function formatearPrecio(precio, moneda = "ARS") {
+  if (!precio) return 'Consultar precio';
 
-    const p = snap.data();
-    const nombre   = p.Nombre || p.nombre || '';
-    const marca    = p.Marca  || p.marca  || '';
-    const cat      = p.Categoría || p.Categoria || p.categoria || '';
-    const estado   = p.Estado || p.estado || 'Nuevo';
-    const precio   = p.Precio || p.precio || 'Consultar';
-    const desc     = p.Descripción || p.descripcion || 'Sin descripción disponible.';
-    const imgs     = p.Imagenes || p.Fotos || p.fotos || (p.Imagen ? [p.Imagen] : (p.imagen ? [p.imagen] : []));
+  const monedaNormalizada = String(moneda || "ARS").toUpperCase().trim();
+  const prefijo = monedaNormalizada === "USD" ? "U$S " : "$ ";
 
-    // Título página
-    document.title = `${nombre} — IMPLEMAQ RURAL`;
-
-    // Breadcrumb
-    document.getElementById('bread-cat').textContent = cat;
-    document.getElementById('bread-nombre').textContent = nombre;
-
-    // Info
-    document.getElementById('info-nombre').textContent = nombre;
-    document.getElementById('info-marca').textContent  = marca || 'Sin especificar';
-    document.getElementById('info-cat').textContent    = cat;
-    document.getElementById('dato-cat').textContent    = cat;
-    document.getElementById('dato-marca').textContent  = marca || '—';
-
-    // Estado
-    const estadoEl = document.getElementById('dato-estado');
-    const badgeEl  = document.getElementById('badge-estado');
-    estadoEl.textContent = estado;
-    estadoEl.className   = `badge-est ${estado.toLowerCase() === 'usado' ? 'badge-usado2' : 'badge-nuevo2'}`;
-    badgeEl.textContent  = estado;
-    badgeEl.className    = `galeria-badge-est ${estado.toLowerCase() === 'usado' ? 'usado' : 'nuevo'}`;
-
-// Precio
-const precioEl = document.getElementById('info-precio');
-const precioNota = document.getElementById('precio-nota');
-
-const moneda = p.Moneda || p.moneda || "ARS";
-
-const normalizarPrecio = valor => {
-  if (!valor) return null;
-
-  if (typeof valor === "number") {
-    return Number.isFinite(valor) && valor > 0 ? valor : null;
+  if (typeof precio === "number") {
+    return Number.isFinite(precio) && precio > 0
+      ? prefijo + precio.toLocaleString('es-AR')
+      : 'Consultar precio';
   }
 
-  const texto = String(valor).trim().toLowerCase();
+  const texto = String(precio).trim().toLowerCase();
 
   if (
     !texto ||
-    texto.includes("consultar") ||
-    texto.includes("a consultar") ||
-    texto.includes("nan")
+    texto.includes('consultar') ||
+    texto.includes('a consultar') ||
+    texto.includes('nan')
   ) {
-    return null;
+    return 'Consultar precio';
   }
 
-  const soloNumeros = texto.replace(/[^0-9]/g, "");
+  const soloNumeros = texto.replace(/[^0-9]/g, '');
 
-  if (!soloNumeros) return null;
+  if (!soloNumeros) return 'Consultar precio';
 
   const numero = Number(soloNumeros);
 
-  return Number.isFinite(numero) && numero > 0 ? numero : null;
-};
-
-const precioNormalizado = normalizarPrecio(precio);
-
-if (!precioNormalizado) {
-  precioEl.textContent = 'Consultar precio';
-  precioEl.classList.add('consultar');
-  precioNota.textContent = 'Precio a consultar';
-} else {
-  precioEl.classList.remove('consultar');
-
-  precioEl.textContent =
-    moneda === "USD"
-      ? 'U$S ' + precioNormalizado.toLocaleString('es-AR')
-      : '$ ' + precioNormalizado.toLocaleString('es-AR');
-
-  precioNota.textContent =
-    moneda === "USD"
-      ? 'Precio en dólares · IVA no incluido'
-      : 'Precio en pesos argentinos · IVA no incluido';
-}
-
-    // Descripción
-    document.getElementById('desc-texto').textContent = desc;
-
-    // Imágenes
-    const imgPrincipal = document.getElementById('img-principal');
-    if (imgs.length > 0) {
-      imgActual = imgs[0];
-      imgPrincipal.src = imgs[0];
-      window.imgActual = imgs[0];
-
-      const thumbsEl = document.getElementById('galeria-thumbs');
-      if (imgs.length > 1) {
-        thumbsEl.innerHTML = imgs.map((src, i) => `
-          <div class="thumb ${i===0?'active':''}" onclick="cambiarImg('${src}', this)">
-            <img src="${src}" onerror="this.parentElement.style.display='none'">
-          </div>`).join('');
-      }
-    } else {
-      imgPrincipal.src = 'https://via.placeholder.com/600x450/f5f3ee/aaa?text=Sin+imagen';
-    }
-
-    // Botones WhatsApp
-    const msgWpp = `Hola! Me interesa consultar por: *${nombre}* (${marca}).\n\nLink del producto:\n${window.location.href}\n\n¿Tienen disponibilidad y cuál es el precio?`;
-    const wppUrl = `https://wa.me/543492508683?text=${encodeURIComponent(msgWpp)}`;
-    document.getElementById('btn-wpp-directo').href = wppUrl;
-    document.getElementById('btn-wpp-lateral').href = wppUrl;
-
-    // Compartir
-    const pageUrl = window.location.href;
-    document.getElementById('share-wpp').href = `https://wa.me/?text=${encodeURIComponent(nombre + ' — IMPLEMAQ RURAL\n' + pageUrl)}`;
-    document.getElementById('share-fb').href  = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
-
-    // Contador de vistas
-    try {
-      await updateDoc(doc(db, "Productos", prodId), { Vistas: increment(1) });
-    } catch {}
-
-    // Relacionados
-    cargarRelacionados(cat, prodId);
-
-  } catch(e) {
-    console.error(e);
+  if (!Number.isFinite(numero) || numero <= 0) {
+    return 'Consultar precio';
   }
+
+  return prefijo + numero.toLocaleString('es-AR');
 }
 
+// ── FUNCIÓN: CARGAR PRODUCTOS RELACIONADOS ──
 async function cargarRelacionados(cat, idActual) {
   try {
-    const normalizar = txt =>
-      String(txt || '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase()
-        .trim();
-
-    const formatearPrecio = (precio, moneda = "ARS") => {
-      if (!precio) return 'Consultar precio';
-
-      const monedaNormalizada = String(moneda || "ARS").toUpperCase().trim();
-      const prefijo = monedaNormalizada === "USD" ? "U$S " : "$ ";
-
-      if (typeof precio === "number") {
-        return Number.isFinite(precio) && precio > 0
-          ? prefijo + precio.toLocaleString('es-AR')
-          : 'Consultar precio';
-      }
-
-      const texto = String(precio).trim().toLowerCase();
-
-      if (
-        !texto ||
-        texto.includes('consultar') ||
-        texto.includes('a consultar') ||
-        texto.includes('nan')
-      ) {
-        return 'Consultar precio';
-      }
-
-      const soloNumeros = texto.replace(/[^0-9]/g, '');
-
-      if (!soloNumeros) return 'Consultar precio';
-
-      const numero = Number(soloNumeros);
-
-      if (!Number.isFinite(numero) || numero <= 0) {
-        return 'Consultar precio';
-      }
-
-      return prefijo + numero.toLocaleString('es-AR');
-    };
-
     const snap = await getDocs(collection(db, "Productos"));
 
     const relacionados = snap.docs
@@ -890,9 +759,169 @@ async function cargarRelacionados(cat, idActual) {
     console.error("Error cargando relacionados:", error);
   }
 }
-cargar();
 
-// ── GALERÍA ──
+// ── FUNCIÓN PRINCIPAL: CARGAR PRODUCTO ──
+async function cargar() {
+  if (!prodId) { 
+    window.location.href = 'catalogo.html'; 
+    return; 
+  }
+
+  try {
+    const snap = await getDoc(doc(db, "Productos", prodId));
+    if (!snap.exists()) { 
+      window.location.href = 'catalogo.html'; 
+      return; 
+    }
+
+    const p = snap.data();
+    const nombre   = p.Nombre || p.nombre || '';
+    const marca    = p.Marca  || p.marca  || '';
+    const cat      = p.Categoría || p.Categoria || p.categoria || '';
+    const estado   = p.Estado || p.estado || 'Nuevo';
+    const precio   = p.Precio || p.precio || 'Consultar';
+    const desc     = p.Descripción || p.descripcion || 'Sin descripción disponible.';
+    const imgs     = p.Imagenes || p.Fotos || p.fotos || (p.Imagen ? [p.Imagen] : (p.imagen ? [p.imagen] : []));
+
+    // Título página
+    document.title = `${nombre} — IMPLEMAQ RURAL`;
+
+    // Breadcrumb
+    document.getElementById('bread-cat').textContent = cat;
+    document.getElementById('bread-nombre').textContent = nombre;
+
+    // Info
+    document.getElementById('info-nombre').textContent = nombre;
+    document.getElementById('info-marca').textContent  = marca || 'Sin especificar';
+    document.getElementById('info-cat').textContent    = cat;
+    document.getElementById('dato-cat').textContent    = cat;
+    document.getElementById('dato-marca').textContent  = marca || '—';
+
+    // Estado
+    const estadoEl = document.getElementById('dato-estado');
+    const badgeEl  = document.getElementById('badge-estado');
+    estadoEl.textContent = estado;
+    estadoEl.className   = `badge-est ${estado.toLowerCase() === 'usado' ? 'badge-usado2' : 'badge-nuevo2'}`;
+    badgeEl.textContent  = estado;
+    badgeEl.className    = `galeria-badge-est ${estado.toLowerCase() === 'usado' ? 'usado' : 'nuevo'}`;
+
+    // Precio
+    const precioEl = document.getElementById('info-precio');
+    const precioNota = document.getElementById('precio-nota');
+
+    const moneda = p.Moneda || p.moneda || "ARS";
+
+    const normalizarPrecio = valor => {
+      if (!valor) return null;
+
+      if (typeof valor === "number") {
+        return Number.isFinite(valor) && valor > 0 ? valor : null;
+      }
+
+      const texto = String(valor).trim().toLowerCase();
+
+      if (
+        !texto ||
+        texto.includes("consultar") ||
+        texto.includes("a consultar") ||
+        texto.includes("nan")
+      ) {
+        return null;
+      }
+
+      const soloNumeros = texto.replace(/[^0-9]/g, "");
+
+      if (!soloNumeros) return null;
+
+      const numero = Number(soloNumeros);
+
+      return Number.isFinite(numero) && numero > 0 ? numero : null;
+    };
+
+    const precioNormalizado = normalizarPrecio(precio);
+
+    if (!precioNormalizado) {
+      precioEl.textContent = 'Consultar precio';
+      precioEl.classList.add('consultar');
+      precioNota.textContent = 'Precio a consultar';
+    } else {
+      precioEl.classList.remove('consultar');
+
+      precioEl.textContent =
+        moneda === "USD"
+          ? 'U$S ' + precioNormalizado.toLocaleString('es-AR')
+          : '$ ' + precioNormalizado.toLocaleString('es-AR');
+
+      precioNota.textContent =
+        moneda === "USD"
+          ? 'Precio en dólares · IVA no incluido'
+          : 'Precio en pesos argentinos · IVA no incluido';
+    }
+
+    // Descripción
+    document.getElementById('desc-texto').textContent = desc;
+
+    // Imágenes
+    const imgPrincipal = document.getElementById('img-principal');
+    if (imgs.length > 0) {
+      imgActual = imgs[0];
+      imgPrincipal.src = imgs[0];
+      window.imgActual = imgs[0];
+
+      const thumbsEl = document.getElementById('galeria-thumbs');
+      if (imgs.length > 1) {
+        thumbsEl.innerHTML = imgs.map((src, i) => `
+          <div class="thumb ${i===0?'active':''}" onclick="cambiarImg('${src}', this)">
+            <img src="${src}" onerror="this.parentElement.style.display='none'">
+          </div>`).join('');
+      }
+    } else {
+      imgPrincipal.src = 'https://via.placeholder.com/600x450/f5f3ee/aaa?text=Sin+imagen';
+    }
+
+    // Botones WhatsApp
+    const msgWpp = `Hola! Me interesa consultar por: *${nombre}* (${marca}).\n\nLink del producto:\n${window.location.href}\n\n¿Tienen disponibilidad y cuál es el precio?`;
+    const wppUrl = `https://wa.me/543492508683?text=${encodeURIComponent(msgWpp)}`;
+    document.getElementById('btn-wpp-directo').href = wppUrl;
+    document.getElementById('btn-wpp-lateral').href = wppUrl;
+
+    // Compartir
+    const pageUrl = window.location.href;
+    document.getElementById('share-wpp').href = `https://wa.me/?text=${encodeURIComponent(nombre + ' — IMPLEMAQ RURAL\n' + pageUrl)}`;
+    document.getElementById('share-fb').href  = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`;
+
+    // Registrar visita
+    (async () => {
+      const clave = `visita_${prodId}`;
+      const ultimaVisita = localStorage.getItem(clave);
+      const TIEMPO_ESPERA = 30 * 60 * 1000;
+
+      if (!ultimaVisita || (Date.now() - Number(ultimaVisita)) > TIEMPO_ESPERA) {
+        try {
+          await setDoc(
+            doc(db, "EstadisticasProductos", prodId),
+            {
+              nombre,
+              visitas: increment(1)
+            },
+            { merge: true }
+          );
+          localStorage.setItem(clave, Date.now().toString());
+        } catch (e) {
+          console.error("Error registrando visita:", e);
+        }
+      }
+    })();
+
+    // ── CARGAR PRODUCTOS RELACIONADOS ──
+    await cargarRelacionados(cat, prodId);
+
+  } catch (error) {
+    console.error("Error cargando producto:", error);
+  }
+}
+
+// ── FUNCIONES DE GALERÍA ──
 window.cambiarImg = (src, el) => {
   document.getElementById('img-principal').src = src;
   window.imgActual = src;
@@ -900,7 +929,7 @@ window.cambiarImg = (src, el) => {
   el.classList.add('active');
 };
 
-window.abrirLightbox = src => {
+window.abrirLightbox = (src) => {
   document.getElementById('lightbox-img').src = src;
   document.getElementById('lightbox').classList.add('open');
 };
@@ -915,25 +944,30 @@ window.copiarLink = () => {
   });
 };
 
-  const menuToggle = document.getElementById("menu-toggle");
-  const mainNav = document.getElementById("main-nav");
+// ── MENÚ HAMBURGUESA ──
+const menuToggle = document.getElementById("menu-toggle");
+const mainNav = document.getElementById("main-nav");
 
-  if (menuToggle && mainNav) {
-    menuToggle.addEventListener("click", () => {
-      menuToggle.classList.toggle("open");
-      mainNav.classList.toggle("open");
-      document.body.classList.toggle("menu-open");
-    });
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener("click", () => {
+    menuToggle.classList.toggle("open");
+    mainNav.classList.toggle("open");
+    document.body.classList.toggle("menu-open");
+  });
 
-    mainNav.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", () => {
-        menuToggle.classList.remove("open");
-        mainNav.classList.remove("open");
-        document.body.classList.remove("menu-open");
-      });
+  mainNav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      menuToggle.classList.remove("open");
+      mainNav.classList.remove("open");
+      document.body.classList.remove("menu-open");
     });
-  }
+  });
+}
+
+// ── EJECUTAR CARGA ──
+cargar().catch(err => console.error('Error al cargar el producto:', err));
+
 </script>
-</script>
+
 </body>
 </html>

@@ -93,6 +93,18 @@
   .es svg{width:48px;height:48px;margin-bottom:12px;stroke:#ccc;fill:none;stroke-width:1.5;}
   .ld{text-align:center;padding:40px;color:#aaa;}
 
+  /* ACCIONES DE TABLA */
+  .btn-r{background:#ffebee;color:var(--rd);}.btn-r:hover{background:#ffcdd2;}
+  .acc-col{text-align:right;width:110px;}
+
+  /* CONFIRM */
+  .co{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;}
+  .co.open{display:flex;}
+  .cb{background:#fff;border-radius:10px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .cb h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;margin-bottom:10px;text-transform:uppercase;}
+  .cb p{font-size:14px;color:var(--tx2);margin-bottom:24px;}
+  .cbb{display:flex;gap:10px;justify-content:center;}
+
   .toast{position:fixed;bottom:24px;right:24px;background:var(--ng);color:#fff;padding:14px 20px;border-radius:8px;font-size:14px;z-index:9999;transform:translateY(100px);opacity:0;transition:all .3s;border-left:3px solid var(--am);}
   .toast.show{transform:translateY(0);opacity:1;}
   .toast.err{border-left-color:var(--rd);}
@@ -130,7 +142,7 @@
       <h1>Admin <span>Estadísticas</span></h1>
     </div>
     <div style="display:flex;gap:10px;align-items:center;">
-      <a href="admin.html" class="btn btn-o btn-sm">← Volver al panel</a>
+      <a href="admin" class="btn btn-o btn-sm">← Volver al panel</a>
       <button class="btn-lo" onclick="doLogout()">Salir</button>
     </div>
   </header>
@@ -139,17 +151,17 @@
     <!-- SIDEBAR -->
     <aside class="sb">
       <div class="sbl">General</div>
-      <a href="admin.html" class="sbt">
+      <a href="admin" class="sbt">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
       </a>
       <div class="sbl">Multimedia</div>
-      <a href="imagenes.html" class="sbt">
+      <a href="imagenes" class="sbt">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
         Imágenes
       </a>
       <div class="sbl">Tráfico</div>
-      <a href="estadisticas.html" class="sbt active">
+      <a href="estadisticas" class="sbt active">
         <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
         Estadísticas
       </a>
@@ -194,14 +206,26 @@
         <div class="ttb"><h3>Detalle completo</h3></div>
         <table>
           <thead>
-            <tr><th>Producto</th><th>Visitas</th></tr>
+            <tr><th>Producto</th><th>Visitas</th><th class="acc-col">Acciones</th></tr>
           </thead>
           <tbody id="tablaBody">
-            <tr><td colspan="2" class="ld">Cargando...</td></tr>
+            <tr><td colspan="3" class="ld">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
     </main>
+  </div>
+</div>
+
+<!-- CONFIRMAR ELIMINACIÓN -->
+<div class="co" id="co">
+  <div class="cb">
+    <h4>¿Eliminar registro?</h4>
+    <p id="co-texto">Se va a borrar el historial de visitas de este producto. Esta acción no se puede deshacer.</p>
+    <div class="cbb">
+      <button class="btn btn-o" onclick="cerrarConfirmacion()">Cancelar</button>
+      <button class="btn btn-r" id="cok">Eliminar</button>
+    </div>
   </div>
 </div>
 
@@ -210,7 +234,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyDtJa1nIppA8j8i7HUP6KFvKLgbRtzLwzQ",
@@ -332,7 +356,7 @@ function renderTabla(productos) {
   const body = document.getElementById('tablaBody');
 
   if (!productos.length) {
-    body.innerHTML = '<tr><td colspan="2" class="es">Sin datos todavía.</td></tr>';
+    body.innerHTML = '<tr><td colspan="3" class="es">Sin datos todavía.</td></tr>';
     return;
   }
 
@@ -340,9 +364,42 @@ function renderTabla(productos) {
     <tr>
       <td class="pn">${p.nombre}</td>
       <td class="pc">${p.visitas.toLocaleString('es-AR')}</td>
+      <td class="acc-col">
+        <button class="btn btn-r btn-sm" onclick="pedirEliminarRegistro('${p.id}', '${p.nombre.replace(/'/g, "\\'")}')">🗑 Eliminar</button>
+      </td>
     </tr>
   `).join('');
 }
+
+// -------------------- ELIMINAR REGISTRO (con confirmación) --------------------
+let idPendiente = null;
+
+window.pedirEliminarRegistro = function pedirEliminarRegistro(id, nombre) {
+  idPendiente = id;
+  document.getElementById('co-texto').textContent =
+    `Se va a borrar el historial de visitas de "${nombre}". Esta acción no se puede deshacer.`;
+  document.getElementById('co').classList.add('open');
+};
+
+window.cerrarConfirmacion = function cerrarConfirmacion() {
+  idPendiente = null;
+  document.getElementById('co').classList.remove('open');
+};
+
+document.getElementById('cok').addEventListener('click', async () => {
+  if (!idPendiente) return;
+  const id = idPendiente;
+  cerrarConfirmacion();
+
+  try {
+    await deleteDoc(doc(db, 'EstadisticasProductos', id));
+    toast('Registro eliminado');
+    cargarEstadisticas();
+  } catch (err) {
+    console.error(err);
+    toast('No se pudo eliminar el registro', true);
+  }
+});
 </script>
 </body>
 </html>

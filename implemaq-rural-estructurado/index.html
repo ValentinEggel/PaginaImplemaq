@@ -689,6 +689,31 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <script src="js/script.js"></script>
   <script type="module" src="js/catalogo.js"></script>
 
+  <!-- CONTADOR DE VISITAS GENERALES AL SITIO -->
+  <script type="module">
+    import { db, doc, increment } from "./js/firebase-config.js";
+    import { setDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+    (async () => {
+      const clave = 'visita_general';
+      const ultimaVisita = localStorage.getItem(clave);
+      const TIEMPO_ESPERA = 30 * 60 * 1000; // 30 minutos, igual que en producto.html
+
+      if (!ultimaVisita || (Date.now() - Number(ultimaVisita)) > TIEMPO_ESPERA) {
+        try {
+          await setDoc(
+            doc(db, "EstadisticasGeneral", "general"),
+            { visitasTotales: increment(1) },
+            { merge: true }
+          );
+          localStorage.setItem(clave, Date.now().toString());
+        } catch (e) {
+          console.error("Error registrando visita general:", e);
+        }
+      }
+    })();
+  </script>
+
 <script>
 const menuToggle = document.getElementById('menu-toggle');
 const mainNav = document.getElementById('main-nav');
