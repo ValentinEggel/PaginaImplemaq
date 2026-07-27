@@ -302,7 +302,7 @@
         <div class="fsec">Información básica</div>
         <div class="fgr full"><label>Nombre *</label><input type="text" id="fn" placeholder="Ej: Tractor John Deere 5090E"></div>
         <div class="fgr"><label>Categoría *</label>
-          <select id="fc">
+          <select id="fc" onchange="actualizarCampoCondicion()">
             <option value="Maquinaria">Maquinaria e Implementos</option>
             <option value="Repuestos">Repuestos</option>
             <option value="Insumos">Insumos</option>
@@ -310,9 +310,16 @@
         </div>
         <div class="fgr"><label>Subcategoría</label><input type="text" id="fsc" placeholder="Ej: Tractor, Sembradora..."></div>
         <div class="fgr"><label>Estado</label>
-          <select id="fco">
+          <select id="fco" onchange="actualizarCampoCondicion()">
             <option value="Nuevo">Nuevo</option>
             <option value="Usado">Usado</option>
+          </select>
+        </div>
+        <div class="fgr" id="grupo-condicion" style="display:none;">
+          <label>Condición de la maquinaria usada</label>
+          <select id="fcond">
+            <option value="buen_estado">Buen estado</option>
+            <option value="reacondicionar">Máquina a reacondicionar</option>
           </select>
         </div>
         <div class="fgr"><label>Año</label><input type="number" id="fa" placeholder="Ej: 2022" min="1990" max="2030"></div>
@@ -542,6 +549,12 @@ function renderTabla(ps, cat) {
       const modelo = val(p,'Modelo','modelo') || '';
       const img = val(p,'Imagen','img') || (Array.isArray(val(p,'Imagenes','fotos')) ? val(p,'Imagenes','fotos')[0] : '');
       const estado = val(p,'Estado','estado') || val(p,'condicion') || 'Nuevo';
+      const condicionGuardada = val(p,'Condicion','condicionMaquinaria') || '';
+      const condicionTexto = condicionGuardada === 'buen_estado'
+        ? 'Buen estado'
+        : condicionGuardada === 'reacondicionar'
+          ? 'A reacondicionar'
+          : '';
       const activo = val(p,'Activo','activo') !== false;
       const destacado = val(p,'Destacado','destacado') === true || val(p,'estado') === 'destacado';
       return `<tr>
@@ -553,7 +566,12 @@ function renderTabla(ps, cat) {
           </div>
         </td>
         <td style="font-size:13px;color:#666;">${marca || '—'}</td>
-        <td><span class="badge ${String(estado).toLowerCase()==='nuevo'?'bn':'bu'}">${estado}</span></td>
+        <td>
+          <span class="badge ${String(estado).toLowerCase()==='nuevo'?'bn':'bu'}">${estado}</span>
+          ${String(estado).toLowerCase() === 'usado' && condicionTexto
+            ? `<div class="ps" style="margin-top:5px;">${condicionTexto}</div>`
+            : ''}
+        </td>
         <td class="pc">${fmtP(p)}</td>
         <td style="font-size:12px;color:#666;">${fmtFecha(p)}</td>
         <td><span class="badge ${!activo?'bu':destacado?'bm':'bn'}">${!activo ? 'Inactivo' : destacado ? 'Destacado' : 'Activo'}</span></td>
@@ -633,6 +651,18 @@ function convertirDrive(url) {
   return url;
 }
 
+window.actualizarCampoCondicion = () => {
+  const categoria = document.getElementById('fc').value;
+  const estado = document.getElementById('fco').value;
+  const grupo = document.getElementById('grupo-condicion');
+  const condicion = document.getElementById('fcond');
+
+  const mostrar = categoria === 'Maquinaria' && estado === 'Usado';
+  grupo.style.display = mostrar ? 'flex' : 'none';
+
+  if (!mostrar) condicion.value = 'buen_estado';
+};
+
 window.openModal = (id, cat) => {
   editId = id;
   document.getElementById('fc').value = catValueFromKey(cat || 'maquinaria');
@@ -651,6 +681,9 @@ window.openModal = (id, cat) => {
     document.getElementById('fc').value = val(p,'Categoría','categoria') || catValueFromKey(cat || 'maquinaria');
     document.getElementById('fsc').value = val(p,'Subcategoría','subcategoria') || '';
     document.getElementById('fco').value = String(estado).toLowerCase() === 'usado' ? 'Usado' : 'Nuevo';
+    const condicionGuardada = val(p,'Condicion','condicionMaquinaria');
+    document.getElementById('fcond').value =
+      condicionGuardada === 'reacondicionar' ? 'reacondicionar' : 'buen_estado';
     document.getElementById('fa').value = val(p,'Año','anio') || '';
     document.getElementById('fm').value = val(p,'Marca','marca') || '';
     document.getElementById('fmo').value = val(p,'Modelo','modelo') || '';
@@ -668,11 +701,13 @@ window.openModal = (id, cat) => {
     document.getElementById('mt').textContent = 'Nuevo Producto';
     ['fn','fsc','fa','fm','fmo','fp','fd','ffo'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('fco').value = 'Nuevo';
+    document.getElementById('fcond').value = 'buen_estado';
     document.getElementById('fmon').value = 'ARS';
     document.getElementById('fmp').value = 'no';
     document.getElementById('fu').value = 'Susana, Santa Fe';
     document.getElementById('fes').value = 'activo';
   }
+  actualizarCampoCondicion();
   document.getElementById('mo').classList.add('open');
 };
 
@@ -699,11 +734,18 @@ window.saveProd = async () => {
   const precio = mostrarPrecio === 'no' || !precioInput ? 'Consultar' : precioInput;
 
   const anterior = editId ? prods.find(p => p.id === editId) : {};
+  const categoria = document.getElementById('fc').value;
+  const estado = document.getElementById('fco').value;
+  const condicion = categoria === 'Maquinaria' && estado === 'Usado'
+    ? document.getElementById('fcond').value
+    : '';
+
   const data = {
     Nombre: nombre,
-    Categoría: document.getElementById('fc').value,
+    Categoría: categoria,
     Subcategoría: document.getElementById('fsc').value.trim(),
-    Estado: document.getElementById('fco').value,
+    Estado: estado,
+    Condicion: condicion,
     Año: document.getElementById('fa').value || '',
     Marca: document.getElementById('fm').value.trim(),
     Modelo: document.getElementById('fmo').value.trim(),

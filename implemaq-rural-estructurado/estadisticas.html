@@ -60,25 +60,42 @@
   .btn-sm{font-size:12px;padding:6px 12px;}
 
   /* STATS CARDS */
-  .sg{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
-  .sc{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;padding:20px;}
-  .sc .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;color:var(--ng);line-height:1.1;}
-  .sc .lbl{font-size:13px;color:var(--tx2);margin-top:4px;}
-  .sc .ico{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .sg{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;gap:16px;margin-bottom:28px;}
+  .sc{background:#fff;border:1.5px solid var(--gr2);border-radius:10px;padding:22px;position:relative;overflow:hidden;}
+  .sc.principal{background:var(--ng);border-color:var(--ng);color:#fff;}
+  .sc.principal::after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(245,200,66,.12);right:-34px;top:-42px;}
+  .sc .num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:36px;color:var(--ng);line-height:1.05;overflow-wrap:anywhere;}
+  .sc.principal .num{color:#fff;font-size:48px;}
+  .sc .lbl{font-size:13px;color:var(--tx2);margin-top:6px;}
+  .sc.principal .lbl{color:rgba(255,255,255,.65);}
+  .sc .ico{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+  .sc.principal .ico{background:var(--am);}
   .iy{background:#fff8d0;}.ik{background:#f0f0f0;}
+  .metric-note{margin-top:12px;font-size:12px;color:#999;}
+  .sc.principal .metric-note{color:rgba(255,255,255,.45);}
+
+  /* GRÁFICO */
+  .chart-card{background:#fff;border:1.5px solid var(--gr2);border-radius:10px;margin-bottom:28px;overflow:hidden;}
+  .chart-head{padding:18px 20px;border-bottom:1px solid var(--gr2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+  .chart-head h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.5px;}
+  .chart-head p{font-size:12px;color:#999;margin-top:3px;}
+  .chart-wrap{position:relative;height:360px;padding:20px;}
+  .chart-empty{height:100%;display:flex;align-items:center;justify-content:center;color:#aaa;text-align:center;}
 
   /* RANKING */
   .tw{background:#fff;border:1.5px solid var(--gr2);border-radius:8px;overflow:hidden;margin-bottom:28px;}
   .ttb{padding:16px 20px;border-bottom:1px solid var(--gr2);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
   .ttb h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.5px;}
+  .ttb p{font-size:12px;color:#999;margin-top:3px;}
   .rank-body{padding:20px;}
-  .rank-row{display:grid;grid-template-columns:28px 1fr 90px;align-items:center;gap:14px;padding:9px 0;}
+  .rank-row{display:grid;grid-template-columns:34px 1fr 100px;align-items:center;gap:16px;padding:12px 0;}
   .rank-pos{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#bbb;text-align:center;}
   .rank-row:nth-child(1) .rank-pos{color:var(--am2);-webkit-text-stroke:1px #c49a00;}
   .rank-name{font-size:13px;font-weight:600;margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .rank-bar-wrap{background:var(--gr);border-radius:20px;height:8px;overflow:hidden;}
+  .rank-bar-wrap{background:var(--gr);border-radius:20px;height:12px;overflow:hidden;}
   .rank-bar{background:var(--am);height:100%;border-radius:20px;transition:width .4s;}
-  .rank-num{text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;}
+  .rank-num{text-align:right;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;}
+  .rank-num small{display:block;font-family:'Barlow',sans-serif;font-size:10px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:.8px;}
 
   /* TABLA */
   table{width:100%;border-collapse:collapse;}
@@ -94,7 +111,7 @@
   .ld{text-align:center;padding:40px;color:#aaa;}
 
   /* ACCIONES DE TABLA */
-  .btn-r{background:#ffebee;color:var(--rd);}.btn-r:hover{background:#ffcdd2;}
+  .btn-r{background:#f3f3f3;color:#777;border:1px solid #e3e3e3;}.btn-r:hover{background:#ffebee;color:var(--rd);border-color:#ffcdd2;}
   .acc-col{text-align:right;width:110px;}
 
   /* CONFIRM */
@@ -116,6 +133,17 @@
     .sbt{width:auto;white-space:nowrap;}
     .sg{grid-template-columns:1fr 1fr;}
     .am{padding:18px;}
+  }
+  @media (max-width:1200px){
+    .sg{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .sg{grid-template-columns:1fr;}
+    .rank-row{grid-template-columns:28px 1fr 72px;gap:10px;}
+    .sc.principal .num{font-size:42px;}
+    .tw{overflow-x:auto;}
+    table{min-width:620px;}
+    .chart-wrap{height:300px;padding:14px;}
   }
 </style>
 </head>
@@ -176,26 +204,51 @@
 
       <!-- CARDS -->
       <div class="sg">
-        <div class="sc">
-          <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="sc principal">
+          <div class="ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></div>
           <div class="num" id="st-visitas">—</div>
           <div class="lbl">Visitas totales al sitio</div>
+          <div class="metric-note">Acumulado histórico registrado</div>
         </div>
         <div class="sc">
-          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
-          <div class="num" id="st-top" style="font-size:18px;">—</div>
+          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M5 6H3v2a4 4 0 0 0 4 4"/><path d="M19 6h2v2a4 4 0 0 1-4 4"/></svg></div>
+          <div class="num" id="st-top" style="font-size:20px;">—</div>
           <div class="lbl">Producto más visitado</div>
+          <div class="metric-note" id="st-top-visitas">— visitas</div>
         </div>
         <div class="sc">
           <div class="ico iy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c49a00" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg></div>
           <div class="num" id="st-total-prod">—</div>
           <div class="lbl">Productos con visitas registradas</div>
+          <div class="metric-note">Solicitud del cliente conservada</div>
+        </div>
+        <div class="sc">
+          <div class="ico ik"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><path d="M4 19V9"/><path d="M10 19V5"/><path d="M16 19v-7"/><path d="M22 19H2"/></svg></div>
+          <div class="num" id="st-promedio">—</div>
+          <div class="lbl">Promedio de visitas por producto</div>
+          <div class="metric-note">Sobre productos con registros</div>
+        </div>
+      </div>
+
+      <!-- GRÁFICO TOP 10 -->
+      <div class="chart-card">
+        <div class="chart-head">
+          <div>
+            <h3>Comparativa de visitas por producto</h3>
+            <p>Representación gráfica de los 10 productos con más visitas.</p>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="grafico-visitas"></canvas>
+          <div class="chart-empty" id="grafico-vacio" style="display:none;">
+            Todavía no hay información suficiente para generar el gráfico.
+          </div>
         </div>
       </div>
 
       <!-- RANKING TOP 10 -->
       <div class="tw">
-        <div class="ttb"><h3>Top 10 — Productos más buscados</h3></div>
+        <div class="ttb"><div><h3>Top 10 — Productos más visitados</h3><p>Comparación visual según la cantidad total de visitas registradas.</p></div></div>
         <div class="rank-body" id="rankingBody">
           <div class="ld">Cargando...</div>
         </div>
@@ -203,13 +256,13 @@
 
       <!-- TABLA COMPLETA -->
       <div class="tw">
-        <div class="ttb"><h3>Detalle completo</h3></div>
+        <div class="ttb"><div><h3>Detalle completo</h3><p>Listado ordenado de mayor a menor cantidad de visitas.</p></div></div>
         <table>
           <thead>
-            <tr><th>Producto</th><th>Visitas</th><th class="acc-col">Acciones</th></tr>
+            <tr><th style="width:70px;">Posición</th><th>Producto</th><th>Visitas</th><th class="acc-col">Acciones</th></tr>
           </thead>
           <tbody id="tablaBody">
-            <tr><td colspan="3" class="ld">Cargando...</td></tr>
+            <tr><td colspan="4" class="ld">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -231,6 +284,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
@@ -249,6 +303,7 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 const ADMIN_EMAIL = "adminimplemaq@gmail.com";
+let graficoVisitas = null;
 
 function toast(msg, err = false) {
   const t = document.getElementById('toast');
@@ -314,15 +369,115 @@ window.cargarEstadisticas = async function cargarEstadisticas() {
 
     document.getElementById('st-total-prod').textContent = productos.length;
     document.getElementById('st-top').textContent = productos.length ? productos[0].nombre : 'Sin datos aún';
+    document.getElementById('st-top-visitas').textContent =
+      productos.length ? `${(productos[0].visitas || 0).toLocaleString('es-AR')} visitas` : 'Sin visitas';
+    const totalVisitasProductos = productos.reduce((acc, p) => acc + Number(p.visitas || 0), 0);
+    const promedio = productos.length ? Math.round(totalVisitasProductos / productos.length) : 0;
+    document.getElementById('st-promedio').textContent = promedio.toLocaleString('es-AR');
 
+    renderGrafico(productos.slice(0, 10));
     renderRanking(productos.slice(0, 10));
     renderTabla(productos);
   } catch (err) {
     console.error(err);
     toast('Error al cargar estadísticas', true);
     document.getElementById('rankingBody').innerHTML = '<div class="es">No se pudieron cargar los datos.</div>';
+    renderGrafico([]);
   }
 };
+
+function renderGrafico(top10) {
+  const canvas = document.getElementById('grafico-visitas');
+  const vacio = document.getElementById('grafico-vacio');
+
+  if (graficoVisitas) {
+    graficoVisitas.destroy();
+    graficoVisitas = null;
+  }
+
+  if (!top10.length) {
+    canvas.style.display = 'none';
+    vacio.style.display = 'flex';
+    return;
+  }
+
+  canvas.style.display = 'block';
+  vacio.style.display = 'none';
+
+  const etiquetas = top10.map(p => {
+    const nombre = String(p.nombre || 'Sin nombre');
+    return nombre.length > 28 ? nombre.slice(0, 28) + '…' : nombre;
+  });
+
+  graficoVisitas = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: etiquetas,
+      datasets: [{
+        label: 'Visitas',
+        data: top10.map(p => Number(p.visitas || 0)),
+        backgroundColor: '#f5c842',
+        borderColor: '#c49a00',
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {
+        duration: 500
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: context => `${Number(context.raw).toLocaleString('es-AR')} visitas`
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0,
+            color: '#777'
+          },
+          grid: {
+            color: '#eeeae2'
+          },
+          title: {
+            display: true,
+            text: 'Cantidad de visitas',
+            color: '#777',
+            font: {
+              family: 'Barlow',
+              size: 12,
+              weight: '600'
+            }
+          }
+        },
+        y: {
+          ticks: {
+            color: '#333',
+            font: {
+              family: 'Barlow',
+              size: 12,
+              weight: '600'
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+}
 
 function renderRanking(top10) {
   const cont = document.getElementById('rankingBody');
@@ -347,7 +502,7 @@ function renderRanking(top10) {
           <div class="rank-name" title="${p.nombre}">${p.nombre}</div>
           <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%"></div></div>
         </div>
-        <div class="rank-num">${p.visitas.toLocaleString('es-AR')}</div>
+        <div class="rank-num">${p.visitas.toLocaleString('es-AR')}<small>visitas</small></div>
       </div>`;
   }).join('');
 }
@@ -356,12 +511,13 @@ function renderTabla(productos) {
   const body = document.getElementById('tablaBody');
 
   if (!productos.length) {
-    body.innerHTML = '<tr><td colspan="3" class="es">Sin datos todavía.</td></tr>';
+    body.innerHTML = '<tr><td colspan="4" class="es">Sin datos todavía.</td></tr>';
     return;
   }
 
-  body.innerHTML = productos.map(p => `
+  body.innerHTML = productos.map((p, i) => `
     <tr>
+      <td class="pc" style="color:#aaa;">#${i + 1}</td>
       <td class="pn">${p.nombre}</td>
       <td class="pc">${p.visitas.toLocaleString('es-AR')}</td>
       <td class="acc-col">
